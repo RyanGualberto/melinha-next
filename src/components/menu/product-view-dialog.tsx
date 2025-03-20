@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, Minus, Plus, ShoppingCart } from "lucide-react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,11 +12,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { IProduct } from "@/types/product";
 import { productVariants } from "@/mock/product-variants";
-import { productVariantCategories } from "@/mock/product-variant-categories";
+import { ProductViewDialogCategory } from "./product-view-dialog-category";
+import { IProductVariantCategory } from "@/types/product-variant-category";
 
 interface ProductViewDialogProps {
   open: boolean;
@@ -31,8 +30,28 @@ export function ProductViewDialog({
 }: ProductViewDialogProps) {
   const router = useRouter();
   const [quantidade, setQuantidade] = useState(1);
-
   const [complements, setComplementos] = useState<string[]>([]);
+  const productVariantCategories = useMemo(() => {
+    const allProductVariants = product.productVariants;
+
+    const productVariantsGroupedByCategory = allProductVariants.reduce(
+      (acc, variant) => {
+        const categoryId = variant.productVariantCategoryId;
+        if (!acc.find((acc) => acc.id === categoryId)) {
+          acc.push({
+            ...variant.productVariantCategory,
+            productVariants: allProductVariants.filter(
+              (v) => v.productVariantCategoryId === categoryId
+            ),
+          });
+        }
+        return acc;
+      },
+      [] as IProductVariantCategory[]
+    );
+
+    return productVariantsGroupedByCategory;
+  }, [product]);
 
   if (!product) return null;
 
@@ -40,14 +59,6 @@ export function ProductViewDialog({
     const novaQuantidade = quantidade + delta;
     if (novaQuantidade >= 1) {
       setQuantidade(novaQuantidade);
-    }
-  };
-
-  const handleComplementoToggle = (variantId: string) => {
-    if (complements.includes(variantId)) {
-      setComplementos(complements.filter((id) => id !== variantId));
-    } else {
-      setComplementos([...complements, variantId]);
     }
   };
 
@@ -66,7 +77,6 @@ export function ProductViewDialog({
   };
 
   const handleAddToCart = () => {
-    // Aqui você adicionaria a lógica para adicionar ao carrinho
     console.log("Adicionado ao carrinho:", {
       product,
       quantidade,
@@ -97,48 +107,12 @@ export function ProductViewDialog({
 
         <div className="space-y-6">
           {productVariantCategories.map((pvc) => (
-            <div key={pvc.id}>
-              <h3 className="font-medium mb-3">{pvc.name}</h3>
-              <div className="grid grid-cols-1 gap-2">
-                {productVariants
-                  .filter(
-                    (variant) => variant.productVariantCategoryId === pvc.id
-                  )
-                  .map((variant) => (
-                    <div
-                      key={variant.id}
-                      className={`flex items-center space-x-2 rounded-md border p-3 cursor-pointer ${
-                        complements.includes(variant.id)
-                          ? "border-purple-600 bg-purple-50 dark:bg-purple-950/20"
-                          : ""
-                      }`}
-                      onClick={() => handleComplementoToggle(variant.id)}
-                    >
-                      <div
-                        className={`h-5 w-5 rounded-full border flex items-center justify-center ${
-                          complements.includes(variant.id)
-                            ? "border-purple-600 bg-purple-600"
-                            : "border-gray-300"
-                        }`}
-                      >
-                        {complements.includes(variant.id) && (
-                          <Check className="h-3 w-3 text-white" />
-                        )}
-                      </div>
-                      <Label className="flex-1 cursor-pointer">
-                        {variant.name}
-                      </Label>
-                      <Badge variant="outline">
-                        +
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(variant.price)}
-                      </Badge>
-                    </div>
-                  ))}
-              </div>
-            </div>
+            <ProductViewDialogCategory
+              key={pvc.id}
+              productVariantCategory={pvc}
+              complements={complements}
+              setComplements={setComplementos}
+            />
           ))}
         </div>
 

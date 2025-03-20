@@ -1,8 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { Tabs } from "@/components/ui/tabs";
-import { ProductViewDialog } from "@/components/products/product-view-dialog";
+import { ProductViewDialog } from "@/components/menu/product-view-dialog";
 import { IProduct } from "@/types/product";
 import { useQuery } from "@tanstack/react-query";
 import { listMenu } from "@/requests/menu";
@@ -14,7 +13,6 @@ export default function CardapioPage() {
     queryKey: ["client-menu"],
     queryFn: async () => await listMenu(),
   });
-  console.log(menu);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<IProduct | undefined>(
     undefined
