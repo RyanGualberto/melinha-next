@@ -1,7 +1,7 @@
 "use client";
 import Logo from "@/assets/logo-horizontal.png";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   ShoppingBag,
@@ -21,6 +21,8 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
+import { useCallback } from "react";
+import { destroyCookie } from "nookies";
 
 const navItems = [
   {
@@ -57,6 +59,12 @@ const navItems = [
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const logout = useCallback(() => {
+    destroyCookie({}, "token");
+    router.push("/login");
+  }, [router]);
 
   return (
     <Sidebar className="w-fit px-4 bg-sidebar">
@@ -86,11 +94,9 @@ export function SidebarNav() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Sair">
-              <Link href="/login">
-                <LogOut className="h-5 w-5" />
-                <span>Sair</span>
-              </Link>
+            <SidebarMenuButton onClick={logout} tooltip="Sair">
+              <LogOut className="h-5 w-5" />
+              <span>Sair</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -23,7 +23,7 @@ const AuthMiddleware = async (request: NextRequest, response: NextResponse) => {
   };
 
   try {
-    const user_response = await fetch(`http://localhost:3001/me`, {
+    const user_response = await fetch(`http://localhost:4444/auth/me`, {
       method: "GET",
       headers: headers,
     });
