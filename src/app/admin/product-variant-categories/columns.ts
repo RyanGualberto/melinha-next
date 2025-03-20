@@ -1,13 +1,9 @@
 "use client";
 
+import { IProductVariantCategory } from "@/types/product-variant-category";
 import type { ColumnDef } from "@tanstack/react-table";
 
-export type CategoriaVariante = {
-  id: string;
-  name: string;
-};
-
-export const columns: ColumnDef<CategoriaVariante>[] = [
+export const columns: ColumnDef<IProductVariantCategory>[] = [
   {
     accessorKey: "name",
     header: "Nome",

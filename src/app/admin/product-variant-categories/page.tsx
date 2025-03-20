@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -9,42 +8,81 @@ import { AlertDialogDelete } from "@/components/ui/alert-dialog-delete";
 import { ProductVariantCategoryDialog } from "@/components/product-variant-categories/product-variant-category-dialog";
 import { columns } from "./columns";
 import { IProductVariantCategory } from "@/types/product-variant-category";
-import { productVariantCategories } from "@/mock/product-variant-categories";
 import { ProductVariantCategoryFormValues } from "@/schemas/product-variant-category-schema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createProductVariantCategory,
+  createProductVariantCategoryPayload,
+  deleteProductVariantCategory,
+  listProductVariantCategories,
+  updateProductVariantCategory,
+  updateProductVariantCategoryPayload,
+} from "@/requests/product-variant-category";
+import { ColumnDef } from "@tanstack/react-table";
 
 export default function ProductVariantCategorysPage() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: productVariantCategories } = useQuery({
+    queryKey: ["product-variant-categories"],
+    queryFn: () => listProductVariantCategories(),
+  });
+  const { mutateAsync: createProductVariantCategoryMutation } = useMutation({
+    mutationFn: async (data: createProductVariantCategoryPayload) =>
+      await createProductVariantCategory(data),
+  });
+  const { mutateAsync: updateProductVariantCategoryMutation } = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: updateProductVariantCategoryPayload;
+    }) => await updateProductVariantCategory(id, data),
+  });
+  const { mutateAsync: deleteProductVariantCategoryMutation } = useMutation({
+    mutationFn: async (id: string) => await deleteProductVariantCategory(id),
+  });
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProductVariantCategory, setEditingProductVariantCategory] =
     useState<IProductVariantCategory | undefined>(undefined);
 
-  const handleEdit = (productVariantCategory: IProductVariantCategory) => {
-    setEditingProductVariantCategory(productVariantCategory);
-    setDialogOpen(true);
-  };
+  const refreshCategories = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["product-variant-categories"] });
+  }, [queryClient]);
 
-  const handleDelete = async (id: string) => {
-    // Simulação de exclusão
-    console.log(`Categoria de Variante ${id} excluída`);
-    // Aqui você faria a chamada para a API
-    // await deleteProductVariantCategory(id)
-    router.refresh();
-  };
+  const handleEdit = useCallback((category: IProductVariantCategory) => {
+    setEditingProductVariantCategory(category);
+    setDialogOpen(true);
+  }, []);
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      await deleteProductVariantCategoryMutation(id);
+      refreshCategories();
+    },
+    [deleteProductVariantCategoryMutation, refreshCategories]
+  );
 
   const handleSave = async (data: ProductVariantCategoryFormValues) => {
-    // Simulação de salvamento
-    console.log("Dados salvos:", data);
-    // Aqui você faria a chamada para a API
-    // editingProductVariantCategory ? await updateProductVariantCategory(data) : await createProductVariantCategory(data)
+    if (editingProductVariantCategory) {
+      await updateProductVariantCategoryMutation({
+        id: editingProductVariantCategory.id,
+        data: data,
+      });
+    } else {
+      await createProductVariantCategoryMutation(data);
+    }
+
     setDialogOpen(false);
     setEditingProductVariantCategory(undefined);
-    router.refresh();
+    refreshCategories();
   };
 
-  const actionColumn = {
+  const actionColumn: ColumnDef<IProductVariantCategory, unknown> = {
     id: "actions",
     header: "Ações",
-    cell: ({ row }: any) => {
+    cell: ({ row }) => {
       const productVariantCategory = row.original;
 
       return (
@@ -92,7 +130,7 @@ export default function ProductVariantCategorysPage() {
 
       <DataTable
         columns={allColumns}
-        data={productVariantCategories}
+        data={productVariantCategories || []}
         searchColumn="name"
         searchPlaceholder="Filtrar categorias de variantes..."
       />
