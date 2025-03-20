@@ -1,3 +1,4 @@
+"use client";
 import type React from "react";
 import Link from "next/link";
 import { ShoppingCart, User } from "lucide-react";
@@ -5,12 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Logo from "@/assets/logo-horizontal.png";
 import Image from "next/image";
+import { useAuthContext } from "@/contexts/user-context";
 
 export default function ClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { currentUser } = useAuthContext();
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center">
@@ -35,33 +39,32 @@ export default function ClientLayout({
             >
               Sobre
             </Link>
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Contato
-            </Link>
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link href="/cart">
-              <Button variant="outline" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                  3
-                </Badge>
-              </Button>
-            </Link>
-            <Link href="/profile">
-              <Button variant="outline" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/login" className="hidden md:block">
-              <Button variant="default" size="sm">
-                Entrar
-              </Button>
-            </Link>
+            {currentUser ? (
+              <>
+                <Link href="/cart">
+                  <Button variant="outline" size="icon" className="relative">
+                    <ShoppingCart className="h-5 w-5" />
+                    <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                      3
+                    </Badge>
+                  </Button>
+                </Link>
+                <Link href="/profile">
+                  <Button variant="outline" size="icon">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Link href="/login" className="hidden md:block">
+                <Button variant="default" size="sm">
+                  Entrar
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -86,16 +89,16 @@ export default function ClientLayout({
           </div>
           <div className="flex gap-4">
             <Link
-              href="/terms"
+              href="/about"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Termos
+              Cardápio
             </Link>
             <Link
-              href="/privacity"
+              href="/about"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Privacidade
+              Sobre
             </Link>
           </div>
         </div>

@@ -5,11 +5,14 @@ export interface IMenuResponse {
   categories: Array<ICategory>;
 }
 
-export const listMenu = async () => {
+export const listMenu = async (query: string) => {
   try {
     const response = await apiClient<IMenuResponse>({
       method: "get",
       url: "/menu",
+      params: {
+        query: query || undefined,
+      },
     });
 
     return response.data;
