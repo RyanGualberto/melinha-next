@@ -1,7 +1,5 @@
 "use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -10,42 +8,80 @@ import { CategoryDialog } from "@/components/categories/category-dialog";
 import { columns } from "./columns";
 import { ICategory } from "@/types/category";
 import { CategoryFormValues } from "@/schemas/category-schema";
-import { categories } from "@/mock/categories";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createCategory,
+  createCategoryPayload,
+  deleteCategory,
+  listCategories,
+  updateCategory,
+  updateCategoryPayload,
+} from "@/requests/category";
+import { ColumnDef } from "@tanstack/react-table";
 
 export default function CategorysPage() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => listCategories(),
+  });
+  const { mutateAsync: createCategoryMutation } = useMutation({
+    mutationFn: async (data: createCategoryPayload) =>
+      await createCategory(data),
+  });
+  const { mutateAsync: updateCategoryMutation } = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: updateCategoryPayload;
+    }) => await updateCategory(id, data),
+  });
+  const { mutateAsync: deleteCategoryMutation } = useMutation({
+    mutationFn: async (id: string) => await deleteCategory(id),
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ICategory | undefined>(
     undefined
   );
 
-  const handleEdit = (category: ICategory) => {
+  const refreshCategories = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["categories"] });
+  }, [queryClient]);
+
+  const handleEdit = useCallback((category: ICategory) => {
     setEditingCategory(category);
     setDialogOpen(true);
-  };
+  }, []);
 
-  const handleDelete = async (id: string) => {
-    // Simulação de exclusão
-    console.log(`Categoria ${id} excluída`);
-    // Aqui você faria a chamada para a API
-    // await deleteCategory(id)
-    router.refresh();
-  };
+  const handleDelete = useCallback(
+    async (id: string) => {
+      await deleteCategoryMutation(id);
+      refreshCategories();
+    },
+    [deleteCategoryMutation, refreshCategories]
+  );
 
   const handleSave = async (data: CategoryFormValues) => {
-    // Simulação de salvamento
-    console.log("Dados salvos:", data);
-    // Aqui você faria a chamada para a API
-    // editingCategory ? await updateCategory(data) : await createCategory(data)
+    if (editingCategory) {
+      await updateCategoryMutation({
+        id: editingCategory.id,
+        data: data,
+      });
+    } else {
+      await createCategoryMutation(data);
+    }
+
     setDialogOpen(false);
     setEditingCategory(undefined);
-    router.refresh();
+    refreshCategories();
   };
 
-  const actionColumn = {
+  const actionColumn: ColumnDef<ICategory, unknown> = {
     id: "actions",
     header: "Ações",
-    cell: ({ row }: any) => {
+    cell: ({ row }) => {
       const category = row.original;
 
       return (
@@ -91,7 +127,7 @@ export default function CategorysPage() {
 
       <DataTable
         columns={allColumns}
-        data={categories.map((category) => ({
+        data={(categories || []).map((category) => ({
           ...category,
           description: category.description || "",
         }))}

@@ -1,14 +1,9 @@
 "use client";
 
+import { ICategory } from "@/types/category";
 import type { ColumnDef } from "@tanstack/react-table";
 
-export type Categoria = {
-  id: string;
-  name: string;
-  description: string;
-};
-
-export const columns: ColumnDef<Categoria>[] = [
+export const columns: ColumnDef<ICategory>[] = [
   {
     accessorKey: "name",
     header: "Nome",
