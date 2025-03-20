@@ -5,6 +5,7 @@ export const productVariantSchema = z.object({
   price: z.coerce.number().min(0, { message: "Preço não pode ser negativo" }),
   status: z.string(),
   productId: z.string(),
+  productVariantCategoryId: z.string(),
   image: z.string(),
 });
 

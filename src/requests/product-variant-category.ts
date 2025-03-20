@@ -1,11 +1,11 @@
 import apiClient from "@/config/api-client";
-import { IProductVariant } from "@/types/product-variant";
+import { IProductVariantCategory } from "@/types/product-variant-category";
 
 export async function listProductVariantCategories() {
   try {
-    const response = await apiClient<Array<IProductVariant>>({
+    const response = await apiClient<Array<IProductVariantCategory>>({
       method: "get",
-      url: "/product-variants",
+      url: "/product-variant-categories",
     });
 
     return response.data;
@@ -15,19 +15,17 @@ export async function listProductVariantCategories() {
   }
 }
 
-export interface createProductVariantPayload {
+export interface createProductVariantCategoryPayload {
   name: string;
-  price: number;
-  status: string;
-  productId: string;
-  image: string;
 }
 
-export async function createProductVariant(data: createProductVariantPayload) {
+export async function createProductVariantCategory(
+  data: createProductVariantCategoryPayload
+) {
   try {
-    const response = await apiClient<Array<IProductVariant>>({
+    const response = await apiClient<Array<IProductVariantCategory>>({
       method: "post",
-      url: "/product-variants",
+      url: "/product-variant-categories",
       data,
     });
 
@@ -38,11 +36,11 @@ export async function createProductVariant(data: createProductVariantPayload) {
   }
 }
 
-export async function deleteProductVariant(id: string) {
+export async function deleteProductVariantCategory(id: string) {
   try {
-    const response = await apiClient<Array<IProductVariant>>({
+    const response = await apiClient<Array<IProductVariantCategory>>({
       method: "delete",
-      url: `/product-variants/${id}`,
+      url: `/product-variant-categories/${id}`,
     });
 
     return response.data;
@@ -52,22 +50,18 @@ export async function deleteProductVariant(id: string) {
   }
 }
 
-export interface updateProductVariantPayload {
+export interface updateProductVariantCategoryPayload {
   name: string;
-  price: number;
-  status: string;
-  productId: string;
-  image: string;
 }
 
-export async function updateProductVariant(
+export async function updateProductVariantCategory(
   id: string,
-  data: updateProductVariantPayload
+  data: updateProductVariantCategoryPayload
 ) {
   try {
-    const response = await apiClient<Array<IProductVariant>>({
+    const response = await apiClient<Array<IProductVariantCategory>>({
       method: "patch",
-      url: `/product-variants/${id}`,
+      url: `/product-variant-categories/${id}`,
       data,
     });
 

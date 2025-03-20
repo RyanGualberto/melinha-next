@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -9,40 +8,76 @@ import { AlertDialogDelete } from "@/components/ui/alert-dialog-delete";
 import { ProductVariantDialog } from "@/components/product-variants/product-variant-dialog";
 import { columns } from "./columns";
 import { IProductVariant } from "@/types/product-variant";
-import { productVariants } from "@/mock/product-variants";
 import { ProductVariantFormValues } from "@/schemas/product-variant-schema";
 import { ColumnDef } from "@tanstack/react-table";
-
-// Dados de exemplo
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createProductVariant,
+  createProductVariantPayload,
+  deleteProductVariant,
+  listProductVariants,
+  updateProductVariant,
+  updateProductVariantPayload,
+} from "@/requests/product-variant";
 
 export default function ProductVariantsPage() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: productVariants } = useQuery({
+    queryKey: ["product-variants"],
+    queryFn: () => listProductVariants(),
+  });
+  const { mutateAsync: createProductVariantMutation } = useMutation({
+    mutationFn: async (data: createProductVariantPayload) =>
+      await createProductVariant(data),
+  });
+  const { mutateAsync: updateProductVariantMutation } = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: updateProductVariantPayload;
+    }) => await updateProductVariant(id, data),
+  });
+  const { mutateAsync: deleteProductVariantMutation } = useMutation({
+    mutationFn: async (id: string) => await deleteProductVariant(id),
+  });
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProductVariant, setEditingProductVariant] = useState<
     IProductVariant | undefined
   >(undefined);
 
-  const handleEdit = (variante: IProductVariant) => {
-    setEditingProductVariant(variante);
-    setDialogOpen(true);
-  };
+  const refreshCategories = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["product-variants"] });
+  }, [queryClient]);
 
-  const handleDelete = async (id: string) => {
-    // Simulação de exclusão
-    console.log(`Variant ${id} excluída`);
-    // Aqui você faria a chamada para a API
-    // await deleteVariant(id)
-    router.refresh();
-  };
+  const handleEdit = useCallback((category: IProductVariant) => {
+    setEditingProductVariant(category);
+    setDialogOpen(true);
+  }, []);
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      await deleteProductVariantMutation(id);
+      refreshCategories();
+    },
+    [deleteProductVariantMutation, refreshCategories]
+  );
 
   const handleSave = async (data: ProductVariantFormValues) => {
-    // Simulação de salvamento
-    console.log("Dados salvos:", data);
-    // Aqui você faria a chamada para a API
-    // editingVariant ? await updateVariant(data) : await createVariant(data)
+    if (editingProductVariant) {
+      await updateProductVariantMutation({
+        id: editingProductVariant.id,
+        data: data,
+      });
+    } else {
+      await createProductVariantMutation(data);
+    }
+
     setDialogOpen(false);
     setEditingProductVariant(undefined);
-    router.refresh();
+    refreshCategories();
   };
 
   const actionColumn: ColumnDef<IProductVariant, unknown> = {
@@ -94,7 +129,7 @@ export default function ProductVariantsPage() {
 
       <DataTable
         columns={allColumns}
-        data={productVariants}
+        data={productVariants || []}
         searchColumn="name"
         searchPlaceholder="Filtrar variantes..."
       />

@@ -29,12 +29,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { products } from "@/mock/products";
 import { IProductVariant } from "@/types/product-variant";
 import {
   ProductVariantFormValues,
   productVariantSchema,
 } from "@/schemas/product-variant-schema";
+import { useQuery } from "@tanstack/react-query";
+import { listProducts } from "@/requests/product";
+import { listProductVariantCategories } from "@/requests/product-variant-category";
 
 interface ProductVariantDialogProps {
   open: boolean;
@@ -49,6 +51,14 @@ export function ProductVariantDialog({
   productVariant,
   onSave,
 }: ProductVariantDialogProps) {
+  const { data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => await listProducts(),
+  });
+  const { data: productVariantCategories } = useQuery({
+    queryKey: ["product-variant-categories"],
+    queryFn: async () => await listProductVariantCategories(),
+  });
   const form = useForm<ProductVariantFormValues>({
     resolver: zodResolver(productVariantSchema),
     defaultValues: {
@@ -156,33 +166,62 @@ export function ProductVariantDialog({
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="productId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Produto</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o produto" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {products.map((produto) => (
-                        <SelectItem key={produto.id} value={produto.id}>
-                          {produto.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-2 items-start">
+              <FormField
+                control={form.control}
+                name="productId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Produto</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o produto" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {(products || []).map((produto) => (
+                          <SelectItem key={produto.id} value={produto.id}>
+                            {produto.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="productVariantCategoryId"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Categoria da variante</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione a categoria de variante" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {(productVariantCategories || []).map((pvc) => (
+                          <SelectItem key={pvc.id} value={pvc.id}>
+                            {pvc.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
