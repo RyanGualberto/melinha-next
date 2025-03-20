@@ -31,11 +31,12 @@ export default function CardapioPage() {
   };
 
   return (
-    <div className="container py-8 w-full flex-1">
+    <div className="container px-4 md:px-0 py-8 w-full flex-1">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Cardápio</h1>
         <p className="text-muted-foreground">
-          Escolha seu açaí favorito e personalize com nossas opções
+          Escolha seu açaí favorito e personalize com nossas opções, frutas e
+          complementos a vontade, peça agora!
         </p>
       </div>
 

@@ -13,9 +13,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { IProduct } from "@/types/product";
-import { productVariants } from "@/mock/product-variants";
 import { ProductViewDialogCategory } from "./product-view-dialog-category";
 import { IProductVariantCategory } from "@/types/product-variant-category";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
 
 interface ProductViewDialogProps {
   open: boolean;
@@ -29,8 +30,23 @@ export function ProductViewDialog({
   product,
 }: ProductViewDialogProps) {
   const router = useRouter();
-  const [quantidade, setQuantidade] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   const [complements, setComplementos] = useState<string[]>([]);
+  const [observations, setObservations] = useState("");
+  const priceItemSubtotal = useMemo(() => {
+    let priceBase = product.price;
+
+    console.log(complements);
+
+    complements.forEach((variantId) => {
+      const variant = product.productVariants.find((v) => v.id === variantId);
+      if (variant) {
+        priceBase += variant.price;
+      }
+    });
+
+    return priceBase * quantity;
+  }, [product, complements, quantity]);
   const productVariantCategories = useMemo(() => {
     const allProductVariants = product.productVariants;
 
@@ -53,35 +69,20 @@ export function ProductViewDialog({
     return productVariantsGroupedByCategory;
   }, [product]);
 
-  if (!product) return null;
-
-  const handleQuantidadeChange = (delta: number) => {
-    const novaQuantidade = quantidade + delta;
-    if (novaQuantidade >= 1) {
-      setQuantidade(novaQuantidade);
+  const handleQuantityChange = (delta: number) => {
+    const novaQuantity = quantity + delta;
+    if (novaQuantity >= 1) {
+      setQuantity(novaQuantity);
     }
-  };
-
-  const calcularPrecoTotal = () => {
-    let priceBase = product.price;
-
-    // Adicionar preço dos complements
-    complements.forEach((variantId) => {
-      const variant = productVariants.find((v) => v.id === variantId);
-      if (variant) {
-        priceBase += variant.price;
-      }
-    });
-
-    return priceBase * quantidade;
   };
 
   const handleAddToCart = () => {
     console.log("Adicionado ao carrinho:", {
       product,
-      quantidade,
+      quantity,
       complements,
-      precoTotal: calcularPrecoTotal(),
+      precoTotal: priceItemSubtotal,
+      observations,
     });
 
     onOpenChange(false);
@@ -114,25 +115,33 @@ export function ProductViewDialog({
               setComplements={setComplementos}
             />
           ))}
+          <div className="space-y-2">
+            <Label>Observações</Label>
+            <Textarea
+              value={observations}
+              onChange={(e) => setObservations(e.target.value)}
+              placeholder="Ex: Sem cebola, sem tomate, etc."
+            />
+          </div>
         </div>
 
-        <DialogFooter className="flex-col sm:flex-row gap-4 sm:gap-0">
+        <DialogFooter className="flex-col sm:flex-row gap-2">
           <div className="flex items-center border rounded-md">
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => handleQuantidadeChange(-1)}
-              disabled={quantidade <= 1}
+              onClick={() => handleQuantityChange(-1)}
+              disabled={quantity <= 1}
             >
               <Minus className="h-4 w-4" />
             </Button>
-            <span className="w-10 text-center">{quantidade}</span>
+            <span className="w-10 text-center">{quantity}</span>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => handleQuantidadeChange(1)}
+              onClick={() => handleQuantityChange(1)}
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -148,7 +157,7 @@ export function ProductViewDialog({
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(calcularPrecoTotal())}
+              }).format(priceItemSubtotal)}
             </span>
           </Button>
         </DialogFooter>

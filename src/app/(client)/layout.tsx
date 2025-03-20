@@ -30,13 +30,13 @@ export default function ClientLayout({
               Cardápio
             </Link>
             <Link
-              href="/sobre"
+              href="/about"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             >
               Sobre
             </Link>
             <Link
-              href="/contato"
+              href="/contact"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             >
               Contato
@@ -44,7 +44,7 @@ export default function ClientLayout({
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link href="/carrinho">
+            <Link href="/cart">
               <Button variant="outline" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
                 <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
@@ -52,7 +52,7 @@ export default function ClientLayout({
                 </Badge>
               </Button>
             </Link>
-            <Link href="/minha-conta">
+            <Link href="/profile">
               <Button variant="outline" size="icon">
                 <User className="h-5 w-5" />
               </Button>
@@ -73,19 +73,26 @@ export default function ClientLayout({
           <div className="flex items-center gap-2 font-semibold">
             <Image src={Logo} height={40} width={120} alt="MELINHA" />
           </div>
-          <p className="text-center text-sm text-muted-foreground md:text-left">
-            &copy; {new Date().getFullYear()} Melinha Açaíteria. Todos os
-            direitos reservados.
-          </p>
+          <div className="text-center">
+            <p className="text-center text-sm text-muted-foreground md:text-left">
+              &copy; {new Date().getFullYear()} Melinha Açaíteria. Todos os
+              direitos reservados.
+            </p>
+            <p>
+              <span className="text-xs text-muted-foreground/80">
+                Desenvolvido por Gualberto Desenvolvimento de Software
+              </span>
+            </p>
+          </div>
           <div className="flex gap-4">
             <Link
-              href="/termos"
+              href="/terms"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Termos
             </Link>
             <Link
-              href="/privacidade"
+              href="/privacity"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Privacidade
