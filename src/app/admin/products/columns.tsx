@@ -2,19 +2,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { IProduct } from "@/types/product";
 
-export type Produto = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  status: string;
-  image: string;
-  categoryId: string;
-  category: { name: string };
-};
-
-export const columns: ColumnDef<Produto>[] = [
+export const columns: ColumnDef<IProduct>[] = [
   {
     accessorKey: "image",
     header: "Imagem",
@@ -58,8 +48,8 @@ export const columns: ColumnDef<Produto>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (
-        <Badge variant={status === "ativo" ? "default" : "secondary"}>
-          {status === "ativo" ? "Ativo" : "Inativo"}
+        <Badge variant={status === "active" ? "default" : "secondary"}>
+          {status === "active" ? "Ativo" : "Inativo"}
         </Badge>
       );
     },

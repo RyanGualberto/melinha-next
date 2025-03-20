@@ -30,8 +30,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProductFormValues, productSchema } from "@/schemas/product-schema";
-import { categories } from "@/mock/categories";
 import { IProduct } from "@/types/product";
+import { useQuery } from "@tanstack/react-query";
+import { listCategories } from "@/requests/category";
 
 interface ProductDialogProps {
   open: boolean;
@@ -46,6 +47,10 @@ export function ProductDialog({
   product,
   onSave,
 }: ProductDialogProps) {
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => listCategories(),
+  });
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -182,7 +187,7 @@ export function ProductDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {categories.map((category) => (
+                      {(categories || []).map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
                         </SelectItem>

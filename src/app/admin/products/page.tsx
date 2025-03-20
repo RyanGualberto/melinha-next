@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -10,42 +9,79 @@ import { ProductDialog } from "@/components/products/product-dialog";
 import { columns } from "./columns";
 import { IProduct } from "@/types/product";
 import { ProductFormValues } from "@/schemas/product-schema";
-import { products } from "@/mock/products";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createProduct,
+  createProductPayload,
+  deleteProduct,
+  listProducts,
+  updateProduct,
+  updateProductPayload,
+} from "@/requests/product";
+import { ColumnDef } from "@tanstack/react-table";
 
 export default function ProdutosPage() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => listProducts(),
+  });
+  const { mutateAsync: createProductMutation } = useMutation({
+    mutationFn: async (data: createProductPayload) => await createProduct(data),
+  });
+  const { mutateAsync: updateProductMutation } = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: updateProductPayload;
+    }) => await updateProduct(id, data),
+  });
+  const { mutateAsync: deleteProductMutation } = useMutation({
+    mutationFn: async (id: string) => await deleteProduct(id),
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<IProduct | undefined>(
     undefined
   );
 
-  const handleEdit = (product: IProduct) => {
+  const refreshProducts = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+  }, [queryClient]);
+
+  const handleEdit = useCallback((product: IProduct) => {
     setEditingProduct(product);
     setDialogOpen(true);
-  };
+  }, []);
 
-  const handleDelete = async (id: string) => {
-    // Simulação de exclusão
-    console.log(`Produto ${id} excluído`);
-    // Aqui você faria a chamada para a API
-    // await deleteProduto(id)
-    router.refresh();
-  };
+  const handleDelete = useCallback(
+    async (id: string) => {
+      await deleteProductMutation(id);
+      refreshProducts();
+    },
+    [deleteProductMutation, refreshProducts]
+  );
 
   const handleSave = async (data: ProductFormValues) => {
-    // Simulação de salvamento
-    console.log("Dados salvos:", data);
-    // Aqui você faria a chamada para a API
-    // editingProduto ? await updateProduto(data) : await createProduto(data)
+    if (editingProduct) {
+      await updateProductMutation({
+        id: editingProduct.id,
+        data: data,
+      });
+    } else {
+      await createProductMutation(data);
+    }
+
     setDialogOpen(false);
     setEditingProduct(undefined);
-    router.refresh();
+    refreshProducts();
   };
 
-  const actionColumn = {
+  const actionColumn: ColumnDef<IProduct, unknown> = {
     id: "actions",
     header: "Ações",
-    cell: ({ row }: any) => {
+    cell: ({ row }) => {
       const product = row.original;
 
       return (
@@ -91,7 +127,7 @@ export default function ProdutosPage() {
 
       <DataTable
         columns={allColumns}
-        data={products}
+        data={products || []}
         searchColumn="title"
         searchPlaceholder="Filtrar produtos..."
       />
