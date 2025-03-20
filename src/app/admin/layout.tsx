@@ -1,5 +1,5 @@
 import type React from "react";
-import { SidebarNav } from "@/components/shared/sidebar-nav";
+import { SidebarNav } from "@/components/shared/admin-sidebar-nav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({

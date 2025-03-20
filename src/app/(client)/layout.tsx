@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Logo from "@/assets/logo-horizontal.png";
+import Image from "next/image";
 
 export default function ClientLayout({
   children,
@@ -17,8 +19,7 @@ export default function ClientLayout({
             href="/"
             className="flex items-center gap-2 font-semibold text-lg"
           >
-            <div className="h-6 w-6 rounded-full bg-purple-600" />
-            <span>Açaíteria</span>
+            <Image src={Logo} height={40} width={120} alt="MELINHA" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
@@ -70,12 +71,11 @@ export default function ClientLayout({
       <footer className="border-t py-6 md:py-8 justify-center flex">
         <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-2 font-semibold">
-            <div className="h-5 w-5 rounded-full bg-purple-600" />
-            <span>Açaíteria</span>
+            <Image src={Logo} height={40} width={120} alt="MELINHA" />
           </div>
           <p className="text-center text-sm text-muted-foreground md:text-left">
-            &copy; {new Date().getFullYear()} Açaíteria. Todos os direitos
-            reservados.
+            &copy; {new Date().getFullYear()} Melinha Açaíteria. Todos os
+            direitos reservados.
           </p>
           <div className="flex gap-4">
             <Link

@@ -1,5 +1,6 @@
 "use client";
 import Logo from "@/assets/logo-horizontal.png";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -20,7 +21,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
 import { useCallback } from "react";
 import { destroyCookie } from "nookies";
 
