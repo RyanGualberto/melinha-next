@@ -1,50 +1,22 @@
 "use client";
-
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { OrderStatus } from "@/types/order-status";
+import { IOrder } from "@/types/order";
+import { IUser } from "@/types/user";
 
-export type Pedido = {
-  id: string;
-  cliente: {
-    nome: string;
-    telefone: string;
-    email: string;
-  };
-  data: Date;
-  valor: number;
-  status: string;
-  endereco: {
-    rua: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-  };
-  pagamento: {
-    metodo: string;
-    troco: string | null;
-  };
-  items: Array<{
-    id: string;
-    nome: string;
-    quantidade: number;
-    preco: number;
-  }>;
-  createdAt: Date;
-  observacoes: string;
-};
-
-const getStatusBadge = (status: string) => {
+const getStatusBadge = (status: keyof typeof OrderStatus) => {
   switch (status) {
-    case "aguardando":
+    case OrderStatus.PENDING:
       return (
         <Badge
           variant="outline"
           className="bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
         >
-          Aguardando
+          Aguardando Confirmação
         </Badge>
       );
-    case "em_preparo":
+    case OrderStatus.IN_PROGRESS:
       return (
         <Badge
           variant="outline"
@@ -53,7 +25,7 @@ const getStatusBadge = (status: string) => {
           Em preparo
         </Badge>
       );
-    case "em_entrega":
+    case OrderStatus.DELIVERY_IN_PROGRESS:
       return (
         <Badge
           variant="outline"
@@ -62,7 +34,7 @@ const getStatusBadge = (status: string) => {
           Em entrega
         </Badge>
       );
-    case "entregue":
+    case OrderStatus.COMPLETED:
       return (
         <Badge
           variant="outline"
@@ -71,7 +43,7 @@ const getStatusBadge = (status: string) => {
           Entregue
         </Badge>
       );
-    case "cancelado":
+    case OrderStatus.CANCELED:
       return (
         <Badge
           variant="outline"
@@ -87,9 +59,9 @@ const getStatusBadge = (status: string) => {
 
 const getMetodoPagamento = (metodo: string) => {
   switch (metodo) {
-    case "dinheiro":
+    case "money":
       return "Dinheiro";
-    case "cartao":
+    case "card":
       return "Cartão";
     case "pix":
       return "PIX";
@@ -98,27 +70,28 @@ const getMetodoPagamento = (metodo: string) => {
   }
 };
 
-export const columns: ColumnDef<Pedido>[] = [
+export const columns: ColumnDef<IOrder>[] = [
   {
-    accessorKey: "id",
-    header: "Pedido",
+    accessorKey: "userSnapshot",
+    header: "Cliente",
     cell: ({ row }) => {
-      return <span className="font-medium">#{row.getValue("id")}</span>;
+      const user: IUser = JSON.parse(row.getValue("userSnapshot"));
+      return user.firstName + user.lastName;
     },
   },
   {
-    accessorKey: "cliente.nome",
-    header: "Cliente",
-  },
-  {
-    accessorKey: "cliente.telefone",
+    accessorKey: "userSnapshotPhone",
     header: "Telefone",
+    cell: ({ row }) => {
+      const user: IUser = JSON.parse(row.getValue("userSnapshot"));
+      return user.phoneNumber;
+    },
   },
   {
-    accessorKey: "data",
+    accessorKey: "createdAt",
     header: "Data",
     cell: ({ row }) => {
-      const data = row.getValue("data") as Date;
+      const data = row.getValue("createdAt") as Date;
       return new Date(data).toLocaleDateString("pt-BR", {
         year: "numeric",
         month: "long",
@@ -129,10 +102,10 @@ export const columns: ColumnDef<Pedido>[] = [
     },
   },
   {
-    accessorKey: "valor",
+    accessorKey: "total",
     header: "Valor",
     cell: ({ row }) => {
-      const valor = Number.parseFloat(row.getValue("valor"));
+      const valor = Number.parseFloat(row.getValue("total"));
       const formatted = new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL",
@@ -141,10 +114,10 @@ export const columns: ColumnDef<Pedido>[] = [
     },
   },
   {
-    accessorKey: "pagamento.metodo",
+    accessorKey: "paymentMethod",
     header: "Pagamento",
     cell: ({ row }) => {
-      const metodo = row.getValue("pagamento.metodo") as string;
+      const metodo = row.getValue("paymentMethod") as string;
       return getMetodoPagamento(metodo);
     },
   },
@@ -152,7 +125,7 @@ export const columns: ColumnDef<Pedido>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const status = row.getValue("status") as keyof typeof OrderStatus;
       return getStatusBadge(status);
     },
   },

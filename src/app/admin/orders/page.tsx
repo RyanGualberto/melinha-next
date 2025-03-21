@@ -15,12 +15,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { orders } from "@/mock/orders";
-
-// Dados de exemplo para pedidos
+import { useQuery } from "@tanstack/react-query";
+import { listOrders } from "@/requests/order";
+import { OrderStatus } from "@/types/order-status";
 
 export default function OrdersPage() {
   const router = useRouter();
+  const { data: orders } = useQuery({
+    queryKey: ["orders"],
+    queryFn: () => listOrders(),
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
@@ -31,10 +35,7 @@ export default function OrdersPage() {
   };
 
   const handleUpdateStatus = async (pedidoId: string, novoStatus: string) => {
-    // Simulação de atualização de status
     console.log(`Atualizando status do pedido ${pedidoId} para ${novoStatus}`);
-    // Aqui você faria a chamada para a API
-    // await updateOrderStatus(pedidoId, novoStatus)
     router.refresh();
   };
 
@@ -64,7 +65,7 @@ export default function OrdersPage() {
   const filteredOrders =
     statusFilter === "todos"
       ? orders
-      : orders.filter((order) => order.status === statusFilter);
+      : (orders || []).filter((order) => order.status === statusFilter);
 
   return (
     <div className="space-y-6">
@@ -89,29 +90,37 @@ export default function OrdersPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos os pedidos</SelectItem>
-              <SelectItem value="aguardando">Aguardando confirmação</SelectItem>
-              <SelectItem value="em_preparo">Em preparo</SelectItem>
-              <SelectItem value="em_entrega">Em entrega</SelectItem>
-              <SelectItem value="entregue">Entregue</SelectItem>
-              <SelectItem value="cancelado">Cancelado</SelectItem>
+              <SelectItem value={OrderStatus.PENDING}>
+                Aguardando confirmação
+              </SelectItem>
+              <SelectItem value={OrderStatus.IN_PROGRESS}>
+                Em preparo
+              </SelectItem>
+              <SelectItem value={OrderStatus.DELIVERY_IN_PROGRESS}>
+                Em entrega
+              </SelectItem>
+              <SelectItem value={OrderStatus.COMPLETED}>Entregue</SelectItem>
+              <SelectItem value={OrderStatus.CANCELED}>Cancelado</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <DataTable
           columns={allColumns}
-          data={filteredOrders}
-          searchColumn="cliente.nome"
+          data={filteredOrders || []}
+          searchColumn="userSnapshot"
           searchPlaceholder="Buscar por cliente..."
         />
       </Card>
 
-      <OrderDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        order={selectedOrder}
-        onUpdateStatus={handleUpdateStatus}
-      />
+      {selectedOrder && (
+        <OrderDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          order={selectedOrder}
+          onUpdateStatus={handleUpdateStatus}
+        />
+      )}
     </div>
   );
 }

@@ -1,8 +1,8 @@
-import { Pedido } from "@/app/admin/orders/columns";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import OrderResumeItem from "./order-resume-item";
 import { Badge } from "../ui/badge";
+import { IOrder } from "@/types/order";
 
 export function OrdersResumeColumn({
   badgeColors,
@@ -16,7 +16,7 @@ export function OrdersResumeColumn({
   badgeColors: string;
   icon: React.ReactNode;
   title: string;
-  orders: Pedido[];
+  orders: IOrder[];
   emptyText: string;
 }) {
   return (

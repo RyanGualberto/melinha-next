@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { useQuery } from "@tanstack/react-query";
-import { getOrders } from "@/requests/order";
+import { getCurrentUserOrders } from "@/requests/order";
 import { CientOrderItem } from "@/components/orders/client-order-item";
 import { Button } from "@/components/ui/button";
 
 export default function PedidosPage() {
   const { data: orders } = useQuery({
-    queryKey: ["orders"],
-    queryFn: getOrders,
+    queryKey: ["user", "orders"],
+    queryFn: getCurrentUserOrders,
   });
 
   const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>(

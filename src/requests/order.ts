@@ -1,5 +1,6 @@
 import apiClient from "@/config/api-client";
 import { IOrder } from "@/types/order";
+import { OrderStatus } from "@/types/order-status";
 
 interface OrderProductVariantDto {
   variantName: string;
@@ -41,7 +42,7 @@ export async function createOrder(data: CreateOrderDto) {
   }
 }
 
-export async function getOrders() {
+export async function getCurrentUserOrders() {
   try {
     const response = await apiClient<Array<IOrder>>({
       method: "get",
@@ -51,6 +52,38 @@ export async function getOrders() {
     return response.data;
   } catch (error) {
     console.error("Error getting orders:", error);
+    throw error;
+  }
+}
+
+export async function listOrders() {
+  try {
+    const response = await apiClient<Array<IOrder>>({
+      method: "get",
+      url: "/orders",
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error getting orders:", error);
+    throw error;
+  }
+}
+
+export async function updateOrderStatus(
+  orderId: string,
+  status: keyof typeof OrderStatus
+) {
+  try {
+    const response = await apiClient<IOrder>({
+      method: "patch",
+      url: `/orders/${orderId}`,
+      data: { status },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating order status:", error);
     throw error;
   }
 }

@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,67 +32,87 @@ import {
   Truck,
   CheckCircle,
   XCircle,
+  Copy,
+  Check,
 } from "lucide-react";
+import { IOrder } from "@/types/order";
+import { OrderStatus } from "@/types/order-status";
+import { IUser } from "@/types/user";
+import { IAddress } from "@/types/address";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateOrderStatus } from "@/requests/order";
 
 interface OrderDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  order?: any;
-  onUpdateStatus: (orderId: string, novoStatus: string) => Promise<void>;
+  order: IOrder;
 }
 
-export function OrderDialog({
-  open,
-  onOpenChange,
-  order,
-  onUpdateStatus,
-}: OrderDialogProps) {
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState("");
+export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
+  const queryClient = useQueryClient();
+  const { mutateAsync: updateOrderMutation, isPending: isUpdating } =
+    useMutation({
+      mutationKey: ["updateOrderStatus", order.id],
+      mutationFn: (newStatus: keyof typeof OrderStatus) =>
+        updateOrderStatus(order.id, newStatus),
+    });
+  const [currentStatus, setCurrentStatus] = useState<
+    keyof typeof OrderStatus | null
+  >(null);
+  const user: IUser = JSON.parse(order.userSnapshot || "");
+  const address: IAddress = JSON.parse(order.addressSnapshot || "");
+  const [copied, setCopied] = useState(false);
 
-  if (!order) return null;
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(
+      `${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`
+    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [address]);
 
-  const handleStatusChange = async (novoStatus: string) => {
-    if (novoStatus === order.status) return;
+  const handleStatusChange = async (newStatus: keyof typeof OrderStatus) => {
+    if (newStatus === order.status) return;
 
-    setIsUpdating(true);
     try {
-      await onUpdateStatus(order.id, novoStatus);
-      setCurrentStatus(novoStatus);
+      await updateOrderMutation(newStatus);
+      setCurrentStatus(newStatus);
+      queryClient.invalidateQueries({
+        queryKey: ["orders"],
+      });
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
     } finally {
-      setIsUpdating(false);
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: keyof typeof OrderStatus) => {
     switch (status) {
-      case "aguardando":
+      case OrderStatus.PENDING:
         return (
           <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">
             Aguardando confirmação
           </Badge>
         );
-      case "em_preparo":
+      case OrderStatus.IN_PROGRESS:
         return (
           <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
             Em preparo
           </Badge>
         );
-      case "em_entrega":
+      case OrderStatus.DELIVERY_IN_PROGRESS:
         return (
           <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
             Em entrega
           </Badge>
         );
-      case "entregue":
+      case OrderStatus.COMPLETED:
         return (
           <Badge className="bg-purple-100 text-[#73067D]/80 dark:bg-purple-900 dark:text-purple-300">
             Entregue
           </Badge>
         );
-      case "cancelado":
+      case OrderStatus.CANCELED:
         return (
           <Badge className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
             Cancelado
@@ -104,11 +123,11 @@ export function OrderDialog({
     }
   };
 
-  const getMetodoPagamento = (metodo: string) => {
+  const getOrderPayment = (metodo: string) => {
     switch (metodo) {
-      case "dinheiro":
+      case "money":
         return "Dinheiro";
-      case "cartao":
+      case "card":
         return "Cartão";
       case "pix":
         return "PIX";
@@ -117,34 +136,25 @@ export function OrderDialog({
     }
   };
 
-  const calcularSubtotal = () => {
-    return order.items.reduce(
-      (total: number, item: any) => total + item.preco * item.quantidade,
-      0
-    );
-  };
-
-  const calcularTaxaEntrega = () => {
-    return 5.0; // Valor fixo para exemplo
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>order #{order.id}</span>
-            {getStatusBadge(currentStatus || order.status)}
+            <span>Pedido #{order.id}</span>
           </DialogTitle>
-          <DialogDescription>
-            {new Date(order.data).toLocaleDateString("pt-BR", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </DialogDescription>
+          <div className="flex items-center justify-between">
+            <DialogDescription>
+              {new Date(order.createdAt).toLocaleDateString("pt-BR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </DialogDescription>
+            {getStatusBadge(currentStatus || order.status)}
+          </div>
         </DialogHeader>
 
         <Tabs defaultValue="detalhes" className="w-full">
@@ -157,25 +167,45 @@ export function OrderDialog({
           <TabsContent value="detalhes" className="space-y-4 pt-4">
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-muted-foreground">
-                Itens do order
+                Itens do Pedido
               </h3>
               <Card>
                 <CardContent className="p-0">
                   <div className="divide-y">
-                    {order.items.map((item: any) => (
-                      <div key={item.id} className="flex justify-between p-4">
-                        <div>
-                          <span className="font-medium">
-                            {item.quantidade}x
-                          </span>{" "}
-                          {item.nome}
+                    {order.products.map((item) => (
+                      <div key={item.id}>
+                        <div className="flex justify-between p-4">
+                          <div>
+                            <span className="font-medium">
+                              {item.quantity}x
+                            </span>{" "}
+                            {item.productTitleSnapshot}
+                          </div>
+                          <div className="font-medium">
+                            {new Intl.NumberFormat("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            }).format(item.productPriceSnapshot)}
+                          </div>
                         </div>
-                        <div className="font-medium">
-                          {new Intl.NumberFormat("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          }).format(item.preco * item.quantidade)}
-                        </div>
+                        <ul className="flex flex-col">
+                          {item.variants.map((variant, index) => (
+                            <li
+                              key={index}
+                              className="flex justify-between p-4"
+                            >
+                              <div className="text-sm text-muted-foreground">
+                                {variant.variantName}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {new Intl.NumberFormat("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                }).format(variant.variantPrice)}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     ))}
                   </div>
@@ -195,7 +225,7 @@ export function OrderDialog({
                       {new Intl.NumberFormat("pt-BR", {
                         style: "currency",
                         currency: "BRL",
-                      }).format(calcularSubtotal())}
+                      }).format(order.total - order.deliveryCost)}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -204,7 +234,7 @@ export function OrderDialog({
                       {new Intl.NumberFormat("pt-BR", {
                         style: "currency",
                         currency: "BRL",
-                      }).format(calcularTaxaEntrega())}
+                      }).format(order.deliveryCost)}
                     </span>
                   </div>
                   <Separator />
@@ -214,7 +244,7 @@ export function OrderDialog({
                       {new Intl.NumberFormat("pt-BR", {
                         style: "currency",
                         currency: "BRL",
-                      }).format(order.valor)}
+                      }).format(order.total)}
                     </span>
                   </div>
                 </CardContent>
@@ -229,27 +259,24 @@ export function OrderDialog({
                 <CardContent className="p-4">
                   <div className="flex items-center">
                     <CreditCard className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>
-                      Método: {getMetodoPagamento(order.pagamento.metodo)}
-                    </span>
+                    <span>Método: {getOrderPayment(order.paymentMethod)}</span>
                   </div>
-                  {order.pagamento.metodo === "dinheiro" &&
-                    order.pagamento.troco && (
-                      <div className="mt-2 text-sm">
-                        <span className="text-muted-foreground">
-                          Troco para:{" "}
-                        </span>
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(Number(order.pagamento.troco))}
-                      </div>
-                    )}
+                  {order.paymentMethod === "money" && order.paymentChange && (
+                    <div className="mt-2 text-sm">
+                      <span className="text-muted-foreground">
+                        Troco para:{" "}
+                      </span>
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(Number(order.paymentChange))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
 
-            {order.observacoes && (
+            {order.observation && (
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">
                   Observações
@@ -258,7 +285,7 @@ export function OrderDialog({
                   <CardContent className="p-4">
                     <div className="flex items-start">
                       <FileText className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
-                      <span>{order.observacoes}</span>
+                      <span>{order.observation}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -276,50 +303,53 @@ export function OrderDialog({
               <CardContent className="space-y-4">
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="font-medium">{order.cliente.nome}</span>
+                  <span className="font-medium">
+                    {user.firstName} {user.lastName}
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span>{order.cliente.telefone}</span>
+                  <span>{user.phoneNumber}</span>
                 </div>
                 <div className="flex items-center">
                   <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span>{order.cliente.email}</span>
+                  <span>{user.email}</span>
                 </div>
               </CardContent>
             </Card>
 
-            <div className="text-center">
+            {/* <div className="text-center">
               <Button variant="outline" size="sm">
                 Ver histórico de orders
               </Button>
-            </div>
+            </div> */}
           </TabsContent>
 
           <TabsContent value="entrega" className="space-y-4 pt-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="justify-between flex">
                 <CardTitle className="text-lg">Endereço de Entrega</CardTitle>
+                <Button size="icon" variant="outline" onClick={handleCopy}>
+                  {copied ? <Check /> : <Copy />}
+                </Button>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-start">
-                  <MapPin className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                  <MapPin className="min-h-4 min-w-4 mr-2 mt-0.5 text-muted-foreground" />
                   <div>
-                    <p>{order.endereco.rua}</p>
                     <p>
-                      {order.endereco.bairro}, {order.endereco.cidade} -{" "}
-                      {order.endereco.estado}
+                      {`${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`}
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <div className="text-center">
+            {/* <div className="text-center">
               <Button variant="outline" size="sm">
                 Ver no mapa
               </Button>
-            </div>
+            </div> */}
           </TabsContent>
         </Tabs>
 
@@ -337,31 +367,34 @@ export function OrderDialog({
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="aguardando" className="flex items-center">
+                <SelectItem
+                  value={OrderStatus.PENDING}
+                  className="flex items-center"
+                >
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-2 text-amber-500" />
                     Aguardando confirmação
                   </div>
                 </SelectItem>
-                <SelectItem value="em_preparo">
+                <SelectItem value={OrderStatus.IN_PROGRESS}>
                   <div className="flex items-center">
                     <Package className="h-4 w-4 mr-2 text-blue-500" />
                     Em preparo
                   </div>
                 </SelectItem>
-                <SelectItem value="em_entrega">
+                <SelectItem value={OrderStatus.DELIVERY_IN_PROGRESS}>
                   <div className="flex items-center">
                     <Truck className="h-4 w-4 mr-2 text-green-500" />
                     Em entrega
                   </div>
                 </SelectItem>
-                <SelectItem value="entregue">
+                <SelectItem value={OrderStatus.COMPLETED}>
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 mr-2 text-purple-500" />
                     Entregue
                   </div>
                 </SelectItem>
-                <SelectItem value="cancelado">
+                <SelectItem value={OrderStatus.CANCELED}>
                   <div className="flex items-center">
                     <XCircle className="h-4 w-4 mr-2 text-red-500" />
                     Cancelado

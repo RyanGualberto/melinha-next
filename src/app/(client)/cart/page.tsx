@@ -293,14 +293,14 @@ export default function CarrinhoPage() {
                   onValueChange={setPaymentMethod}
                 >
                   <div className="flex items-center space-x-2 rounded-md border p-3">
-                    <RadioGroupItem value="dinheiro" id="dinheiro" />
-                    <Label htmlFor="dinheiro" className="flex-1 cursor-pointer">
+                    <RadioGroupItem value="money" id="money" />
+                    <Label htmlFor="money" className="flex-1 cursor-pointer">
                       Dinheiro
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2 rounded-md border p-3">
-                    <RadioGroupItem value="cartao" id="cartao" />
-                    <Label htmlFor="cartao" className="flex-1 cursor-pointer">
+                    <RadioGroupItem value="card" id="card" />
+                    <Label htmlFor="card" className="flex-1 cursor-pointer">
                       Cartão (na entrega)
                     </Label>
                   </div>
@@ -312,7 +312,7 @@ export default function CarrinhoPage() {
                   </div>
                 </RadioGroup>
 
-                {cart.paymentMethod === "dinheiro" && (
+                {cart.paymentMethod === "money" && (
                   <div className="space-y-2">
                     <Label htmlFor="troco">Troco para</Label>
                     <div className="relative">
@@ -404,7 +404,7 @@ export default function CarrinhoPage() {
                   onClick={handleFinalizarPedido}
                   disabled={
                     !selectedAddress ||
-                    (cart.paymentMethod === "dinheiro" && !cart.paymentChange)
+                    (cart.paymentMethod === "money" && !cart.paymentChange)
                   }
                 >
                   Finalizar Pedido
