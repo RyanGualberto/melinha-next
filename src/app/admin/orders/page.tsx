@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Eye, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -20,7 +19,6 @@ import { listOrders } from "@/requests/order";
 import { OrderStatus } from "@/types/order-status";
 
 export default function OrdersPage() {
-  const router = useRouter();
   const { data: orders } = useQuery({
     queryKey: ["orders"],
     queryFn: () => listOrders(),
@@ -32,11 +30,6 @@ export default function OrdersPage() {
   const handleViewOrder = (pedido: any) => {
     setSelectedOrder(pedido);
     setDialogOpen(true);
-  };
-
-  const handleUpdateStatus = async (pedidoId: string, novoStatus: string) => {
-    console.log(`Atualizando status do pedido ${pedidoId} para ${novoStatus}`);
-    router.refresh();
   };
 
   const actionColumn = {
@@ -118,7 +111,6 @@ export default function OrdersPage() {
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           order={selectedOrder}
-          onUpdateStatus={handleUpdateStatus}
         />
       )}
     </div>
