@@ -1,8 +1,12 @@
 import apiClient from "@/config/api-client";
 import { IUser } from "@/types/user";
 
-export interface ListUsersResponse
-  extends Omit<Omit<IUser, "firstName">, "lastName"> {
+export interface ListUsersResponse {
+  id: string;
+  role: "admin" | "user";
+  email: string;
+  phoneNumber: string;
+  createdAt: Date;
   name: string;
   qtOrders: number;
   lastOrder: Date | null;
