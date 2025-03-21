@@ -3,7 +3,7 @@
 
 import type React from "react";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,33 @@ import { AddressFormValues, addressSchema } from "@/schemas/address-schema";
 
 const estados = ["SP"];
 
+const districts = [
+  "Quietude",
+  "Tupi",
+  "Ocian",
+  "Anhanguera",
+  "Tupiry",
+  "Caieiras",
+  "Mirim",
+  "Antártica",
+  "Aloha",
+  "Aviação",
+  "Vila São Jorge",
+  "Vila Sônia",
+  "Glória",
+  "Guilhermina",
+  "Maracanã",
+  "Ribeirópolis",
+  "Esmeralda",
+  "Curva do S",
+  "Sitio do campo (Tude Bastos)",
+  "Boqueirão",
+  "Melvi",
+  "Samambaia",
+  "Forte",
+  "Caiçara",
+];
+
 interface AddressDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -62,6 +89,12 @@ export function AddressDialog({
       state: "",
       principal: false,
     },
+  });
+  const [lockFields, setLockFields] = useState({
+    address: false,
+    city: false,
+    state: true,
+    district: false,
   });
 
   const { reset, formState } = form;
@@ -100,10 +133,28 @@ export function AddressDialog({
       const data = await response.json();
 
       if (!data.erro) {
-        form.setValue("address", data.logradouro);
-        form.setValue("district", data.bairro);
-        form.setValue("city", data.localidade);
-        form.setValue("state", data.uf);
+        const lockFields = [];
+        if (data.logradouro) {
+          lockFields.push("address");
+          form.setValue("address", data.logradouro);
+        }
+
+        if (districts.includes(data.bairro)) {
+          form.setValue("district", data.bairro);
+          lockFields.push("district");
+        }
+
+        if (data.localidade) {
+          lockFields.push("city");
+          form.setValue("city", data.localidade);
+        }
+
+        form.setValue("state", "SP");
+        lockFields.push("state");
+
+        lockFields.map((field) => {
+          setLockFields((prev) => ({ ...prev, [field]: true }));
+        });
       }
     } catch (error) {
       console.error("Erro ao buscar CEP:", error);
@@ -169,6 +220,7 @@ export function AddressDialog({
               <FormField
                 control={form.control}
                 name="address"
+                disabled={lockFields.address}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Rua</FormLabel>
@@ -232,11 +284,29 @@ export function AddressDialog({
               <FormField
                 control={form.control}
                 name="district"
+                disabled={lockFields.district}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Bairro</FormLabel>
                     <FormControl>
-                      <Input placeholder="Bairro" {...field} />
+                      <Select
+                        disabled={lockFields.district}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Selecione o bairro" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {districts.map((district) => (
+                            <SelectItem key={district} value={district}>
+                              {district}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -246,6 +316,7 @@ export function AddressDialog({
               <FormField
                 control={form.control}
                 name="city"
+                disabled={lockFields.city}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Cidade</FormLabel>
@@ -265,6 +336,7 @@ export function AddressDialog({
                 <FormItem>
                   <FormLabel>Estado</FormLabel>
                   <Select
+                    disabled={lockFields.state}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >

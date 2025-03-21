@@ -110,8 +110,8 @@ export const columns: ColumnDef<IProductVariant>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (
-        <Badge variant={status === "active" ? "default" : "secondary"}>
-          {status === "active" ? "Ativo" : "Inativo"}
+        <Badge variant={status === "ACTIVE" ? "default" : "secondary"}>
+          {status === "ACTIVE" ? "Ativo" : "Inativo"}
         </Badge>
       );
     },

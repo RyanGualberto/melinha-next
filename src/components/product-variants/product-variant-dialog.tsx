@@ -64,7 +64,7 @@ export function ProductVariantDialog({
     defaultValues: {
       name: "",
       price: 0,
-      status: "active",
+      status: "ACTIVE",
       productId: "",
       image:
         "https://acaidatribo.com.br/wp-content/uploads/2024/10/10102421.jpg",
@@ -81,7 +81,7 @@ export function ProductVariantDialog({
       reset({
         name: "",
         price: 0,
-        status: "active",
+        status: "ACTIVE",
         productId: "",
         image:
           "https://acaidatribo.com.br/wp-content/uploads/2024/10/10102421.jpg",
@@ -156,7 +156,7 @@ export function ProductVariantDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="active">Ativo</SelectItem>
+                        <SelectItem value="ACTIVE">Ativo</SelectItem>
                         <SelectItem value="inactive">Inativo</SelectItem>
                       </SelectContent>
                     </Select>

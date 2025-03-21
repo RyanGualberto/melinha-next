@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,86 +25,44 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/contexts/user-context";
-
-// Dados de exemplo
-const carrinhoItems = [
-  {
-    id: "1",
-    produto: {
-      id: "1",
-      title: "Açaí Tradicional",
-      price: 15.99,
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    quantidade: 1,
-    variantes: [{ nome: "Tamanho", valor: "Médio (500ml)", preco: 4 }],
-    complementos: [
-      { nome: "Granola", preco: 2 },
-      { nome: "Leite Condensado", preco: 2 },
-    ],
-    precoTotal: 23.99,
-  },
-  {
-    id: "2",
-    produto: {
-      id: "4",
-      title: "Açaí Premium",
-      price: 24.99,
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    quantidade: 2,
-    variantes: [{ nome: "Tamanho", valor: "Grande (700ml)", preco: 8 }],
-    complementos: [
-      { nome: "Morango", preco: 3 },
-      { nome: "Banana", preco: 3 },
-    ],
-    precoTotal: 77.98,
-  },
-];
+import { useCartContext } from "@/contexts/cart-context";
+import { IAddress } from "@/types/address";
 
 export default function CarrinhoPage() {
   const router = useRouter();
+  const {
+    cart,
+    handleRemoveCartItem,
+    handleChangeQuantity,
+    setAddress,
+    setPaymentMethod,
+    setPaymentChange,
+    setObservation,
+  } = useCartContext();
   const { addresses } = useAuthContext();
   const [selectedAddress, setSelectedAddress] = useState("");
-  const [observacoes, setObservacoes] = useState("");
-  const [formaPagamento, setFormaPagamento] = useState("dinheiro");
-  const [troco, setTroco] = useState("");
 
-  const calcularSubtotal = () => {
-    return carrinhoItems.reduce((total, item) => total + item.precoTotal, 0);
-  };
+  const calculateTotalAndSubtotal = useMemo(() => {
+    const subtotal = cart.products.reduce((acc, item) => acc + item.price, 0);
+    const total = subtotal - (cart.discount || 0) + cart.deliveryCost;
+    return { subtotal, total };
+  }, [cart]);
 
-  const calcularTaxaEntrega = () => {
-    return 5.0;
-  };
-
-  const calcularTotal = () => {
-    return calcularSubtotal() + calcularTaxaEntrega();
-  };
-
-  const handleQuantidadeChange = (itemId: string, delta: number) => {
-    // Aqui você implementaria a lógica para atualizar a quantidade
-    console.log(`Alterando quantidade do item ${itemId} em ${delta}`);
-  };
-
-  const handleRemoveItem = (itemId: string) => {
-    // Aqui você implementaria a lógica para remover o item
-    console.log(`Removendo item ${itemId}`);
-  };
+  useEffect(() => {
+    if (selectedAddress) {
+      setAddress(
+        addresses.find((address) => address.id === selectedAddress) as IAddress
+      );
+    }
+  }, [selectedAddress, addresses]);
 
   const handleFinalizarPedido = () => {
-    // Aqui você implementaria a lógica para finalizar o pedido
     console.log("Finalizando pedido", {
-      items: carrinhoItems,
-      endereco: addresses.find((e) => e.id === selectedAddress),
-      observacoes,
-      formaPagamento,
-      troco: formaPagamento === "dinheiro" ? troco : "",
-      total: calcularTotal(),
+      cart,
+      total: calculateTotalAndSubtotal.total,
     });
 
-    // Redirecionar para uma página de confirmação
-    router.push("/pedido-confirmado");
+    router.push("/profile/orders");
   };
 
   useEffect(() => {
@@ -129,7 +86,7 @@ export default function CarrinhoPage() {
         </p>
       </div>
 
-      {carrinhoItems.length > 0 ? (
+      {cart.products.length > 0 ? (
         <div className="grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2 space-y-6">
             <Card>
@@ -138,13 +95,13 @@ export default function CarrinhoPage() {
               </CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y">
-                  {carrinhoItems.map((item) => (
-                    <div key={item.id} className="p-4 sm:p-6">
+                  {cart.products.map((product) => (
+                    <div key={product.id} className="p-4 sm:p-6">
                       <div className="flex gap-4">
                         <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
                           <Image
-                            src={item.produto.image || "/placeholder.svg"}
-                            alt={item.produto.title}
+                            src={product.product.image || "/placeholder.svg"}
+                            alt={product.product.title}
                             fill
                             className="object-cover"
                           />
@@ -153,36 +110,26 @@ export default function CarrinhoPage() {
                         <div className="flex flex-1 flex-col">
                           <div className="flex justify-between">
                             <h3 className="font-medium">
-                              {item.produto.title}
+                              {product.product.title}
                             </h3>
                             <p className="font-medium">
                               {new Intl.NumberFormat("pt-BR", {
                                 style: "currency",
                                 currency: "BRL",
-                              }).format(item.precoTotal)}
+                              }).format(product.price)}
                             </p>
                           </div>
 
                           <div className="mt-1 text-sm text-muted-foreground">
-                            {item.variantes.map((variante, index) => (
+                            {product.variants.map((variant, index) => (
                               <div key={index}>
-                                {variante.nome}: {variante.valor}
-                                {variante.preco > 0 &&
-                                  ` (+${new Intl.NumberFormat("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                  }).format(variante.preco)})`}
+                                {variant.variantName}:
+                                {`${new Intl.NumberFormat("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                }).format(variant.variantPrice)}`}
                               </div>
                             ))}
-
-                            {item.complementos.length > 0 && (
-                              <div className="mt-1">
-                                Complementos:{" "}
-                                {item.complementos
-                                  .map((c) => c.nome)
-                                  .join(", ")}
-                              </div>
-                            )}
                           </div>
 
                           <div className="mt-2 flex items-center justify-between">
@@ -193,14 +140,17 @@ export default function CarrinhoPage() {
                                 size="icon"
                                 className="h-8 w-8"
                                 onClick={() =>
-                                  handleQuantidadeChange(item.id, -1)
+                                  handleChangeQuantity(
+                                    product,
+                                    product.quantity - 1
+                                  )
                                 }
-                                disabled={item.quantidade <= 1}
+                                disabled={product.quantity <= 1}
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
                               <span className="w-8 text-center text-sm">
-                                {item.quantidade}
+                                {product.quantity}
                               </span>
                               <Button
                                 type="button"
@@ -208,7 +158,10 @@ export default function CarrinhoPage() {
                                 size="icon"
                                 className="h-8 w-8"
                                 onClick={() =>
-                                  handleQuantidadeChange(item.id, 1)
+                                  handleChangeQuantity(
+                                    product,
+                                    product.quantity + 1
+                                  )
                                 }
                               >
                                 <Plus className="h-3 w-3" />
@@ -219,7 +172,7 @@ export default function CarrinhoPage() {
                               variant="ghost"
                               size="sm"
                               className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                              onClick={() => handleRemoveItem(item.id)}
+                              onClick={() => handleRemoveCartItem(product)}
                             >
                               <Trash2 className="h-4 w-4 mr-1" />
                               Remover
@@ -307,8 +260,8 @@ export default function CarrinhoPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <RadioGroup
-                  value={formaPagamento}
-                  onValueChange={setFormaPagamento}
+                  value={cart.paymentMethod}
+                  onValueChange={setPaymentMethod}
                 >
                   <div className="flex items-center space-x-2 rounded-md border p-3">
                     <RadioGroupItem value="dinheiro" id="dinheiro" />
@@ -330,7 +283,7 @@ export default function CarrinhoPage() {
                   </div>
                 </RadioGroup>
 
-                {formaPagamento === "dinheiro" && (
+                {cart.paymentMethod === "dinheiro" && (
                   <div className="space-y-2">
                     <Label htmlFor="troco">Troco para</Label>
                     <div className="relative">
@@ -340,8 +293,12 @@ export default function CarrinhoPage() {
                       <Input
                         id="troco"
                         type="text"
-                        value={troco}
-                        onChange={(e) => setTroco(e.target.value)}
+                        value={String(cart.paymentChange)}
+                        onChange={(e) =>
+                          // a cada 2 do lado direito acrecenta uma virgula
+                          // a forma atual não me deixa acrescentar 0, exemplo 20, 200, 2000
+                          setPaymentChange(e.target.value)
+                        }
                         className="pl-9"
                         placeholder="0,00"
                       />
@@ -349,7 +306,7 @@ export default function CarrinhoPage() {
                   </div>
                 )}
 
-                {formaPagamento === "pix" && (
+                {cart.paymentMethod === "pix" && (
                   <div className="rounded-md border p-3 text-center">
                     <p className="text-sm text-muted-foreground mb-2">
                       Você receberá as informações para pagamento após finalizar
@@ -367,8 +324,8 @@ export default function CarrinhoPage() {
               <CardContent>
                 <Textarea
                   placeholder="Alguma observação para o seu pedido? (opcional)"
-                  value={observacoes}
-                  onChange={(e) => setObservacoes(e.target.value)}
+                  value={cart.observation}
+                  onChange={(e) => setObservation(e.target.value)}
                   className="resize-none"
                   rows={3}
                 />
@@ -388,7 +345,7 @@ export default function CarrinhoPage() {
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
-                    }).format(calcularSubtotal())}
+                    }).format(calculateTotalAndSubtotal.subtotal)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -397,7 +354,7 @@ export default function CarrinhoPage() {
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
-                    }).format(calcularTaxaEntrega())}
+                    }).format(cart.deliveryCost)}
                   </span>
                 </div>
                 <Separator />
@@ -407,7 +364,7 @@ export default function CarrinhoPage() {
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
-                    }).format(calcularTotal())}
+                    }).format(calculateTotalAndSubtotal.total)}
                   </span>
                 </div>
               </CardContent>
@@ -418,7 +375,7 @@ export default function CarrinhoPage() {
                   onClick={handleFinalizarPedido}
                   disabled={
                     !selectedAddress ||
-                    (formaPagamento === "dinheiro" && !troco)
+                    (cart.paymentMethod === "dinheiro" && !cart.paymentChange)
                   }
                 >
                   Finalizar Pedido

@@ -17,6 +17,7 @@ import { ProductViewDialogCategory } from "./product-view-dialog-category";
 import { IProductVariantCategory } from "@/types/product-variant-category";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { useCartContext } from "@/contexts/cart-context";
 
 interface ProductViewDialogProps {
   open: boolean;
@@ -30,6 +31,7 @@ export function ProductViewDialog({
   product,
 }: ProductViewDialogProps) {
   const router = useRouter();
+  const { handleAddCartItem } = useCartContext();
   const [quantity, setQuantity] = useState(1);
   const [complements, setComplementos] = useState<string[]>([]);
   const [observations, setObservations] = useState("");
@@ -75,16 +77,25 @@ export function ProductViewDialog({
   };
 
   const handleAddToCart = () => {
-    console.log("Adicionado ao carrinho:", {
+    handleAddCartItem({
+      id: String(Math.random()),
+      productId: product.id,
       product,
       quantity,
-      complements,
-      precoTotal: priceItemSubtotal,
-      observations,
+      price: priceItemSubtotal,
+      variants: complements.map((variantId) => {
+        const variant = product.productVariants.find((v) => v.id === variantId);
+        return {
+          variantId: variantId || "",
+          variantName: variant?.name || "",
+          variantPrice: variant?.price || 0,
+        };
+      }),
+      observation: observations,
     });
 
     onOpenChange(false);
-    router.push("/carrinho");
+    router.push("/cart");
   };
 
   return (

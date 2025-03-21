@@ -57,7 +57,7 @@ export function ProductDialog({
       title: "",
       description: "",
       price: 0,
-      status: "active",
+      status: "ACTIVE",
       image:
         "https://acaidatribo.com.br/wp-content/uploads/2024/10/10102421.jpg",
       categoryId: "",
@@ -75,7 +75,7 @@ export function ProductDialog({
         title: "",
         description: "",
         price: 0,
-        status: "active",
+        status: "ACTIVE",
         image:
           "https://acaidatribo.com.br/wp-content/uploads/2024/10/10102421.jpg",
         categoryId: "",
@@ -161,7 +161,7 @@ export function ProductDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="active">Ativo</SelectItem>
+                        <SelectItem value="ACTIVE">Ativo</SelectItem>
                         <SelectItem value="inactive">Inativo</SelectItem>
                       </SelectContent>
                     </Select>
