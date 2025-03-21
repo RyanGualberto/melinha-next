@@ -11,6 +11,7 @@ import {
   Layers,
   Grid,
   LogOut,
+  Users,
 } from "lucide-react";
 import {
   Sidebar,
@@ -53,6 +54,11 @@ const navItems = [
     title: "Categoria de Variantes",
     href: "/admin/product-variant-categories",
     icon: Grid,
+  },
+  {
+    title: "Clientes",
+    href: "/admin/clients",
+    icon: Users,
   },
 ];
 

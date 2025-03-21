@@ -29,6 +29,7 @@ export type Pedido = {
     quantidade: number;
     preco: number;
   }>;
+  createdAt: Date;
   observacoes: string;
 };
 
