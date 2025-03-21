@@ -86,7 +86,7 @@ export function AddressDialog({
       complement: "",
       district: "",
       city: "",
-      state: "",
+      state: "SP",
       principal: false,
     },
   });
@@ -112,7 +112,7 @@ export function AddressDialog({
         complement: "",
         district: "",
         city: "",
-        state: "",
+        state: "SP",
         principal: false,
       });
     }
