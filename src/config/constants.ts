@@ -1,1 +1,1 @@
-export const UNAUTHENTICATED_ROUTES = ["/login", "/", "/register", "/reset-password"];
+export const UNAUTHENTICATED_ROUTES = ["/login", "/", "/register", "/reset-password", "/about"];
