@@ -6,7 +6,7 @@ export function MenuTabs({ categories }: { categories: Array<ICategory> }) {
   const handleScrollToSection = (id: string) => {
     const section = document.getElementById(id);
     if (section) {
-      const headerOffset = 140;
+      const headerOffset = 165;
       const elementPosition =
         section.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - headerOffset;
