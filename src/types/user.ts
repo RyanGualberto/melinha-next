@@ -1,4 +1,4 @@
-import { Pedido } from "@/app/admin/orders/columns";
+import { IOrder } from "./order";
 
 export interface IUser {
   id: string;
@@ -9,5 +9,5 @@ export interface IUser {
   phoneNumber: string;
   createdAt: Date;
   updatedAt: Date;
-  orders: Pedido[];
+  orders: IOrder[];
 }
