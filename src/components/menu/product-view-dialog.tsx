@@ -36,8 +36,6 @@ export function ProductViewDialog({
   const priceItemSubtotal = useMemo(() => {
     let priceBase = product.price;
 
-    console.log(complements);
-
     complements.forEach((variantId) => {
       const variant = product.productVariants.find((v) => v.id === variantId);
       if (variant) {

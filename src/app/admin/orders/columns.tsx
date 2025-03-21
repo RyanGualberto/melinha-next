@@ -118,8 +118,6 @@ export const columns: ColumnDef<Pedido>[] = [
     header: "Data",
     cell: ({ row }) => {
       const data = row.getValue("data") as Date;
-      console.log("data", data);
-      
       return new Date(data).toLocaleDateString("pt-BR", {
         year: "numeric",
         month: "long",

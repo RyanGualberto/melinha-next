@@ -11,8 +11,6 @@ import { useAuthContext } from "@/contexts/user-context";
 export default function Header() {
   const { currentUser } = useAuthContext();
 
-  console.log(currentUser);
-
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex justify-center">
       <div className="container px-4 md:px-0 flex h-16 items-center justify-between">

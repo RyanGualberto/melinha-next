@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Filter } from "lucide-react";

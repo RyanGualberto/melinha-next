@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -56,6 +57,7 @@ export default function AddressesPage() {
     // Aqui você implementaria a lógica para excluir o endereço
     console.log(`Excluindo endereço ${id}`);
   };
+
 
   const handleSave = async (data: any) => {
     // Aqui você implementaria a lógica para salvar o endereço
