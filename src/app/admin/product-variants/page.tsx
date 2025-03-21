@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Edit, Plus } from "lucide-react";
+import { Copy, Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { AlertDialogDelete } from "@/components/ui/alert-dialog-delete";
@@ -48,7 +48,7 @@ export default function ProductVariantsPage() {
     IProductVariant | undefined
   >(undefined);
 
-  const refreshCategories = useCallback(() => {
+  const refreshProductVariants = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["product-variants"] });
   }, [queryClient]);
 
@@ -60,9 +60,9 @@ export default function ProductVariantsPage() {
   const handleDelete = useCallback(
     async (id: string) => {
       await deleteProductVariantMutation(id);
-      refreshCategories();
+      refreshProductVariants();
     },
-    [deleteProductVariantMutation, refreshCategories]
+    [deleteProductVariantMutation, refreshProductVariants]
   );
 
   const handleSave = async (data: ProductVariantFormValues) => {
@@ -77,28 +77,40 @@ export default function ProductVariantsPage() {
 
     setDialogOpen(false);
     setEditingProductVariant(undefined);
-    refreshCategories();
+    refreshProductVariants();
+  };
+
+  const duplicate = async (data: ProductVariantFormValues) => {
+    await createProductVariantMutation(data);
+    refreshProductVariants();
   };
 
   const actionColumn: ColumnDef<IProductVariant, unknown> = {
     id: "actions",
     header: "Ações",
     cell: ({ row }) => {
-      const variante = row.original;
+      const variant = row.original;
 
       return (
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
-            onClick={() => handleEdit(variante)}
+            onClick={() => duplicate(variant)}
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => handleEdit(variant)}
           >
             <Edit className="h-4 w-4" />
           </Button>
           <AlertDialogDelete
             title="Excluir variante"
             description="Tem certeza que deseja excluir esta variante? Esta ação não pode ser desfeita."
-            onDelete={() => handleDelete(variante.id)}
+            onDelete={() => handleDelete(variant.id)}
           />
         </div>
       );

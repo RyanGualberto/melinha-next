@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Edit, Plus } from "lucide-react";
+import { Copy, Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { AlertDialogDelete } from "@/components/ui/alert-dialog-delete";
@@ -78,6 +78,11 @@ export default function ProdutosPage() {
     refreshProducts();
   };
 
+  const duplicate = async (data: ProductFormValues) => {
+    await createProductMutation(data);
+    refreshProducts();
+  };
+
   const actionColumn: ColumnDef<IProduct, unknown> = {
     id: "actions",
     header: "Ações",
@@ -86,6 +91,13 @@ export default function ProdutosPage() {
 
       return (
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => duplicate(product)}
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
           <Button
             variant="outline"
             size="icon"
