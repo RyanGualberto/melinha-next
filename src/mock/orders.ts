@@ -1,4 +1,6 @@
-export const orders = [
+import { Pedido } from "@/app/admin/orders/columns";
+
+export const orders: Pedido[] = [
   {
     id: "1",
     cliente: {
@@ -24,6 +26,7 @@ export const orders = [
       { id: "2", nome: "Açaí com Banana (P)", quantidade: 1, preco: 17.5 },
     ],
     observacoes: "Entregar na portaria",
+    createdAt: new Date(),
   },
   {
     id: "2",
@@ -47,6 +50,7 @@ export const orders = [
     },
     items: [{ id: "3", nome: "Açaí Premium (G)", quantidade: 1, preco: 24.99 }],
     observacoes: "",
+    createdAt: new Date(),
   },
   {
     id: "3",
@@ -72,6 +76,7 @@ export const orders = [
       { id: "4", nome: "Açaí com Morango (M)", quantidade: 2, preco: 19.45 },
     ],
     observacoes: "Sem granola",
+    createdAt: new Date(),
   },
   {
     id: "4",
@@ -98,6 +103,7 @@ export const orders = [
       { id: "6", nome: "Açaí com Banana (P)", quantidade: 1, preco: 9.9 },
     ],
     observacoes: "",
+    createdAt: new Date(),
   },
   {
     id: "5",
@@ -124,6 +130,7 @@ export const orders = [
       { id: "8", nome: "Açaí com Morango (M)", quantidade: 1, preco: 18.9 },
     ],
     observacoes: "Entregar no apartamento 101",
+    createdAt: new Date(),
   },
   {
     id: "6",
@@ -150,6 +157,7 @@ export const orders = [
       { id: "10", nome: "Açaí com Banana (M)", quantidade: 1, preco: 16.0 },
     ],
     observacoes: "",
+    createdAt: new Date(),
   },
   {
     id: "7",
@@ -173,5 +181,6 @@ export const orders = [
     },
     items: [{ id: "11", nome: "Açaí Premium (P)", quantidade: 1, preco: 25.5 }],
     observacoes: "Sem contato, deixar na portaria",
+    createdAt: new Date(),
   },
 ];
