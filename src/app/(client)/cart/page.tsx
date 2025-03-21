@@ -1,17 +1,29 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Minus, Plus, Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Minus, Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Dados de exemplo
 const carrinhoItems = [
@@ -47,7 +59,7 @@ const carrinhoItems = [
     ],
     precoTotal: 77.98,
   },
-]
+];
 
 // Dados de exemplo para endereços
 const enderecos = [
@@ -69,36 +81,36 @@ const enderecos = [
     estado: "SP",
     cep: "01310-100",
   },
-]
+];
 
 export default function CarrinhoPage() {
-  const router = useRouter()
-  const [enderecoSelecionado, setEnderecoSelecionado] = useState("")
-  const [observacoes, setObservacoes] = useState("")
-  const [formaPagamento, setFormaPagamento] = useState("dinheiro")
-  const [troco, setTroco] = useState("")
+  const router = useRouter();
+  const [enderecoSelecionado, setEnderecoSelecionado] = useState("");
+  const [observacoes, setObservacoes] = useState("");
+  const [formaPagamento, setFormaPagamento] = useState("dinheiro");
+  const [troco, setTroco] = useState("");
 
   const calcularSubtotal = () => {
-    return carrinhoItems.reduce((total, item) => total + item.precoTotal, 0)
-  }
+    return carrinhoItems.reduce((total, item) => total + item.precoTotal, 0);
+  };
 
   const calcularTaxaEntrega = () => {
-    return 5.0
-  }
+    return 5.0;
+  };
 
   const calcularTotal = () => {
-    return calcularSubtotal() + calcularTaxaEntrega()
-  }
+    return calcularSubtotal() + calcularTaxaEntrega();
+  };
 
   const handleQuantidadeChange = (itemId: string, delta: number) => {
     // Aqui você implementaria a lógica para atualizar a quantidade
-    console.log(`Alterando quantidade do item ${itemId} em ${delta}`)
-  }
+    console.log(`Alterando quantidade do item ${itemId} em ${delta}`);
+  };
 
   const handleRemoveItem = (itemId: string) => {
     // Aqui você implementaria a lógica para remover o item
-    console.log(`Removendo item ${itemId}`)
-  }
+    console.log(`Removendo item ${itemId}`);
+  };
 
   const handleFinalizarPedido = () => {
     // Aqui você implementaria a lógica para finalizar o pedido
@@ -109,17 +121,19 @@ export default function CarrinhoPage() {
       formaPagamento,
       troco: formaPagamento === "dinheiro" ? troco : "",
       total: calcularTotal(),
-    })
+    });
 
     // Redirecionar para uma página de confirmação
-    router.push("/pedido-confirmado")
-  }
+    router.push("/pedido-confirmado");
+  };
 
   return (
-    <div className="container py-8">
+    <div className="container py-8 px-4 sm:px-0">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Carrinho</h1>
-        <p className="text-muted-foreground">Revise seu pedido e escolha as opções de entrega</p>
+        <p className="text-muted-foreground">
+          Revise seu pedido e escolha as opções de entrega
+        </p>
       </div>
 
       {carrinhoItems.length > 0 ? (
@@ -145,7 +159,9 @@ export default function CarrinhoPage() {
 
                         <div className="flex flex-1 flex-col">
                           <div className="flex justify-between">
-                            <h3 className="font-medium">{item.produto.title}</h3>
+                            <h3 className="font-medium">
+                              {item.produto.title}
+                            </h3>
                             <p className="font-medium">
                               {new Intl.NumberFormat("pt-BR", {
                                 style: "currency",
@@ -168,7 +184,10 @@ export default function CarrinhoPage() {
 
                             {item.complementos.length > 0 && (
                               <div className="mt-1">
-                                Complementos: {item.complementos.map((c) => c.nome).join(", ")}
+                                Complementos:{" "}
+                                {item.complementos
+                                  .map((c) => c.nome)
+                                  .join(", ")}
                               </div>
                             )}
                           </div>
@@ -180,18 +199,24 @@ export default function CarrinhoPage() {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => handleQuantidadeChange(item.id, -1)}
+                                onClick={() =>
+                                  handleQuantidadeChange(item.id, -1)
+                                }
                                 disabled={item.quantidade <= 1}
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
-                              <span className="w-8 text-center text-sm">{item.quantidade}</span>
+                              <span className="w-8 text-center text-sm">
+                                {item.quantidade}
+                              </span>
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => handleQuantidadeChange(item.id, 1)}
+                                onClick={() =>
+                                  handleQuantidadeChange(item.id, 1)
+                                }
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -227,7 +252,10 @@ export default function CarrinhoPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="endereco">Selecione um endereço</Label>
-                  <Select value={enderecoSelecionado} onValueChange={setEnderecoSelecionado}>
+                  <Select
+                    value={enderecoSelecionado}
+                    onValueChange={setEnderecoSelecionado}
+                  >
                     <SelectTrigger id="endereco">
                       <SelectValue placeholder="Selecione um endereço" />
                     </SelectTrigger>
@@ -245,26 +273,31 @@ export default function CarrinhoPage() {
                   {enderecoSelecionado && (
                     <div className="rounded-md border p-3">
                       {(() => {
-                        const endereco = enderecos.find((e) => e.id === enderecoSelecionado)
+                        const endereco = enderecos.find(
+                          (e) => e.id === enderecoSelecionado
+                        );
                         return endereco ? (
                           <>
                             <p className="font-medium">{endereco.nome}</p>
                             <p>{endereco.rua}</p>
                             <p>
-                              {endereco.bairro}, {endereco.cidade} - {endereco.estado}
+                              {endereco.bairro}, {endereco.cidade} -{" "}
+                              {endereco.estado}
                             </p>
                             <p>CEP: {endereco.cep}</p>
                           </>
-                        ) : null
+                        ) : null;
                       })()}
                     </div>
                   )}
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Não encontrou seu endereço?</span>
+                  <span className="text-sm text-muted-foreground">
+                    Não encontrou seu endereço?
+                  </span>
                   <Button variant="outline" size="sm" asChild>
-                    <Link href="/minha-conta/enderecos">Adicionar Novo</Link>
+                    <Link href="/profile/addresses">Adicionar Novo</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -275,7 +308,10 @@ export default function CarrinhoPage() {
                 <CardTitle>Forma de Pagamento</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <RadioGroup value={formaPagamento} onValueChange={setFormaPagamento}>
+                <RadioGroup
+                  value={formaPagamento}
+                  onValueChange={setFormaPagamento}
+                >
                   <div className="flex items-center space-x-2 rounded-md border p-3">
                     <RadioGroupItem value="dinheiro" id="dinheiro" />
                     <Label htmlFor="dinheiro" className="flex-1 cursor-pointer">
@@ -300,7 +336,9 @@ export default function CarrinhoPage() {
                   <div className="space-y-2">
                     <Label htmlFor="troco">Troco para</Label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2">R$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                        R$
+                      </span>
                       <input
                         id="troco"
                         type="text"
@@ -316,7 +354,8 @@ export default function CarrinhoPage() {
                 {formaPagamento === "pix" && (
                   <div className="rounded-md border p-3 text-center">
                     <p className="text-sm text-muted-foreground mb-2">
-                      Você receberá as informações para pagamento após finalizar o pedido.
+                      Você receberá as informações para pagamento após finalizar
+                      o pedido.
                     </p>
                   </div>
                 )}
@@ -379,7 +418,10 @@ export default function CarrinhoPage() {
                   className="w-full bg-purple-600 hover:bg-purple-700"
                   size="lg"
                   onClick={handleFinalizarPedido}
-                  disabled={!enderecoSelecionado || (formaPagamento === "dinheiro" && !troco)}
+                  disabled={
+                    !enderecoSelecionado ||
+                    (formaPagamento === "dinheiro" && !troco)
+                  }
                 >
                   Finalizar Pedido
                 </Button>
@@ -389,14 +431,17 @@ export default function CarrinhoPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <h2 className="text-xl font-semibold mb-2">Seu carrinho está vazio</h2>
-          <p className="text-muted-foreground mb-6">Adicione alguns produtos deliciosos para começar seu pedido.</p>
+          <h2 className="text-xl font-semibold mb-2">
+            Seu carrinho está vazio
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Adicione alguns produtos deliciosos para começar seu pedido.
+          </p>
           <Button asChild className="bg-purple-600 hover:bg-purple-700">
             <Link href="/">Ver Cardápio</Link>
           </Button>
         </div>
       )}
     </div>
-  )
+  );
 }
-

@@ -1,19 +1,24 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { createContext } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "@/requests/auth";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getCurrentUser, registerResponse } from "@/requests/auth";
 import { IUser } from "@/types/user";
-import { parseCookies } from "nookies";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
+import { useRouter } from "next/navigation";
 
 interface AuthenticatedContextProps {
   currentUser: IUser | null;
   loadingUser: boolean;
+  logout: () => void;
+  afterLogin: (data: { user: IUser; accessToken: string }) => void;
 }
 
 const AuthenticatedContext = createContext<AuthenticatedContextProps>({
   currentUser: null,
   loadingUser: false,
+  logout: () => {},
+  afterLogin: () => {},
 });
 
 export const AuthenticatedContextProvider = ({
@@ -21,6 +26,8 @@ export const AuthenticatedContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const cookies = parseCookies();
   const { data: currentUser, isPending: loadingUser } = useQuery({
     queryKey: ["whoami"],
@@ -28,8 +35,32 @@ export const AuthenticatedContextProvider = ({
     enabled: !!cookies.token,
   });
 
+  const logout = useCallback(() => {
+    destroyCookie({}, "token");
+    router.push("/login");
+  }, [router]);
+
+  const afterLogin = useCallback(
+    (data: registerResponse) => {
+      setCookie(null, "token", data.accessToken, {
+        maxAge: 30 * 24 * 60 * 60,
+        path: "/",
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["whoami"],
+      });
+      const nextRoute = data.user.role === "admin" ? "/admin/dashboard" : "/";
+      router.push(nextRoute);
+      router.refresh();
+    },
+    [queryClient, router]
+  );
+
   return (
-    <AuthenticatedContext.Provider value={{ currentUser, loadingUser }}>
+    <AuthenticatedContext.Provider
+      value={{ currentUser, loadingUser, logout, afterLogin }}
+    >
       {children}
     </AuthenticatedContext.Provider>
   );

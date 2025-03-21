@@ -2,7 +2,7 @@
 import Logo from "@/assets/logo-horizontal.png";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Home,
   ShoppingBag,
@@ -21,8 +21,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { useCallback } from "react";
-import { destroyCookie } from "nookies";
+import { useAuthContext } from "@/contexts/user-context";
 
 const navItems = [
   {
@@ -58,13 +57,8 @@ const navItems = [
 ];
 
 export function SidebarNav() {
+  const { logout } = useAuthContext();
   const pathname = usePathname();
-  const router = useRouter();
-
-  const logout = useCallback(() => {
-    destroyCookie({}, "token");
-    router.push("/login");
-  }, [router]);
 
   return (
     <Sidebar className="w-fit px-4 bg-sidebar">

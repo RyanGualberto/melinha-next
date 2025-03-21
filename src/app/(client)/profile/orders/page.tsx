@@ -123,7 +123,7 @@ export default function PedidosPage() {
   };
 
   return (
-    <div className="container py-8">
+    <div className="container py-8 px-4 sm:px-0">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Meus Pedidos</h1>
         <p className="text-muted-foreground">

@@ -6,7 +6,7 @@ export function MenuTabs({ categories }: { categories: Array<ICategory> }) {
   const handleScrollToSection = (id: string) => {
     const section = document.getElementById(id);
     if (section) {
-      const headerOffset = 80;
+      const headerOffset = 140;
       const elementPosition =
         section.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - headerOffset;
@@ -19,7 +19,7 @@ export function MenuTabs({ categories }: { categories: Array<ICategory> }) {
   };
 
   return (
-    <TabsList className="inline-flex w-full justify-start h-auto p-1 md:justify-center ticky top-12 z-50">
+    <TabsList className="inline-flex w-full justify-start h-auto p-1 md:justify-center z-50">
       {categories.map((category) => (
         <TabsTrigger
           key={category.id}

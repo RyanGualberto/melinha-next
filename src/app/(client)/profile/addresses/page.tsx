@@ -70,8 +70,8 @@ export default function AddressesPage() {
   };
 
   return (
-    <div className="container py-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="container py-8 px-4 sm:px-0">
+      <div className="flex gap-2 justify-center md:justify-between mb-8 flex-col md:flex-row">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">
             Meus Endereços
@@ -126,7 +126,6 @@ export default function AddressesPage() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={() => handleEdit(address)}
                 >
                   <Edit className="mr-1 h-4 w-4" />

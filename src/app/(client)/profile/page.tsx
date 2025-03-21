@@ -16,6 +16,7 @@ import { useAuthContext } from "@/contexts/user-context";
 
 export default function MinhaContaPage() {
   const { currentUser } = useAuthContext();
+  const { logout } = useAuthContext();
   return (
     <div className="container px-4 sm:px-0 py-8">
       <div className="mb-8">
@@ -117,7 +118,11 @@ export default function MinhaContaPage() {
       <Separator className="my-8" />
 
       <div className="flex justify-center">
-        <Button variant="destructive" className="flex items-center">
+        <Button
+          onClick={logout}
+          variant="destructive"
+          className="flex items-center"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           Sair da Conta
         </Button>

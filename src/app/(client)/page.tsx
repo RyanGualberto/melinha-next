@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { ProductViewDialog } from "@/components/menu/product-view-dialog";
 import { IProduct } from "@/types/product";
@@ -43,7 +43,7 @@ export default function CardapioPage() {
   }, [query, queryClient]);
 
   return (
-    <div className="container px-4 md:px-0 py-8 w-full flex-1 relative scroll-smooth">
+    <div className="container px-4 md:px-0 py-8 w-full flex-1 scroll-smooth">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Cardápio</h1>
         <p className="text-muted-foreground">
@@ -64,7 +64,7 @@ export default function CardapioPage() {
         onValueChange={setSelectedCategory}
         className="w-full"
       >
-        <div className="mb-6 overflow-auto">
+        <div className="mb-6 overflow-auto sticky left-0 pb-0.5 top-16 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full pt-3">
           <MenuTabs categories={menu?.categories || []} />
         </div>
 

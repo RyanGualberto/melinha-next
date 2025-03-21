@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -26,11 +25,12 @@ import { Loader2 } from "lucide-react";
 import { LoginFormValues, loginSchema } from "@/schemas/login-schema";
 import { useMutation } from "@tanstack/react-query";
 import { login, loginPayload } from "@/requests/auth";
-import { setCookie } from "nookies";
 import { AxiosError } from "axios";
+import { useAuthContext } from "@/contexts/user-context";
 
 export default function Login() {
-  const router = useRouter();
+  const { afterLogin } = useAuthContext();
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -41,15 +41,7 @@ export default function Login() {
   const { mutateAsync, isPending } = useMutation({
     mutationKey: ["auth", "register"],
     mutationFn: async (data: loginPayload) => await login(data),
-    onSuccess: (data) => {
-      setCookie(null, "token", data.accessToken, {
-        maxAge: 30 * 24 * 60 * 60,
-        path: "/",
-      });
-
-      const nextRoute = data.user.role === "admin" ? "/admin/dashboard" : "/";
-      router.push(nextRoute);
-    },
+    onSuccess: afterLogin,
     onError: (error) => {
       console.error(error);
       if (error instanceof AxiosError) {
