@@ -11,7 +11,7 @@ export default function AdminSidebarMobileTrigger() {
       onClick={() => setOpenMobile(true)}
       variant="outline"
       size="icon"
-      className="fixed hidden md:flex top-4 right-4"
+      className="fixed flex md:hidden  top-4 right-4"
     >
       <Menu />
     </Button>
