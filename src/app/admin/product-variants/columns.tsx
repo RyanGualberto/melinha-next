@@ -4,6 +4,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { IProductVariant } from "@/types/product-variant";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 
 export const columns: ColumnDef<IProductVariant>[] = [
   {
@@ -25,11 +27,33 @@ export const columns: ColumnDef<IProductVariant>[] = [
   },
   {
     accessorKey: "name",
-    header: "Nome",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Nome
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    enableSorting: true,
   },
   {
     accessorKey: "price",
-    header: "Preço Adicional",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Preço Adicional
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    enableSorting: true,
     cell: ({ row }) => {
       const price = Number.parseFloat(row.getValue("price"));
       const formatted = new Intl.NumberFormat("pt-BR", {
@@ -41,15 +65,48 @@ export const columns: ColumnDef<IProductVariant>[] = [
   },
   {
     accessorKey: "product.title",
-    header: "Produto",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Produto
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    enableSorting: true,
   },
   {
     accessorKey: "productVariantCategory.name",
-    header: "Categoria",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Categoria
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    enableSorting: true,
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    enableSorting: true,
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (
