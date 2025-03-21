@@ -7,7 +7,12 @@ import { Menu } from "lucide-react";
 export default function AdminSidebarMobileTrigger() {
   const { setOpenMobile } = useSidebar();
   return (
-    <Button  onClick={() => setOpenMobile(true)} variant="outline" size="icon" className="fixed top-4 right-4">
+    <Button
+      onClick={() => setOpenMobile(true)}
+      variant="outline"
+      size="icon"
+      className="fixed hidden md:flex top-4 right-4"
+    >
       <Menu />
     </Button>
   );
