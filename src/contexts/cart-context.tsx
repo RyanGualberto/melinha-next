@@ -40,6 +40,7 @@ export interface CartContextProps {
   setPaymentChange: (paymentChange: string) => void;
   cart: Cart;
   setObservation: (observation: string) => void;
+  cleanCart: () => void;
 }
 
 const CartContext = createContext<CartContextProps>({
@@ -51,6 +52,7 @@ const CartContext = createContext<CartContextProps>({
   setPaymentMethod: () => {},
   setPaymentChange: () => {},
   setObservation: () => {},
+  cleanCart: () => {},
 });
 
 export const CartContextProvider = ({
@@ -58,22 +60,27 @@ export const CartContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [cart, setCart] = useState<Cart>(
-    localStorage.getItem("cart")
-      ? JSON.parse(String(localStorage.getItem("cart")))
-      : {
-          addressId: "",
-          addressDistrict: "",
-          products: [],
-          discount: 0,
-          deliveryCost: 0,
-          paymentMethod: "",
-          paymentChange: 0,
-        }
-  );
+  const [cart, setCart] = useState<Cart>({
+    addressId: "",
+    addressDistrict: "",
+    products: [],
+    discount: 0,
+    deliveryCost: 0,
+    paymentMethod: "",
+    observation: "",
+    paymentChange: "",
+  });
 
   useEffect(() => {
-    // const cart = localStorage.getItem("cart");
+    if (!localStorage) return;
+    const cart = localStorage.getItem("cart");
+    if (cart) {
+      setCart(JSON.parse(cart));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!localStorage) return;
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
@@ -169,6 +176,19 @@ export const CartContextProvider = ({
     [cart]
   );
 
+  const cleanCart = useCallback(() => {
+    setCart({
+      addressId: "",
+      addressDistrict: "",
+      products: [],
+      discount: 0,
+      deliveryCost: 0,
+      paymentMethod: "",
+      observation: "",
+      paymentChange: "",
+    });
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
@@ -180,6 +200,7 @@ export const CartContextProvider = ({
         setPaymentMethod,
         setPaymentChange,
         setObservation,
+        cleanCart,
       }}
     >
       {children}

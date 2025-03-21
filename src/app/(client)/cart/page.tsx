@@ -27,10 +27,13 @@ import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/contexts/user-context";
 import { useCartContext } from "@/contexts/cart-context";
 import { IAddress } from "@/types/address";
+import { useMutation } from "@tanstack/react-query";
+import { createOrder, CreateOrderDto } from "@/requests/order";
 
 export default function CarrinhoPage() {
   const router = useRouter();
   const {
+    cleanCart,
     cart,
     handleRemoveCartItem,
     handleChangeQuantity,
@@ -39,6 +42,12 @@ export default function CarrinhoPage() {
     setPaymentChange,
     setObservation,
   } = useCartContext();
+  const { mutateAsync: createOrderMutation } = useMutation({
+    mutationKey: ["createOrder"],
+    mutationFn: async (data: CreateOrderDto) => {
+      return await createOrder(data);
+    },
+  });
   const { addresses } = useAuthContext();
   const [selectedAddress, setSelectedAddress] = useState("");
 
@@ -56,12 +65,32 @@ export default function CarrinhoPage() {
     }
   }, [selectedAddress, addresses]);
 
-  const handleFinalizarPedido = () => {
-    console.log("Finalizando pedido", {
-      cart,
+  const handleFinalizarPedido = async () => {
+    await createOrderMutation({
+      addressId: selectedAddress,
+      products: cart.products.map((product) => ({
+        productObservation: product.observation,
+        productId: product.product.id,
+        quantity: product.quantity,
+        price: product.price,
+        variants: product.variants.map((variant) => ({
+          variantName: variant.variantName,
+          variantPrice: variant.variantPrice,
+        })),
+      })),
       total: calculateTotalAndSubtotal.total,
+      discount: cart.discount || 0,
+      deliveryCost: cart.deliveryCost,
+      paymentMethod: cart.paymentMethod,
+      paymentChange: cart.paymentChange
+        ? Number(cart.paymentChange)
+        : undefined,
+      addressSnapshot: JSON.stringify(
+        addresses.find((address) => address.id === selectedAddress)
+      ),
+      orderObservation: cart.observation,
     });
-
+    cleanCart();
     router.push("/profile/orders");
   };
 
