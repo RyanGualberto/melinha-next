@@ -6,12 +6,15 @@ import { getCurrentUser, registerResponse } from "@/requests/auth";
 import { IUser } from "@/types/user";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { useRouter } from "next/navigation";
+import { IAddress } from "@/types/address";
+import { listAddresses } from "@/requests/address";
 
 interface AuthenticatedContextProps {
   currentUser: IUser | null;
   loadingUser: boolean;
   logout: () => void;
   afterLogin: (data: { user: IUser; accessToken: string }) => void;
+  addresses: IAddress[];
 }
 
 const AuthenticatedContext = createContext<AuthenticatedContextProps>({
@@ -19,6 +22,7 @@ const AuthenticatedContext = createContext<AuthenticatedContextProps>({
   loadingUser: false,
   logout: () => {},
   afterLogin: () => {},
+  addresses: [],
 });
 
 export const AuthenticatedContextProvider = ({
@@ -32,6 +36,12 @@ export const AuthenticatedContextProvider = ({
   const { data: currentUser, isPending: loadingUser } = useQuery({
     queryKey: ["whoami"],
     queryFn: async () => await getCurrentUser(),
+    enabled: !!cookies.token,
+  });
+
+  const { data: addresses } = useQuery({
+    queryKey: ["addresses"],
+    queryFn: async () => await listAddresses(),
     enabled: !!cookies.token,
   });
 
@@ -50,6 +60,9 @@ export const AuthenticatedContextProvider = ({
       queryClient.invalidateQueries({
         queryKey: ["whoami"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["addresses"],
+      });
       const nextRoute = data.user.role === "admin" ? "/admin/dashboard" : "/";
       router.push(nextRoute);
       router.refresh();
@@ -59,7 +72,13 @@ export const AuthenticatedContextProvider = ({
 
   return (
     <AuthenticatedContext.Provider
-      value={{ currentUser, loadingUser, logout, afterLogin }}
+      value={{
+        currentUser,
+        loadingUser,
+        logout,
+        afterLogin,
+        addresses: addresses || [],
+      }}
     >
       {children}
     </AuthenticatedContext.Provider>

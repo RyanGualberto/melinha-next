@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,6 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+import { useAuthContext } from "@/contexts/user-context";
 
 // Dados de exemplo
 const carrinhoItems = [
@@ -62,31 +63,10 @@ const carrinhoItems = [
   },
 ];
 
-// Dados de exemplo para endereços
-const enderecos = [
-  {
-    id: "1",
-    nome: "Casa",
-    rua: "Rua das Flores, 123",
-    bairro: "Centro",
-    cidade: "São Paulo",
-    estado: "SP",
-    cep: "01234-567",
-  },
-  {
-    id: "2",
-    nome: "Trabalho",
-    rua: "Av. Paulista, 1000",
-    bairro: "Bela Vista",
-    cidade: "São Paulo",
-    estado: "SP",
-    cep: "01310-100",
-  },
-];
-
 export default function CarrinhoPage() {
   const router = useRouter();
-  const [enderecoSelecionado, setEnderecoSelecionado] = useState("");
+  const { addresses } = useAuthContext();
+  const [selectedAddress, setSelectedAddress] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [formaPagamento, setFormaPagamento] = useState("dinheiro");
   const [troco, setTroco] = useState("");
@@ -117,7 +97,7 @@ export default function CarrinhoPage() {
     // Aqui você implementaria a lógica para finalizar o pedido
     console.log("Finalizando pedido", {
       items: carrinhoItems,
-      endereco: enderecos.find((e) => e.id === enderecoSelecionado),
+      endereco: addresses.find((e) => e.id === selectedAddress),
       observacoes,
       formaPagamento,
       troco: formaPagamento === "dinheiro" ? troco : "",
@@ -127,6 +107,18 @@ export default function CarrinhoPage() {
     // Redirecionar para uma página de confirmação
     router.push("/pedido-confirmado");
   };
+
+  useEffect(() => {
+    if (
+      addresses &&
+      addresses.length > 0 &&
+      addresses.find((address) => address.principal)
+    ) {
+      setSelectedAddress(
+        addresses.find((address) => address.principal)?.id || ""
+      );
+    }
+  }, [addresses]);
 
   return (
     <div className="container py-8 px-4 sm:px-0">
@@ -254,16 +246,16 @@ export default function CarrinhoPage() {
                 <div className="space-y-2">
                   <Label htmlFor="endereco">Selecione um endereço</Label>
                   <Select
-                    value={enderecoSelecionado}
-                    onValueChange={setEnderecoSelecionado}
+                    value={selectedAddress}
+                    onValueChange={setSelectedAddress}
                   >
                     <SelectTrigger id="endereco">
                       <SelectValue placeholder="Selecione um endereço" />
                     </SelectTrigger>
                     <SelectContent>
-                      {enderecos.map((endereco) => (
-                        <SelectItem key={endereco.id} value={endereco.id}>
-                          {endereco.nome} - {endereco.rua}, {endereco.bairro}
+                      {addresses.map((address) => (
+                        <SelectItem key={address.id} value={address.id}>
+                          {address.name} - {address.address}, {address.district}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -271,21 +263,26 @@ export default function CarrinhoPage() {
                 </div>
 
                 <div className="text-sm">
-                  {enderecoSelecionado && (
+                  {selectedAddress && (
                     <div className="rounded-md border p-3">
                       {(() => {
-                        const endereco = enderecos.find(
-                          (e) => e.id === enderecoSelecionado
+                        const endereco = addresses.find(
+                          (e) => e.id === selectedAddress
                         );
                         return endereco ? (
                           <>
-                            <p className="font-medium">{endereco.nome}</p>
-                            <p>{endereco.rua}</p>
+                            <p className="font-medium">{endereco.name}</p>
                             <p>
-                              {endereco.bairro}, {endereco.cidade} -{" "}
-                              {endereco.estado}
+                              {endereco.address}, {endereco.number}
                             </p>
-                            <p>CEP: {endereco.cep}</p>
+                            <p>
+                              {endereco.complement}, {endereco.reference}
+                            </p>
+                            <p>
+                              {endereco.district}, {endereco.city} -{" "}
+                              {endereco.state}
+                            </p>
+                            <p>CEP: {endereco.zipCode}</p>
                           </>
                         ) : null;
                       })()}
@@ -420,7 +417,7 @@ export default function CarrinhoPage() {
                   size="lg"
                   onClick={handleFinalizarPedido}
                   disabled={
-                    !enderecoSelecionado ||
+                    !selectedAddress ||
                     (formaPagamento === "dinheiro" && !troco)
                   }
                 >

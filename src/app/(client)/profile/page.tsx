@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuthContext } from "@/contexts/user-context";
 
 export default function MinhaContaPage() {
-  const { currentUser } = useAuthContext();
+  const { currentUser, addresses } = useAuthContext();
   const { logout } = useAuthContext();
   return (
     <div className="container px-4 sm:px-0 py-8">
@@ -85,7 +85,13 @@ export default function MinhaContaPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm">Você tem 2 endereços cadastrados.</p>
+            <p className="text-sm">
+              {addresses.length === 0
+                ? "Você não tem nenhum endereço cadastrado"
+                : `Você tem ${addresses.length} endereço${
+                    addresses.length !== 1 && "s"
+                  } cadastrado${addresses.length !== 1 && "s"}.`}
+            </p>
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>

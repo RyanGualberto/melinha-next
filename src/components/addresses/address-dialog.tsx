@@ -53,7 +53,7 @@ export function AddressDialog({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       name: "",
-      cep: "",
+      zipCode: "",
       address: "",
       number: "",
       complement: "",
@@ -73,7 +73,7 @@ export function AddressDialog({
     } else {
       reset({
         name: "",
-        cep: "",
+        zipCode: "",
         address: "",
         number: "",
         complement: "",
@@ -91,12 +91,12 @@ export function AddressDialog({
   };
 
   const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-    const cep = e.target.value.replace(/\D/g, "");
+    const zipCode = e.target.value.replace(/\D/g, "");
 
-    if (cep.length !== 8) return;
+    if (zipCode.length !== 8) return;
 
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const response = await fetch(`https://viacep.com.br/ws/${zipCode}/json/`);
       const data = await response.json();
 
       if (!data.erro) {
@@ -140,7 +140,7 @@ export function AddressDialog({
 
             <FormField
               control={form.control}
-              name="cep"
+              name="zipCode"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>CEP</FormLabel>
@@ -210,6 +210,23 @@ export function AddressDialog({
                 />
               </div>
             </div>
+
+            <FormField
+              control={form.control}
+              name="reference"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Referencia</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ex.: Toldo Vermelho e uma placa na frente"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid items-start grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
