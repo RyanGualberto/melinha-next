@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "vercel-build": "rm -rf node_modules && npm install && next build",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "npm rebuild sharp"
+    "postinstall": "npm rebuild lightningcss"
   },
   "engines": {
     "node": "18.x"
