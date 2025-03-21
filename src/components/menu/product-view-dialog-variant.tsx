@@ -26,7 +26,7 @@ export default function ProductViewDialogVariant({
       key={productVariant.id}
       className={`flex items-center space-x-2 rounded-md border p-3 cursor-pointer ${
         complements.includes(productVariant.id)
-          ? "border-purple-600 bg-purple-50 dark:bg-purple-950/20"
+          ? "border-[#73067D] bg-purple-50 dark:bg-purple-950/20"
           : ""
       }`}
       onClick={() => handleComplementsToggle(productVariant.id)}
@@ -34,7 +34,7 @@ export default function ProductViewDialogVariant({
       <div
         className={`h-5 w-5 rounded-full border flex items-center justify-center ${
           complements.includes(productVariant.id)
-            ? "border-purple-600 bg-purple-600"
+            ? "border-[#73067D] bg-[#73067D]"
             : "border-gray-300"
         }`}
       >

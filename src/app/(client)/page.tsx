@@ -8,6 +8,7 @@ import { listMenu } from "@/requests/menu";
 import { MenuTabs } from "@/components/menu/menu-tabs";
 import MenuCategoryTabContent from "@/components/menu/menu-category-tab-content";
 import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export default function CardapioPage() {
   const [query, setQuery] = useState("");
@@ -52,19 +53,19 @@ export default function CardapioPage() {
         </p>
       </div>
 
-      <Input
-        placeholder="Pesquisar produtos"
-        className="mb-2"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-
       <Tabs
         value={selectedCategory}
         onValueChange={setSelectedCategory}
         className="w-full"
       >
-        <div className="mb-6 overflow-auto sticky left-0 pb-0.5 top-16 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full pt-3">
+        <div className="mb-6 overflow-auto sticky left-0 pb-0.5 top-[65px] z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full pt-3">
+          <Input
+            icon={<Search size={14} />}
+            placeholder="Pesquisar produtos"
+            className="mb-2 bg-background"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <MenuTabs categories={menu?.categories || []} />
         </div>
         <div className="flex flex-col gap-5">

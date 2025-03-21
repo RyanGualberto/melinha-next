@@ -78,7 +78,7 @@ export default function RecuperarSenha() {
           <div className="text-center mt-4">
             <Link
               href="/login"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+              className="text-[#73067D] hover:text-[#73067D]/80 dark:text-purple-400"
             >
               Voltar para o login
             </Link>
@@ -111,7 +111,7 @@ export default function RecuperarSenha() {
             <CardFooter className="flex flex-col space-y-4 mt-4">
               <Button
                 type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full bg-[#73067D] hover:bg-[#73067D]/80"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -127,7 +127,7 @@ export default function RecuperarSenha() {
                 Lembrou sua senha?{" "}
                 <Link
                   href="/login"
-                  className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+                  className="text-[#73067D] hover:text-[#73067D]/80 dark:text-purple-400"
                 >
                   Voltar para o login
                 </Link>

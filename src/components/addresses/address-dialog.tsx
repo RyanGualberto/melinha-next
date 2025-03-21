@@ -298,7 +298,7 @@ export function AddressDialog({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-[#73067D] hover:bg-[#73067D]/80"
               >
                 {isSubmitting ? "Salvando..." : "Salvar"}
               </Button>

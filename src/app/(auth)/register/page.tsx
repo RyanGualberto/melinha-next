@@ -214,7 +214,7 @@ export default function Registro() {
           <CardFooter className="flex flex-col space-y-4 mt-4">
             <Button
               type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-[#73067D] hover:bg-[#73067D]/80"
               disabled={isPending}
             >
               {isPending ? (
@@ -230,7 +230,7 @@ export default function Registro() {
               Já tem uma conta?{" "}
               <Link
                 href="/login"
-                className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+                className="text-[#73067D] hover:text-[#73067D]/80 dark:text-purple-400"
               >
                 Entrar
               </Link>

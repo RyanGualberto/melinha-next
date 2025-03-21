@@ -98,7 +98,7 @@ const getStatusInfo = (status: string) => {
       return {
         label: "Entregue",
         color:
-          "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+          "bg-purple-100 text-[#73067D]/80 dark:bg-purple-900 dark:text-purple-300",
         icon: CheckCircle2,
       };
     default:
@@ -250,7 +250,7 @@ export default function PedidosPage() {
             <p className="text-muted-foreground mb-6">
               Que tal experimentar nossos deliciosos açaís?
             </p>
-            <Button asChild className="bg-purple-600 hover:bg-purple-700">
+            <Button asChild className="bg-[#73067D] hover:bg-[#73067D]/80">
               <Link href="/">Ver Cardápio</Link>
             </Button>
           </div>

@@ -65,7 +65,7 @@ const getStatusBadge = (status: string) => {
       return (
         <Badge
           variant="outline"
-          className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+          className="bg-purple-100 text-[#73067D]/80 dark:bg-purple-900 dark:text-purple-300"
         >
           Entregue
         </Badge>

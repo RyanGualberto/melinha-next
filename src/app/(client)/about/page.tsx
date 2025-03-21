@@ -31,7 +31,7 @@ export default function SobrePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center text-xl">
-              <Clock className="mr-2 h-5 w-5 text-purple-600" />
+              <Clock className="mr-2 h-5 w-5 text-[#73067D]" />
               Horários de Funcionamento
             </CardTitle>
           </CardHeader>
@@ -57,7 +57,7 @@ export default function SobrePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center text-xl">
-              <ExternalLink className="mr-2 h-5 w-5 text-purple-600" />
+              <ExternalLink className="mr-2 h-5 w-5 text-[#73067D]" />
               Redes Sociais
             </CardTitle>
           </CardHeader>
@@ -98,7 +98,7 @@ export default function SobrePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center text-xl">
-              <CreditCard className="mr-2 h-5 w-5 text-purple-600" />
+              <CreditCard className="mr-2 h-5 w-5 text-[#73067D]" />
               Métodos de Pagamento
             </CardTitle>
           </CardHeader>
@@ -113,7 +113,7 @@ export default function SobrePage() {
                 <span className="text-sm font-medium">Cartão</span>
               </div>
               <div className="flex flex-col items-center text-center p-3 rounded-md border">
-                <QrCode className="h-8 w-8 mb-2 text-purple-600" />
+                <QrCode className="h-8 w-8 mb-2 text-[#73067D]" />
                 <span className="text-sm font-medium">PIX</span>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function SobrePage() {
           Venha conhecer nosso açaí e descubra por que somos a escolha preferida
           dos amantes de açaí na cidade.
         </p>
-        <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700">
+        <Button asChild size="lg" className="bg-[#73067D] hover:bg-[#73067D]/80">
           <Link href="/">Ver Cardápio</Link>
         </Button>
       </div>

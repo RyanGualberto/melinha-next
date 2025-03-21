@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 
 // Dados de exemplo
 const carrinhoItems = [
@@ -339,12 +340,12 @@ export default function CarrinhoPage() {
                       <span className="absolute left-3 top-1/2 -translate-y-1/2">
                         R$
                       </span>
-                      <input
+                      <Input
                         id="troco"
                         type="text"
                         value={troco}
                         onChange={(e) => setTroco(e.target.value)}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-9 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="pl-9"
                         placeholder="0,00"
                       />
                     </div>
@@ -415,7 +416,7 @@ export default function CarrinhoPage() {
               </CardContent>
               <CardFooter>
                 <Button
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  className="w-full bg-[#73067D] hover:bg-[#73067D]/80"
                   size="lg"
                   onClick={handleFinalizarPedido}
                   disabled={
@@ -437,7 +438,7 @@ export default function CarrinhoPage() {
           <p className="text-muted-foreground mb-6">
             Adicione alguns produtos deliciosos para começar seu pedido.
           </p>
-          <Button asChild className="bg-purple-600 hover:bg-purple-700">
+          <Button asChild className="bg-[#73067D] hover:bg-[#73067D]/80">
             <Link href="/">Ver Cardápio</Link>
           </Button>
         </div>

@@ -89,7 +89,7 @@ export function OrderDialog({
         );
       case "entregue":
         return (
-          <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+          <Badge className="bg-purple-100 text-[#73067D]/80 dark:bg-purple-900 dark:text-purple-300">
             Entregue
           </Badge>
         );

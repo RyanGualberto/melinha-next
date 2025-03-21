@@ -146,7 +146,7 @@ export function ProductViewDialog({
           </div>
 
           <Button
-            className="flex-1 bg-purple-600 hover:bg-purple-700"
+            className="flex-1 bg-[#73067D] hover:bg-[#73067D]/80"
             onClick={handleAddToCart}
           >
             <ShoppingCart className="mr-2 h-4 w-4" />

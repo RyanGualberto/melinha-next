@@ -28,7 +28,7 @@ export default function ProductCard({
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-semibold">{product.title}</h3>
-          <div className="font-semibold text-purple-600 hidden md:flex">
+          <div className="font-semibold text-[#73067D] hidden md:flex">
             {new Intl.NumberFormat("pt-BR", {
               style: "currency",
               currency: "BRL",
@@ -38,13 +38,13 @@ export default function ProductCard({
         <p className="text-sm text-muted-foreground line-clamp-2 flex-1 h-14">
           {product.description}
         </p>
-        <div className="font-semibold text-purple-600 flex md:hidden">
+        <div className="font-semibold text-[#73067D] flex md:hidden">
           {new Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
           }).format(product.price)}
         </div>
-        <Button className="w-full mt-4 bg-purple-600 hover:bg-purple-700 hidden md:flex">
+        <Button className="w-full mt-4 bg-[#73067D] hover:bg-[#73067D]/80 hidden md:flex">
           Escolher
         </Button>
       </CardContent>

@@ -112,7 +112,7 @@ export default function Login() {
                         <FormLabel>Senha</FormLabel>
                         <Link
                           href="/reset-password"
-                          className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400"
+                          className="text-sm text-[#73067D] hover:text-[#73067D]/80 dark:text-purple-400"
                         >
                           Esqueceu a senha?
                         </Link>
@@ -135,7 +135,7 @@ export default function Login() {
           <CardFooter className="flex flex-col space-y-4 mt-4">
             <Button
               type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-[#73067D] hover:bg-[#73067D]/80"
               disabled={isPending}
             >
               {isPending ? (
@@ -151,7 +151,7 @@ export default function Login() {
               Não tem uma conta?{" "}
               <Link
                 href="/register"
-                className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+                className="text-[#73067D] hover:text-[#73067D]/80 dark:text-purple-400"
               >
                 Registre-se
               </Link>
