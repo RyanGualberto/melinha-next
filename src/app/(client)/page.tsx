@@ -67,14 +67,15 @@ export default function CardapioPage() {
         <div className="mb-6 overflow-auto sticky left-0 pb-0.5 top-16 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full pt-3">
           <MenuTabs categories={menu?.categories || []} />
         </div>
-
-        {(menu?.categories || []).map((category) => (
-          <MenuCategoryTabContent
-            key={category.id}
-            handleProductClick={handleProductClick}
-            category={category}
-          />
-        ))}
+        <div className="flex flex-col gap-5">
+          {(menu?.categories || []).map((category) => (
+            <MenuCategoryTabContent
+              key={category.id}
+              handleProductClick={handleProductClick}
+              category={category}
+            />
+          ))}
+        </div>
       </Tabs>
 
       {selectedProduct && (
