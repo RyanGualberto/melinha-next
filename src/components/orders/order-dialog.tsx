@@ -80,6 +80,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
       queryClient.invalidateQueries({
         queryKey: ["orders"],
       });
+      onOpenChange(false)
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
     } finally {
