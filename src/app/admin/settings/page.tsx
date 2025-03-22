@@ -34,7 +34,7 @@ const configSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
   whatsapp: z.string().min(10, { message: "WhatsApp inválido" }),
   deliveryTime: z
-    .string()
+    .number()
     .min(1, { message: "Tempo de entrega é obrigatório" }),
   opened: z.boolean(),
   orderMinimum: z.number().min(0, { message: "Valor mínimo inválido" }),
@@ -62,7 +62,7 @@ export default function ConfiguracoesPage() {
   const form = useForm<ConfigFormValues>({
     resolver: zodResolver(configSchema),
     defaultValues: {
-      deliveryTime: settings?.deliveryTime ?? "",
+      deliveryTime: settings?.deliveryTime ?? 30,
       email: settings?.email ?? "",
       instagram: settings?.instagram ?? "",
       whatsapp: formatPhoneNumber(settings?.whatsapp ?? ""),
@@ -86,7 +86,11 @@ export default function ConfiguracoesPage() {
 
   async function onSubmit(data: ConfigFormValues) {
     try {
-      await updateSettingsMutation(data);
+      await updateSettingsMutation({
+        ...data,
+        orderMinimum: Number(data.orderMinimum),
+        deliveryTime: Number(data.deliveryTime),
+      });
       toast("As configurações foram atualizadas com sucesso.");
     } catch (error) {
       console.error("Erro ao salvar configurações:", error);
@@ -193,6 +197,10 @@ export default function ConfiguracoesPage() {
                           icon={<Clock size={14} className="opacity-90" />}
                           placeholder="30-45 minutos"
                           {...field}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            field.onChange(Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormDescription>

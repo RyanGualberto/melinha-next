@@ -4,7 +4,7 @@ export interface SettingsResponse {
   instagram: string;
   email: string;
   whatsapp: string;
-  deliveryTime: string;
+  deliveryTime: number;
   orderMinimum: number;
   opened: boolean;
 }
@@ -27,7 +27,7 @@ export interface updateSettingsPayload {
   instagram: string;
   email: string;
   whatsapp: string;
-  deliveryTime: string;
+  deliveryTime: number;
   orderMinimum: number;
   opened: boolean;
 }
