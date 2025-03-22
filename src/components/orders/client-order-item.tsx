@@ -84,7 +84,9 @@ export function CientOrderItem({
       <CardHeader className="pb-2">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
-            <CardTitle className="text-lg">Pedido #{order.id}</CardTitle>
+            <CardTitle className="text-lg">
+              Pedido #{order.id.split("-")[0]}
+            </CardTitle>
             <CardDescription>
               {new Date(order.createdAt).toLocaleDateString("pt-BR", {
                 year: "numeric",
@@ -95,10 +97,27 @@ export function CientOrderItem({
               })}
             </CardDescription>
           </div>
-          <Badge className={`${statusInfo.color} flex items-center gap-1`}>
-            <statusInfo.icon className="h-3.5 w-3.5" />
-            {statusInfo.label}
-          </Badge>
+          <div className="flex flex-col items-end">
+            <Badge className={`${statusInfo.color} flex items-center gap-1`}>
+              <statusInfo.icon className="h-3.5 w-3.5" />
+              {statusInfo.label}
+            </Badge>
+            {[
+              OrderStatus.DELIVERY_IN_PROGRESS,
+              OrderStatus.IN_PROGRESS,
+            ].includes(order.status) && (
+              <span className="text-muted-foreground text-sm">
+                Entrega prevista para{" "}
+                {new Date(
+                  new Date(order.createdAt).getTime() +
+                    order.deliveryTime * 60000
+                ).toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>

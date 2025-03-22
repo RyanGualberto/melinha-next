@@ -144,15 +144,32 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
             <span>Pedido #{order.id}</span>
           </DialogTitle>
           <div className="flex items-center justify-between">
-            <DialogDescription>
-              {new Date(order.createdAt).toLocaleDateString("pt-BR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </DialogDescription>
+            <div>
+              <DialogDescription>
+                {new Date(order.createdAt).toLocaleDateString("pt-BR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </DialogDescription>
+              {[
+                OrderStatus.DELIVERY_IN_PROGRESS,
+                OrderStatus.IN_PROGRESS,
+              ].includes(order.status) && (
+                <span className="text-muted-foreground text-sm">
+                  Entrega prevista para{" "}
+                  {new Date(
+                    new Date(order.createdAt).getTime() +
+                      order.deliveryTime * 60000
+                  ).toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              )}
+            </div>
             {getStatusBadge(currentStatus || order.status)}
           </div>
         </DialogHeader>

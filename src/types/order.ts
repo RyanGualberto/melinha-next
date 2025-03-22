@@ -7,6 +7,7 @@ export interface IOrder {
   addressSnapshot: string;
   createdAt: string;
   deliveryCost: number;
+  deliveryTime: number;
   discount: number;
   observation: string;
   paymentChange: number;
