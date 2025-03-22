@@ -7,7 +7,7 @@ import { listUsers } from "@/requests/user";
 export default function UsersPage() {
   const { data: users } = useQuery({
     queryKey: ["users"],
-    queryFn: () => listUsers(),
+    queryFn: async () => await listUsers(),
   });
 
   return (
