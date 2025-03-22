@@ -8,15 +8,15 @@ import WorkHours from "@/components/about/work-hours";
 
 export default function SobrePage() {
   return (
-    <div className="container py-8 md:py-12 px-4 md:px-0">
-      <div className="flex flex-col items-center text-center mb-12">
-        <Image src={Logo} height={160} width={160} alt="MELINHA" />
-        <h1 className="text-4xl font-bold tracking-tight mb-2">
-          Melinha Açaíteria
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl">
-          O melhor açaí da cidade, com sabor e qualidade que você merece
-        </p>
+    <div className="container  py-8 md:py-12 md:pt-24 px-4 md:px-0 relative">
+      <div className="flex flex-col items-center text-center mb-12 ">
+        <Image
+          src={Logo}
+          height={160}
+          width={160}
+          alt="MELINHA"
+          className="border border-white"
+        />
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

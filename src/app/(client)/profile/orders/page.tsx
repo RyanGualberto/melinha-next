@@ -1,15 +1,14 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
-
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOrders } from "@/requests/order";
 import { CientOrderItem } from "@/components/orders/client-order-item";
 import { Button } from "@/components/ui/button";
+import { socket } from "@/config/socket-client";
 
 export default function PedidosPage() {
-  const { data: orders } = useQuery({
+  const { data: orders, refetch: refetchOrders } = useQuery({
     queryKey: ["user", "orders"],
     queryFn: getCurrentUserOrders,
   });
@@ -24,6 +23,10 @@ export default function PedidosPage() {
       [id]: !expandedOrders[id],
     });
   };
+
+  socket.on("orderUpdated", () => {
+    refetchOrders();
+  });
 
   return (
     <div className="container py-8 px-4 sm:px-0">

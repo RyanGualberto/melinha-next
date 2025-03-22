@@ -3,16 +3,16 @@ import type React from "react";
 import { SidebarNav } from "@/components/shared/admin-sidebar-nav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebarMobileTrigger from "@/components/shared/admin-sidebar-mobile-trigger";
-import { io } from "socket.io-client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogTitle,
   AlertDialogContent,
-  AlertDialogAction,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import { socket } from "@/config/socket-client";
 
 export default function DashboardLayout({
   children,
@@ -21,12 +21,31 @@ export default function DashboardLayout({
 }) {
   const queryClient = useQueryClient();
   const [hasNewOrder, setHasNewOrder] = useState(false);
-  const socket = io(process.env.NEXT_PUBLIC_API_URL); // Ajuste a URL conforme necessário
 
-  socket.on("orderCreated", (order) => {
-    setHasNewOrder(order);
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-  });
+  function playTrimmedAudio() {
+    const audio = new Audio("/sounds/notification.wav");
+    audio.currentTime = 0;
+    audio.play();
+
+    setTimeout(() => {
+      audio.pause();
+      audio.currentTime = 0;
+    }, 3000);
+  }
+
+  useEffect(() => {
+    const handleNewOrder = () => {
+      setHasNewOrder(true);
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      playTrimmedAudio();
+    };
+
+    socket.on("orderCreated", handleNewOrder);
+
+    return () => {
+      socket.off("orderCreated", handleNewOrder);
+    };
+  }, [queryClient]);
 
   return (
     <SidebarProvider>
@@ -48,9 +67,7 @@ export default function DashboardLayout({
               detalhes.
             </p>
           </AlertDescription>
-          <AlertDialogAction>
-            <a href="/admin/orders">Ver pedido</a>
-          </AlertDialogAction>
+          <AlertDialogCancel>Ver Pedido</AlertDialogCancel>
         </AlertDialogContent>
       </AlertDialog>
     </SidebarProvider>

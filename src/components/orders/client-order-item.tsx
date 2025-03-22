@@ -194,11 +194,27 @@ export function CientOrderItem({
                         </li>
                       ))}
                     </ul>
+                    <div>
+                      {orderProduct.observation && (
+                        <p className="text-sm text-muted-foreground">
+                          Observação: {orderProduct.observation}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
+            {order.observation && (
+              <>
+                <Separator />
+                <div>
+                  <h4 className="font-medium mb-2">Observação</h4>
+                  <p>{order.observation}</p>
+                </div>
+              </>
+            )}
             <Separator />
 
             <div>
