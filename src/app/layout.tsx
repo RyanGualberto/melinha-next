@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import QueryProvider from "@/contexts/query-context";
 import { AuthenticatedContextProvider } from "@/contexts/user-context";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Melinha Açaíteria",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthenticatedContextProvider>
             {children}
+            <Toaster />
           </AuthenticatedContextProvider>
         </QueryProvider>
       </body>

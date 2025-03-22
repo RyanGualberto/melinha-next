@@ -27,11 +27,16 @@ import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/contexts/user-context";
 import { useCartContext } from "@/contexts/cart-context";
 import { IAddress } from "@/types/address";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createOrder, CreateOrderDto } from "@/requests/order";
+import { getSettings } from "@/requests/settings";
 
 export default function CarrinhoPage() {
   const router = useRouter();
+  const { data: storeConfig } = useQuery({
+    queryKey: ["store-config"],
+    queryFn: async () => await getSettings(),
+  });
   const {
     cleanCart,
     cart,
@@ -105,6 +110,8 @@ export default function CarrinhoPage() {
       );
     }
   }, [addresses]);
+
+  if (!storeConfig) return null;
 
   return (
     <div className="container py-8 px-4 sm:px-0">
@@ -397,18 +404,37 @@ export default function CarrinhoPage() {
                   </span>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex-col">
                 <Button
                   className="w-full bg-[#73067D] hover:bg-[#73067D]/80"
                   size="lg"
                   onClick={handleFinalizarPedido}
                   disabled={
                     !selectedAddress ||
-                    (cart.paymentMethod === "money" && !cart.paymentChange)
+                    (cart.paymentMethod === "money" && !cart.paymentChange) ||
+                    !cart.paymentMethod ||
+                    storeConfig?.orderMinimum >
+                      calculateTotalAndSubtotal.total ||
+                    !storeConfig?.opened
                   }
                 >
                   Finalizar Pedido
                 </Button>
+                {!storeConfig?.opened && (
+                  <p className="bg-red-50 border border-red-700 text-sm text-center text-red-700 mt-2 w-full p-2 rounded-md">
+                    Estamos fechados no momento, volte mais tarde.
+                  </p>
+                )}
+                {storeConfig?.orderMinimum >
+                  calculateTotalAndSubtotal.total && (
+                  <p className="bg-yellow-50 border border-yellow-600 font-semibold text-sm text-center text-yellow-800 mt-2 w-full p-2 rounded-md">
+                    Pedido mínimo de{" "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(storeConfig?.orderMinimum)}
+                  </p>
+                )}
               </CardFooter>
             </Card>
           </div>

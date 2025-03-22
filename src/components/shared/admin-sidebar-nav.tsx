@@ -12,6 +12,7 @@ import {
   Grid,
   LogOut,
   Users,
+  Settings2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -93,6 +94,14 @@ export function SidebarNav() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip="Sair" asChild>
+              <Link href="/admin/settings">
+                <Settings2 className="h-5 w-5" />
+                <span>Configurações</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={logout} tooltip="Sair">
               <LogOut className="h-5 w-5" />

@@ -26,6 +26,7 @@ import { RegisterFormValues, registerSchema } from "@/schemas/register-schema";
 import { useMutation } from "@tanstack/react-query";
 import { register, registerPayload } from "@/requests/auth";
 import { setCookie } from "nookies";
+import { formatPhoneNumber } from "@/utils/format-number";
 
 export default function Registro() {
   const router = useRouter();
@@ -58,26 +59,6 @@ export default function Registro() {
   async function onSubmit(data: RegisterFormValues) {
     await mutateAsync(data);
   }
-
-  // Função para formatar o telefone no padrão (00) 00000-0000
-  const formatPhoneNumber = (value: string) => {
-    if (!value) return value;
-
-    // Remove todos os caracteres não numéricos
-    const phoneNumber = value.replace(/\D/g, "");
-
-    // Aplica a formatação
-    if (phoneNumber.length <= 2) {
-      return `(${phoneNumber}`;
-    }
-    if (phoneNumber.length <= 7) {
-      return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
-    }
-    return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(
-      2,
-      7
-    )}-${phoneNumber.slice(7, 11)}`;
-  };
 
   return (
     <Card className="w-full max-w-md">

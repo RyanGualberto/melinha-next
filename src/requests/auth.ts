@@ -1,11 +1,6 @@
 import apiClient from "@/config/api-client";
 import { IUser } from "@/types/user";
 
-export interface MeResponse extends IUser {
-  instagram: string;
-  email: string;
-  whatsapp: string;
-}
 
 export async function getCurrentUser() {
   try {
