@@ -45,7 +45,7 @@ export default function ProductCard({
           }).format(product.price)}
         </div>
         <Button className="w-full mt-4 bg-[#73067D] hover:bg-[#73067D]/80 hidden md:flex">
-          Escolher
+          Adicionar ao carrinho
         </Button>
       </CardContent>
     </Card>

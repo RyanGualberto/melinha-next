@@ -77,7 +77,7 @@ export default function CardapioPage() {
 
           <Badge className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-300 border-blue-200 dark:border-blue-800">
             <Clock className="h-3.5 w-3.5" />
-            Tempo de entrega: {storeConfig?.deliveryTime}
+            Tempo de entrega: {storeConfig?.deliveryTime} minutos
           </Badge>
 
           <Badge
