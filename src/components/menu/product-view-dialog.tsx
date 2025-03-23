@@ -129,7 +129,7 @@ export function ProductViewDialog({
             <Textarea
               value={observations}
               onChange={(e) => setObservations(e.target.value)}
-              placeholder="Ex: Sem cebola, sem tomate, etc."
+              placeholder="Ex: Pouca Granola"
             />
           </div>
         </div>

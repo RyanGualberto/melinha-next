@@ -30,9 +30,11 @@ import { IAddress } from "@/types/address";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createOrder, CreateOrderDto } from "@/requests/order";
 import { getSettings } from "@/requests/settings";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CarrinhoPage() {
   const router = useRouter();
+  const [needPaymentChange, setNeedPaymentChange] = useState(false);
   const { data: storeConfig } = useQuery({
     queryKey: ["store-config"],
     queryFn: async () => await getSettings(),
@@ -318,8 +320,21 @@ export default function CarrinhoPage() {
                     </Label>
                   </div>
                 </RadioGroup>
-
                 {cart.paymentMethod === "money" && (
+                  // adiciona a opção para perguntar se precisa de troco
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="troco"
+                      checked={needPaymentChange}
+                      onCheckedChange={(checked) => {
+                        setNeedPaymentChange(Boolean(!checked));
+                      }}
+                    />
+                    <Label htmlFor="troco">Precisa de troco?</Label>
+                  </div>
+                )}
+
+                {cart.paymentMethod === "money" && needPaymentChange && (
                   <div className="space-y-2">
                     <Label htmlFor="troco">Troco para</Label>
                     <div className="relative">
@@ -330,11 +345,7 @@ export default function CarrinhoPage() {
                         id="troco"
                         type="text"
                         value={String(cart.paymentChange)}
-                        onChange={(e) =>
-                          // a cada 2 do lado direito acrecenta uma virgula
-                          // a forma atual não me deixa acrescentar 0, exemplo 20, 200, 2000
-                          setPaymentChange(e.target.value)
-                        }
+                        onChange={(e) => setPaymentChange(e.target.value)}
                         className="pl-9"
                         placeholder="0,00"
                       />
