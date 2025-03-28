@@ -13,10 +13,11 @@ import { cn } from "@/lib/utils";
 import { getSettings } from "@/requests/settings";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CardapioPage() {
   const [query, setQuery] = useState("");
-  const { data: menu } = useQuery({
+  const { data: menu, isPending: loadingMenu } = useQuery({
     queryKey: ["client-menu"],
     queryFn: async () => await listMenu(query),
   });
@@ -116,9 +117,26 @@ export default function CardapioPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <MenuTabs categories={menu?.categories || []} />
+          {!loadingMenu && <MenuTabs categories={menu?.categories || []} />}
         </div>
         <div className="flex flex-col gap-5">
+          {loadingMenu && (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="w-full h-10" />
+              <div className="flex flex-col gap-1">
+                <Skeleton className="w-48 h-8" />
+                <Skeleton className="w-96 h-5" />
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className="w-60 h-96 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
           {(menu?.categories || []).map((category) => (
             <MenuCategoryTabContent
               key={category.id}
