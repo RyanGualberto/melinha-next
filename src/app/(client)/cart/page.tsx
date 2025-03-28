@@ -70,7 +70,7 @@ export default function CarrinhoPage() {
         addresses.find((address) => address.id === selectedAddress) as IAddress
       );
     }
-  }, [selectedAddress, addresses]);
+  }, [selectedAddress, addresses, setAddress]);
 
   const handleFinalizarPedido = async () => {
     await createOrderMutation({
