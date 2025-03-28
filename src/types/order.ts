@@ -3,8 +3,8 @@ import { OrderStatus } from "./order-status";
 export interface IOrder {
   id: string;
   userId: string;
-  addressId: string;
-  addressSnapshot: string;
+  addressId?: string;
+  addressSnapshot?: string;
   createdAt: string;
   deliveryCost: number;
   deliveryTime: number;
@@ -17,6 +17,7 @@ export interface IOrder {
   total: number;
   userSnapshot: string;
   updatedAt: string;
+  isWithdrawal?: boolean;
 }
 
 export interface IOrderProduct {

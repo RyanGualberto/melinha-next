@@ -60,7 +60,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
     keyof typeof OrderStatus | null
   >(null);
   const user: IUser = JSON.parse(order.userSnapshot || "");
-  const address: IAddress = JSON.parse(order.addressSnapshot || "");
+  const address: IAddress = JSON.parse(order?.addressSnapshot || "{}");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(() => {
@@ -417,9 +417,13 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                 <div className="flex items-start">
                   <MapPin className="min-h-4 min-w-4 mr-2 mt-0.5 text-muted-foreground" />
                   <div>
-                    <p>
-                      {`${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`}
-                    </p>
+                    {order.isWithdrawal ? (
+                      <p>Retirada no local</p>
+                    ) : (
+                      <p>
+                        {`${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>

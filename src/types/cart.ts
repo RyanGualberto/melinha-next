@@ -9,6 +9,7 @@ export interface Cart {
   paymentMethod: string;
   paymentChange?: string;
   observation?: string;
+  isWithdrawal: boolean;
 }
 
 export interface CartProduct {

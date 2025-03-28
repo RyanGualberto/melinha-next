@@ -41,6 +41,7 @@ export interface CartContextProps {
   cart: Cart;
   setObservation: (observation: string) => void;
   cleanCart: () => void;
+  toggleIsWithdrawal: (isWithdrawal: boolean) => void;
 }
 
 const CartContext = createContext<CartContextProps>({
@@ -53,6 +54,7 @@ const CartContext = createContext<CartContextProps>({
   setPaymentChange: () => {},
   setObservation: () => {},
   cleanCart: () => {},
+  toggleIsWithdrawal: () => {},
 });
 
 export const CartContextProvider = ({
@@ -69,6 +71,7 @@ export const CartContextProvider = ({
     paymentMethod: "",
     observation: "",
     paymentChange: "",
+    isWithdrawal: false,
   });
 
   useEffect(() => {
@@ -176,6 +179,19 @@ export const CartContextProvider = ({
     [cart]
   );
 
+  const toggleIsWithdrawal = useCallback(
+    (isWithdrawal: boolean) => {
+      setCart({
+        ...cart,
+        isWithdrawal,
+        deliveryCost: isWithdrawal ? 0 : cart.deliveryCost,
+        addressId: isWithdrawal ? "" : cart.addressId,
+        addressDistrict: isWithdrawal ? "" : cart.addressDistrict,
+      });
+    },
+    [cart]
+  );
+
   const cleanCart = useCallback(() => {
     setCart({
       addressId: "",
@@ -186,6 +202,7 @@ export const CartContextProvider = ({
       paymentMethod: "",
       observation: "",
       paymentChange: "",
+      isWithdrawal: false,
     });
   }, []);
 
@@ -201,6 +218,7 @@ export const CartContextProvider = ({
         setPaymentChange,
         setObservation,
         cleanCart,
+        toggleIsWithdrawal,
       }}
     >
       {children}

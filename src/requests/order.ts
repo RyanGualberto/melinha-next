@@ -16,18 +16,24 @@ interface OrderProductDto {
 }
 
 export interface CreateOrderDto {
-  addressId: string;
+  addressId?: string;
   products: OrderProductDto[];
   total: number;
   discount: number;
   deliveryCost: number;
   paymentMethod: string;
   paymentChange?: number;
-  addressSnapshot: string;
+  addressSnapshot?: string;
   orderObservation?: string;
+  isWithdrawal?: boolean;
 }
 
 export async function createOrder(data: CreateOrderDto) {
+  if (data.isWithdrawal) {
+    data.deliveryCost = 0;
+    delete data.addressSnapshot;
+    delete data.addressId;
+  }
   try {
     const response = await apiClient({
       method: "post",

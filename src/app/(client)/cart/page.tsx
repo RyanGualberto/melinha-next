@@ -48,6 +48,7 @@ export default function CarrinhoPage() {
     setPaymentMethod,
     setPaymentChange,
     setObservation,
+    toggleIsWithdrawal,
   } = useCartContext();
   const { mutateAsync: createOrderMutation } = useMutation({
     mutationKey: ["createOrder"],
@@ -96,6 +97,7 @@ export default function CarrinhoPage() {
         addresses.find((address) => address.id === selectedAddress)
       ),
       orderObservation: cart.observation,
+      isWithdrawal: cart.isWithdrawal
     });
     cleanCart();
     router.push("/profile/orders");
@@ -233,62 +235,91 @@ export default function CarrinhoPage() {
               <CardHeader>
                 <CardTitle>Endereço de Entrega</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="endereco">Selecione um endereço</Label>
-                  <Select
-                    value={selectedAddress}
-                    onValueChange={setSelectedAddress}
-                  >
-                    <SelectTrigger id="endereco">
-                      <SelectValue placeholder="Selecione um endereço" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {addresses.map((address) => (
-                        <SelectItem key={address.id} value={address.id}>
-                          {address.name} - {address.address}, {address.district}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="text-sm">
-                  {selectedAddress && (
-                    <div className="rounded-md border p-3">
-                      {(() => {
-                        const endereco = addresses.find(
-                          (e) => e.id === selectedAddress
-                        );
-                        return endereco ? (
-                          <>
-                            <p className="font-medium">{endereco.name}</p>
-                            <p>
-                              {endereco.address}, {endereco.number}
-                            </p>
-                            <p>
-                              {endereco.complement}, {endereco.reference}
-                            </p>
-                            <p>
-                              {endereco.district}, {endereco.city} -{" "}
-                              {endereco.state}
-                            </p>
-                            <p>CEP: {endereco.zipCode}</p>
-                          </>
-                        ) : null;
-                      })()}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    Não encontrou seu endereço?
+              <CardContent className="space-y-4 flex flex-col gap-4">
+                <RadioGroup
+                  value={String(cart.isWithdrawal)}
+                  onValueChange={(value) =>
+                    toggleIsWithdrawal(value === "true")
+                  }
+                >
+                  <div className="flex items-center space-x-2 rounded-md border p-3">
+                    <RadioGroupItem value="true" id="true" />
+                    <Label htmlFor="true" className="flex-1 cursor-pointer">
+                      Retirada
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 rounded-md border p-3">
+                    <RadioGroupItem value="false" id="false" />
+                    <Label htmlFor="false" className="flex-1 cursor-pointer">
+                      Delivery
+                    </Label>
+                  </div>
+                </RadioGroup>
+                {cart.isWithdrawal ? (
+                  <span className="text-sm ">
+                    Você escolheu retirar seu pedido na loja. Aguarde o
+                    estabelecimento entrar em contato com você.
                   </span>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/profile/addresses">Adicionar Novo</Link>
-                  </Button>
-                </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="endereco">Selecione um endereço</Label>
+                      <Select
+                        value={selectedAddress}
+                        onValueChange={setSelectedAddress}
+                      >
+                        <SelectTrigger id="endereco">
+                          <SelectValue placeholder="Selecione um endereço" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {addresses.map((address) => (
+                            <SelectItem key={address.id} value={address.id}>
+                              {address.name} - {address.address},{" "}
+                              {address.district}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="text-sm">
+                      {selectedAddress && (
+                        <div className="rounded-md border p-3">
+                          {(() => {
+                            const endereco = addresses.find(
+                              (e) => e.id === selectedAddress
+                            );
+                            return endereco ? (
+                              <>
+                                <p className="font-medium">{endereco.name}</p>
+                                <p>
+                                  {endereco.address}, {endereco.number}
+                                </p>
+                                <p>
+                                  {endereco.complement}, {endereco.reference}
+                                </p>
+                                <p>
+                                  {endereco.district}, {endereco.city} -{" "}
+                                  {endereco.state}
+                                </p>
+                                <p>CEP: {endereco.zipCode}</p>
+                              </>
+                            ) : null;
+                          })()}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">
+                        Não encontrou seu endereço?
+                      </span>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href="/profile/addresses">Adicionar Novo</Link>
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -421,7 +452,7 @@ export default function CarrinhoPage() {
                   size="lg"
                   onClick={handleFinalizarPedido}
                   disabled={
-                    !selectedAddress ||
+                    (!cart.isWithdrawal && !selectedAddress) ||
                     (cart.paymentMethod === "money" && !cart.paymentChange) ||
                     !cart.paymentMethod ||
                     storeConfig?.orderMinimum >
