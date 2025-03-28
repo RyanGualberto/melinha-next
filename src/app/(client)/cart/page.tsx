@@ -327,7 +327,7 @@ export default function CarrinhoPage() {
                       id="troco"
                       checked={needPaymentChange}
                       onCheckedChange={(checked) => {
-                        setNeedPaymentChange(Boolean(!checked));
+                        setNeedPaymentChange(!checked);
                       }}
                     />
                     <Label htmlFor="troco">Precisa de troco?</Label>

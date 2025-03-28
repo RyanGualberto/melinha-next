@@ -4,7 +4,7 @@ import { SidebarNav } from "@/components/shared/admin-sidebar-nav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebarMobileTrigger from "@/components/shared/admin-sidebar-mobile-trigger";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -12,7 +12,7 @@ import {
   AlertDialogContent,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { socket } from "@/config/socket-client";
+import { listOrders } from "@/requests/order";
 
 export default function DashboardLayout({
   children,
@@ -20,6 +20,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const queryClient = useQueryClient();
+  const { data: orders } = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => listOrders(),
+  });
   const [hasNewOrder, setHasNewOrder] = useState(false);
 
   function playTrimmedAudio() {
@@ -40,12 +44,17 @@ export default function DashboardLayout({
       playTrimmedAudio();
     };
 
-    socket.on("orderCreated", handleNewOrder);
+    setInterval(() => {
+      const lastOrder = orders?.[orders.length - 1];
+      const lastOrderDate = new Date(lastOrder?.createdAt ?? 0);
+      const now = new Date();
+      const timeWithErrorMargin = 4500;
 
-    return () => {
-      socket.off("orderCreated", handleNewOrder);
-    };
-  }, [queryClient]);
+      if (now.getTime() - lastOrderDate.getTime() < timeWithErrorMargin) {
+        handleNewOrder();
+      }
+    }, 3000);
+  }, [queryClient, orders]);
 
   return (
     <SidebarProvider>
