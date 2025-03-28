@@ -36,6 +36,11 @@ export default function Dashboard() {
     const ordersPriceTotalToday =
       ordersToday?.reduce((acc, order) => acc + order.total, 0) || 0;
 
+    const ordersCostTotal = ordersToday?.reduce(
+      (acc, order) => acc + order.deliveryCost,
+      0
+    );
+
     const usersNotAdmin = users?.filter((user) => user.role !== "admin") || [];
 
     const productsLength =
@@ -46,6 +51,7 @@ export default function Dashboard() {
       ordersPriceTotal: ordersPriceTotalToday,
       usersLength: usersNotAdmin?.length || 0,
       productsLength: productsLength,
+      ordersCostTotal: ordersCostTotal || 0,
     };
   }, [products, orders, users]);
 
@@ -106,7 +112,24 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData.ordersPriceTotal}
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData.ordersPriceTotal)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Frete hoje</CardTitle>
+            <Layers className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData.ordersCostTotal)}
             </div>
           </CardContent>
         </Card>
