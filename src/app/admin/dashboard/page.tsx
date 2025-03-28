@@ -1,13 +1,12 @@
 "use client";
 import OrdersResume from "@/components/orders/orders-resume";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { listCategories } from "@/requests/category";
+import { listOrders } from "@/requests/order";
 import { listProducts } from "@/requests/product";
-import { listProductVariants } from "@/requests/product-variant";
+import { listUsers } from "@/requests/user";
 import { useQuery } from "@tanstack/react-query";
 import { Package, ShoppingBag, Tag, Layers } from "lucide-react";
-import Link from "next/link";
+import { useMemo } from "react";
 
 export default function Dashboard() {
   const { data: products } = useQuery({
@@ -15,15 +14,40 @@ export default function Dashboard() {
     queryFn: async () => await listProducts(),
   });
 
-  const { data: productVariants } = useQuery({
-    queryKey: ["variants"],
-    queryFn: async () => await listProductVariants(),
+  const { data: orders } = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => await listOrders(),
   });
 
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => await listCategories(),
+  const { data: users } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => await listUsers(),
   });
+
+  const dashboardData = useMemo(() => {
+    const ordersToday = orders?.filter(
+      (order) =>
+        new Date(order.createdAt).toDateString() === new Date().toDateString()
+    );
+
+    const ordersLengthToday =
+      ordersToday?.length === undefined ? 0 : ordersToday?.length;
+
+    const ordersPriceTotalToday =
+      ordersToday?.reduce((acc, order) => acc + order.total, 0) || 0;
+
+    const usersNotAdmin = users?.filter((user) => user.role !== "admin") || [];
+
+    const productsLength =
+      products?.length === undefined ? 0 : products?.length;
+
+    return {
+      ordersLength: ordersLengthToday,
+      ordersPriceTotal: ordersPriceTotalToday,
+      usersLength: usersNotAdmin?.length || 0,
+      productsLength: productsLength,
+    };
+  }, [products, orders, users]);
 
   return (
     <div className="space-y-6">
@@ -38,15 +62,14 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total de Pedidos
+              Quantidade de clientes
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">
-              Nenhum pedido registrado
-            </p>
+            <div className="text-2xl font-bold">
+              {dashboardData.usersLength}
+            </div>
           </CardContent>
         </Card>
 
@@ -58,60 +81,33 @@ export default function Dashboard() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{products?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {products?.length === 0 ? (
-                <Link href="/admin/products">
-                  <Button variant="link" className="p-0">
-                    Cadastrar um produto
-                  </Button>
-                </Link>
-              ) : null}
-            </p>
+            <div className="text-2xl font-bold">
+              {dashboardData.productsLength}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Categorias
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Pedidos Hoje</CardTitle>
             <Tag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{categories?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {categories?.length === 0 ? (
-                <Link href="/admin/categories">
-                  <Button variant="link" className="p-0">
-                    Cadastrar uma categoria
-                  </Button>
-                </Link>
-              ) : null}
-            </p>
+            <div className="text-2xl font-bold">
+              {dashboardData.ordersLength}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Variantes
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Faturado hoje</CardTitle>
             <Layers className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {productVariants?.length || 0}
+              {dashboardData.ordersPriceTotal}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {productVariants?.length === 0 ? (
-                <Link href="/admin/variants">
-                  <Button variant="link" className="p-0">
-                    Cadastrar uma variante
-                  </Button>
-                </Link>
-              ) : null}
-            </p>
           </CardContent>
         </Card>
       </div>
