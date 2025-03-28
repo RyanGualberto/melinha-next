@@ -17,7 +17,7 @@ export default function ProductCard({
       className="overflow-hidden cursor-pointer transition-all hover:shadow-md pt-0 pb-0 md:pb-6 flex flex-row md:flex-col gap-0"
       onClick={() => handleProductClick(product)}
     >
-      <div className="relative h-36 w-36 md:h-48 md:w-full">
+      <div className="relative min-w-24 h-36 w-36 md:h-72 md:w-full">
         <Image
           src={product.image || "/placeholder.svg"}
           alt={product.title}
