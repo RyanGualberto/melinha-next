@@ -6,7 +6,20 @@ import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Melinha Açaíteria",
-  description: "Melinha Açaíteria.",
+  description:
+    "Página principal da Melinha Açaíteria, faça seu pedido agora mesmo",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    images: [
+      {
+        url: "/profile.png",
+        width: 400,
+        height: 400,
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
