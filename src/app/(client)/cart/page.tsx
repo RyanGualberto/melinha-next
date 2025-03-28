@@ -238,6 +238,7 @@ export default function CarrinhoPage() {
               <CardContent className="space-y-4 flex flex-col gap-4">
                 <RadioGroup
                   value={String(cart.isWithdrawal)}
+                  defaultValue="false"
                   onValueChange={(value) =>
                     toggleIsWithdrawal(value === "true")
                   }
