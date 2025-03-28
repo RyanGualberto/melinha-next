@@ -1,11 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOrders } from "@/requests/order";
 import { CientOrderItem } from "@/components/orders/client-order-item";
 import { Button } from "@/components/ui/button";
-import { socket } from "@/config/socket-client";
 
 export default function PedidosPage() {
   const { data: orders, refetch: refetchOrders } = useQuery({
@@ -24,9 +23,13 @@ export default function PedidosPage() {
     });
   };
 
-  socket.on("orderUpdated", () => {
-    refetchOrders();
-  });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchOrders();
+    }, 5000);
+
+    return clearInterval(interval);
+  }, [refetchOrders]);
 
   return (
     <div className="container py-8 px-4 sm:px-0">

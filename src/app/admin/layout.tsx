@@ -20,11 +20,21 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const queryClient = useQueryClient();
+  const [oldOrdersLength, setOldOrdersLength] = useState<number | null>(null);
+  const [hasNewOrder, setHasNewOrder] = useState(false);
   const { data: orders } = useQuery({
     queryKey: ["orders"],
-    queryFn: async () => listOrders(),
+    queryFn: async () => {
+      const orders = await listOrders();
+      return orders;
+    },
   });
-  const [hasNewOrder, setHasNewOrder] = useState(false);
+
+  useEffect(() => {
+    if (oldOrdersLength === null) {
+      setOldOrdersLength(orders?.length || null);
+    }
+  }, [orders, oldOrdersLength]);
 
   function playTrimmedAudio() {
     const audio = new Audio("/sounds/notification.wav");
@@ -40,21 +50,26 @@ export default function DashboardLayout({
   useEffect(() => {
     const handleNewOrder = () => {
       setHasNewOrder(true);
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
       playTrimmedAudio();
+      setOldOrdersLength(orders?.length || null);
     };
 
-    setInterval(() => {
-      const lastOrder = orders?.[orders.length - 1];
-      const lastOrderDate = new Date(lastOrder?.createdAt ?? 0);
-      const now = new Date();
-      const timeWithErrorMargin = 4500;
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      console.log("invalidating");
+    }, 5000);
 
-      if (now.getTime() - lastOrderDate.getTime() < timeWithErrorMargin) {
-        handleNewOrder();
-      }
-    }, 3000);
-  }, [queryClient, orders]);
+    if (
+      orders &&
+      orders.length > 0 &&
+      oldOrdersLength !== null &&
+      orders.length > oldOrdersLength
+    ) {
+      handleNewOrder();
+    }
+
+    return () => clearInterval(interval);
+  }, [queryClient, orders, oldOrdersLength]);
 
   return (
     <SidebarProvider>
