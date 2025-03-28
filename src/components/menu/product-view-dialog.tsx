@@ -45,7 +45,7 @@ export function ProductViewDialog({
       }
     });
 
-    return priceBase * quantity;
+    return { subtotal: priceBase * quantity, unit: priceBase };
   }, [product, complements, quantity]);
   const productVariantCategories = useMemo(() => {
     const allProductVariants = product.productVariants;
@@ -82,7 +82,8 @@ export function ProductViewDialog({
       productId: product.id,
       product,
       quantity,
-      price: priceItemSubtotal,
+      unitPrice: priceItemSubtotal.unit,
+      price: priceItemSubtotal.subtotal,
       variants: complements.map((variantId) => {
         const variant = product.productVariants.find((v) => v.id === variantId);
         return {
@@ -166,7 +167,7 @@ export function ProductViewDialog({
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(priceItemSubtotal)}
+              }).format(priceItemSubtotal.subtotal)}
             </span>
           </Button>
         </DialogFooter>

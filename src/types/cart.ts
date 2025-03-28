@@ -18,6 +18,7 @@ export interface CartProduct {
 
   quantity: number;
   price: number;
+  unitPrice: number;
   variants: CartProductVariant[];
   observation?: string;
 }

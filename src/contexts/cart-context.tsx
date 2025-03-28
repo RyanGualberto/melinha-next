@@ -119,7 +119,7 @@ export const CartContextProvider = ({
           return {
             ...item,
             quantity,
-            price: item.product.price * quantity,
+            price: item.unitPrice * quantity,
           };
         }
         return item;
