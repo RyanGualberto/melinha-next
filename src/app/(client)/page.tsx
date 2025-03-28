@@ -131,7 +131,7 @@ export default function CardapioPage() {
                 {Array.from({ length: 12 }).map((_, i) => (
                   <Skeleton
                     key={i}
-                    className="w-60 h-96 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"
+                    className="w-full md:w-60 h-36 md:h-96 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"
                   />
                 ))}
               </div>
