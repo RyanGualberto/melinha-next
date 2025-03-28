@@ -106,7 +106,7 @@ export function ProductViewDialog({
           <DialogDescription>{product.description}</DialogDescription>
         </DialogHeader>
 
-        <div className="relative h-48 w-full rounded-md overflow-hidden my-4">
+        <div className="relative h-72 w-full rounded-md overflow-hidden my-4">
           <Image
             src={product.image || "/placeholder.svg"}
             alt={product.title}
