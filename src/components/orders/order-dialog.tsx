@@ -80,7 +80,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
       queryClient.invalidateQueries({
         queryKey: ["orders"],
       });
-      onOpenChange(false)
+      onOpenChange(false);
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
     } finally {
@@ -180,6 +180,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
           ) && (
             <Button
               onClick={() => handleStatusChange("CANCELED")}
+              disabled={isUpdating}
               variant="destructive"
             >
               Cancelar Pedido
@@ -189,6 +190,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
             <Button
               onClick={() => handleStatusChange("IN_PROGRESS")}
               variant="secondary"
+              disabled={isUpdating}
               className="bg-yellow-50 border border-yellow-600 text-yellow-600"
             >
               Confirmar Pedido
@@ -198,6 +200,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
             <Button
               onClick={() => handleStatusChange("DELIVERY_IN_PROGRESS")}
               variant="secondary"
+              disabled={isUpdating}
               className="bg-blue-50 border border-blue-600 text-blue-600"
             >
               Iniciar Entrega
@@ -207,6 +210,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
             <Button
               onClick={() => handleStatusChange("COMPLETED")}
               variant="secondary"
+              disabled={isUpdating}
               className="bg-green-50 border border-green-600 text-green-600"
             >
               Finalizar Entrega
