@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -25,22 +24,34 @@ import { Loader2 } from "lucide-react";
 import { RegisterFormValues, registerSchema } from "@/schemas/register-schema";
 import { useMutation } from "@tanstack/react-query";
 import { register, registerPayload } from "@/requests/auth";
-import { setCookie } from "nookies";
 import { formatPhoneNumber } from "@/utils/format-number";
+import { AxiosError } from "axios";
+import { useAuthContext } from "@/contexts/user-context";
 
 export default function Registro() {
-  const router = useRouter();
+  const { afterLogin } = useAuthContext();
   const { mutateAsync, isPending } = useMutation({
     mutationKey: ["auth", "register"],
     mutationFn: async (data: registerPayload) => await register(data),
-    onSuccess: (data) => {
-      setCookie(null, "token", data.accessToken, {
-        maxAge: 30 * 24 * 60 * 60,
-        path: "/",
-      });
+    onSuccess: afterLogin,
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 400) {
+          const message = error.response.data.message;
+          if (message.includes("email")) {
+            form.setError("email", {
+              message: "Email já cadastrado",
+            });
+          }
 
-      const nextRoute = data.user.role === "admin" ? "/admin/dashboard" : "/";
-      router.push(nextRoute);
+          if (message.includes("phoneNumber")) {
+            form.setError("phoneNumber", {
+              message: "Telefone já cadastrado",
+            });
+          }
+          return;
+        }
+      }
     },
   });
 

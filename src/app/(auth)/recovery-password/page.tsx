@@ -23,47 +23,39 @@ import {
 import { Loader2, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  ResetPasswordFormValues,
-  resetPasswordSchema,
-} from "@/schemas/reset-password-schema";
+  RecoveryPasswordFormValues,
+  recoveryPasswordSchema,
+} from "@/schemas/recovery-password-schema";
 import { useMutation } from "@tanstack/react-query";
-import { resetPassword } from "@/requests/auth";
+import { recoveryPassword } from "@/requests/auth";
 
-export default function ChangePassword() {
+export default function RecuperarSenha() {
   const {
-    mutateAsync: resetPasswordMutation,
+    mutateAsync: recoveryPasswordMutation,
+    isPending: isLoading,
     isSuccess,
-    isPending,
   } = useMutation({
-    mutationKey: ["password", "reset"],
-    mutationFn: async (data: { newPassword: string; token: string }) =>
-      await resetPassword(data.newPassword, data.token),
+    mutationKey: ["recovery-password"],
+    mutationFn: async (email: string) => await recoveryPassword(email),
   });
 
-  const form = useForm<ResetPasswordFormValues>({
-    resolver: zodResolver(resetPasswordSchema),
+  const form = useForm<RecoveryPasswordFormValues>({
+    resolver: zodResolver(recoveryPasswordSchema),
     defaultValues: {
-      password: "",
-      confirmPassword: "",
+      email: "",
     },
   });
 
-  async function onSubmit(data: ResetPasswordFormValues) {
-    const token = new URLSearchParams(window.location.search).get("token");
-    if (token) {
-      await resetPasswordMutation({
-        newPassword: data.password,
-        token: token,
-      });
-    }
+  async function onSubmit(data: RecoveryPasswordFormValues) {
+    await recoveryPasswordMutation(data.email);
   }
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold">Alterar Senha</CardTitle>
+        <CardTitle className="text-2xl font-bold">Recuperar Senha</CardTitle>
         <CardDescription>
-          Digite sua nova senha abaixo para alterar sua senha
+          Digite seu email para receber um link de recuperação de senha
         </CardDescription>
       </CardHeader>
 
@@ -71,7 +63,10 @@ export default function ChangePassword() {
         <CardContent className="space-y-4">
           <Alert className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950/50 dark:text-green-400 dark:border-green-900">
             <CheckCircle2 className="h-4 w-4 mr-2" />
-            <AlertDescription>Senha Alterada com sucesso!</AlertDescription>
+            <AlertDescription>
+              Email enviado com sucesso! Verifique sua caixa de entrada e siga
+              as instruções para redefinir sua senha.
+            </AlertDescription>
           </Alert>
           <div className="text-center mt-4">
             <Link
@@ -88,35 +83,16 @@ export default function ChangePassword() {
             <CardContent className="space-y-4">
               <FormField
                 control={form.control}
-                name="password"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="******"
-                        type="password"
-                        autoComplete="password"
-                        disabled={isPending}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirmação de senha</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="******"
-                        type="password"
-                        autoComplete="password"
-                        disabled={isPending}
+                        placeholder="seu@email.com"
+                        type="email"
+                        autoComplete="email"
+                        disabled={isLoading}
                         {...field}
                       />
                     </FormControl>
@@ -129,15 +105,15 @@ export default function ChangePassword() {
               <Button
                 type="submit"
                 className="w-full bg-[#73067D] hover:bg-[#73067D]/80"
-                disabled={isPending}
+                disabled={isLoading}
               >
-                {isPending ? (
+                {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Alterando...
+                    Enviando...
                   </>
                 ) : (
-                  "Alterar Senha"
+                  "Enviar Link de Recuperação"
                 )}
               </Button>
               <div className="text-center text-sm">

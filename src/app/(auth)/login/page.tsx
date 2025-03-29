@@ -111,7 +111,7 @@ export default function Login() {
                       <div className="flex items-center justify-between">
                         <FormLabel>Senha</FormLabel>
                         <Link
-                          href="/reset-password"
+                          href="/recovery-password"
                           className="text-sm text-[#73067D] hover:text-[#73067D]/80 dark:text-purple-400"
                         >
                           Esqueceu a senha?

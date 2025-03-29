@@ -13,9 +13,15 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuthContext } from "@/contexts/user-context";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentUserOrders } from "@/requests/order";
 
 export default function MinhaContaPage() {
   const { currentUser, addresses } = useAuthContext();
+  const { data: orders } = useQuery({
+    queryKey: ["user", "orders"],
+    queryFn: async () => await getCurrentUserOrders(),
+  });
   const { logout } = useAuthContext();
   return (
     <div className="container px-4 sm:px-0 py-8">
@@ -89,8 +95,8 @@ export default function MinhaContaPage() {
               {addresses.length === 0
                 ? "Você não tem nenhum endereço cadastrado"
                 : `Você tem ${addresses.length} endereço${
-                    addresses.length !== 1 && "s"
-                  } cadastrado${addresses.length !== 1 && "s"}.`}
+                    addresses.length !== 1 ? "s" : ""
+                  } cadastrado${addresses.length !== 1 ? "s" : ""}.`}
             </p>
           </CardContent>
           <CardFooter>
@@ -110,7 +116,11 @@ export default function MinhaContaPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm">
-              Você realizou 5 pedidos nos últimos 30 dias.
+              {orders?.length === 0
+                ? "Você não fez nenhum pedido em Melinha Açaíteria"
+                : `Você fez ${orders?.length} pedido${
+                    orders?.length !== 1 ? "s" : ""
+                  } em Melinha Açaíteria`}
             </p>
           </CardContent>
           <CardFooter>

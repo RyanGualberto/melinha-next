@@ -133,7 +133,16 @@ export function CientOrderItem({
           </div>
           <div>
             <p className="text-sm font-medium">Forma de Pagamento</p>
-            <p>{order.paymentMethod}</p>
+            <p>
+              {
+                {
+                  money: "Dinheiro",
+                  cash: "Dinheiro",
+                  card: "Cartão",
+                  pix: "Pix",
+                }[order.paymentMethod.toLowerCase()]
+              }
+            </p>
           </div>
           <div>
             <p className="text-sm font-medium">Endereço</p>

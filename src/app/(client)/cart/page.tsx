@@ -97,7 +97,7 @@ export default function CarrinhoPage() {
         addresses.find((address) => address.id === selectedAddress)
       ),
       orderObservation: cart.observation,
-      isWithdrawal: cart.isWithdrawal
+      isWithdrawal: cart.isWithdrawal,
     });
     cleanCart();
     router.push("/profile/orders");
@@ -454,7 +454,9 @@ export default function CarrinhoPage() {
                   onClick={handleFinalizarPedido}
                   disabled={
                     (!cart.isWithdrawal && !selectedAddress) ||
-                    (cart.paymentMethod === "money" && !cart.paymentChange) ||
+                    (cart.paymentMethod === "money" &&
+                      needPaymentChange &&
+                      !cart.paymentChange) ||
                     !cart.paymentMethod ||
                     storeConfig?.orderMinimum >
                       calculateTotalAndSubtotal.total ||
