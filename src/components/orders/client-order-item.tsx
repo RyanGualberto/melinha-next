@@ -223,7 +223,7 @@ export function CientOrderItem({
               <>
                 <Separator />
                 <div>
-                  <h4 className="font-medium mb-2">Observação</h4>
+                  <h4 className="font-medium mb-2">Observação: </h4>
                   <p>{order.observation}</p>
                 </div>
               </>

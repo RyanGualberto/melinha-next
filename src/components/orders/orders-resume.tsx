@@ -13,17 +13,31 @@ export default function OrdersResume() {
     queryFn: async () => await listOrders(),
   });
   const ordersFiltered = useMemo(() => {
-    const ordersToday = orders?.filter(
-      (order) => new Date(order.createdAt).getDate() === new Date().getDate()
-    );
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    const startDate = new Date(now);
+    if (currentHour < 2) {
+      startDate.setDate(startDate.getDate() - 1);
+    }
+    startDate.setHours(16, 0, 0, 0);
+
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+    endDate.setHours(2, 0, 0, 0);
+
+    const ordersInPeriod = orders?.filter((order) => {
+      const orderDate = new Date(order.createdAt);
+      return orderDate >= startDate && orderDate < endDate;
+    });
     return {
-      waiting: ordersToday?.filter(
+      waiting: ordersInPeriod?.filter(
         (order) => order.status === OrderStatus.PENDING
       ),
-      inProgress: ordersToday?.filter(
+      inProgress: ordersInPeriod?.filter(
         (order) => order.status === OrderStatus.IN_PROGRESS
       ),
-      inDelivery: ordersToday?.filter(
+      inDelivery: ordersInPeriod?.filter(
         (order) => order.status === OrderStatus.DELIVERY_IN_PROGRESS
       ),
     };

@@ -76,7 +76,7 @@ export const columns: ColumnDef<IOrder>[] = [
     header: "Cliente",
     cell: ({ row }) => {
       const user: IUser = JSON.parse(row.getValue("userSnapshot"));
-      return user.firstName + user.lastName;
+      return user.firstName + " " + user.lastName;
     },
   },
   {
@@ -94,11 +94,23 @@ export const columns: ColumnDef<IOrder>[] = [
       const data = row.getValue("createdAt") as Date;
       return new Date(data).toLocaleDateString("pt-BR", {
         year: "numeric",
-        month: "long",
+        month: "numeric",
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
       });
+    },
+  },
+  {
+    accessorKey: "deliveryCost",
+    header: "Taxa de entrega",
+    cell: ({ row }) => {
+      const valor = Number.parseFloat(row.getValue("deliveryCost"));
+      const formatted = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(valor);
+      return Boolean(valor) ? formatted : "Retirada";
     },
   },
   {

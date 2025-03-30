@@ -162,7 +162,7 @@ export function ProductDialog({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="ACTIVE">Ativo</SelectItem>
-                        <SelectItem value="inactive">Inativo</SelectItem>
+                        <SelectItem value="INACTIVE">Inativo</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

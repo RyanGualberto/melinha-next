@@ -25,18 +25,33 @@ export default function Dashboard() {
   });
 
   const dashboardData = useMemo(() => {
-    const ordersToday = orders?.filter(
-      (order) =>
-        new Date(order.createdAt).toDateString() === new Date().toDateString()
-    );
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    const startDate = new Date(now);
+    if (currentHour < 2) {
+      startDate.setDate(startDate.getDate() - 1);
+    }
+    startDate.setHours(16, 0, 0, 0);
+
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+    endDate.setHours(2, 0, 0, 0);
+
+    const ordersInPeriod = orders?.filter((order) => {
+      const orderDate = new Date(order.createdAt);
+      return orderDate >= startDate && orderDate < endDate;
+    });
+
+    console.log(ordersInPeriod);
 
     const ordersLengthToday =
-      ordersToday?.length === undefined ? 0 : ordersToday?.length;
+      ordersInPeriod?.length === undefined ? 0 : ordersInPeriod?.length;
 
     const ordersPriceTotalToday =
-      ordersToday?.reduce((acc, order) => acc + order.total, 0) || 0;
+      ordersInPeriod?.reduce((acc, order) => acc + order.total, 0) || 0;
 
-    const ordersCostTotal = ordersToday?.reduce(
+    const ordersCostTotal = ordersInPeriod?.reduce(
       (acc, order) => acc + order.deliveryCost,
       0
     );

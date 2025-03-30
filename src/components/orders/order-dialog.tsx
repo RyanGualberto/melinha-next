@@ -269,7 +269,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                         {item.observation && (
                           <div className="flex justify-between p-4">
                             <div className="text-sm text-muted-foreground">
-                              Observação
+                              Observação:{" "}
                             </div>
                             <div className="text-sm text-muted-foreground">
                               {item.observation}
@@ -281,7 +281,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                     {order.observation && (
                       <div className="flex justify-between p-4">
                         <div className="text-sm text-muted-foreground">
-                          Observação
+                          Observação:{" "}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {order.observation}
