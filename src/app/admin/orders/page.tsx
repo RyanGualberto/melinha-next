@@ -17,6 +17,7 @@ import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { listOrders } from "@/requests/order";
 import { OrderStatus } from "@/types/order-status";
+import OrdersResume from "@/components/orders/orders-resume";
 
 export default function OrdersPage() {
   const { data: orders } = useQuery({
@@ -136,7 +137,7 @@ export default function OrdersPage() {
           </p>
         </div>
       </div>
-
+      <OrdersResume />
       <Card className="p-4">
         <div className="flex items-center gap-4 mb-4">
           <div className="flex flex-col gap-1">

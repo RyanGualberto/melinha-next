@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home,
   ShoppingBag,
   Package,
   Tag,
@@ -13,6 +12,7 @@ import {
   LogOut,
   Users,
   Settings2,
+  ChartNoAxesCombined,
 } from "lucide-react";
 import {
   Sidebar,
@@ -29,7 +29,7 @@ const navItems = [
   {
     title: "Início",
     href: "/admin/dashboard",
-    icon: Home,
+    icon: ChartNoAxesCombined,
   },
   {
     title: "Pedidos",

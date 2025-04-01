@@ -1,74 +1,14 @@
 "use client";
-import OrdersResume from "@/components/orders/orders-resume";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { listOrders } from "@/requests/order";
-import { listProducts } from "@/requests/product";
-import { listUsers } from "@/requests/user";
+import { getDashboard } from "@/requests/dashboard";
 import { useQuery } from "@tanstack/react-query";
-import { Package, ShoppingBag, Tag, Layers } from "lucide-react";
-import { useMemo } from "react";
+import { ShoppingBag } from "lucide-react";
 
 export default function Dashboard() {
-  const { data: products } = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => await listProducts(),
+  const { data: dashboardData } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: async () => await getDashboard(),
   });
-
-  const { data: orders } = useQuery({
-    queryKey: ["orders"],
-    queryFn: async () => await listOrders(),
-  });
-
-  const { data: users } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => await listUsers(),
-  });
-
-  const dashboardData = useMemo(() => {
-    const now = new Date();
-    const currentHour = now.getHours();
-
-    const startDate = new Date(now);
-    if (currentHour < 2) {
-      startDate.setDate(startDate.getDate() - 1);
-    }
-    startDate.setHours(16, 0, 0, 0);
-
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1);
-    endDate.setHours(2, 0, 0, 0);
-
-    const ordersInPeriod = orders?.filter((order) => {
-      const orderDate = new Date(order.createdAt);
-      return orderDate >= startDate && orderDate < endDate;
-    });
-
-    console.log(ordersInPeriod);
-
-    const ordersLengthToday =
-      ordersInPeriod?.length === undefined ? 0 : ordersInPeriod?.length;
-
-    const ordersPriceTotalToday =
-      ordersInPeriod?.reduce((acc, order) => acc + order.total, 0) || 0;
-
-    const ordersCostTotal = ordersInPeriod?.reduce(
-      (acc, order) => acc + order.deliveryCost,
-      0
-    );
-
-    const usersNotAdmin = users?.filter((user) => user.role !== "admin") || [];
-
-    const productsLength =
-      products?.length === undefined ? 0 : products?.length;
-
-    return {
-      ordersLength: ordersLengthToday,
-      ordersPriceTotal: ordersPriceTotalToday,
-      usersLength: usersNotAdmin?.length || 0,
-      productsLength: productsLength,
-      ordersCostTotal: ordersCostTotal || 0,
-    };
-  }, [products, orders, users]);
 
   return (
     <div className="space-y-6">
@@ -89,67 +29,221 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData.usersLength}
+              {dashboardData?.totalClients}
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total de Produtos
+              Pedidos no último mês
             </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData.productsLength}
+              {dashboardData?.ordersLast30Days}
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pedidos Hoje</CardTitle>
-            <Tag className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">
+              Pedidos no último final de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData.ordersLength}
+              {dashboardData?.ordersLastWeekend}
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Faturado hoje</CardTitle>
-            <Layers className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">
+              Faturado no último mês
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(dashboardData.ordersPriceTotal)}
+              }).format(dashboardData?.revenueLast30Days || 0)}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Frete hoje</CardTitle>
-            <Layers className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">
+              Faturado no último final de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(dashboardData.ordersCostTotal)}
+              }).format(dashboardData?.revenueLastWeekend || 0)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Item mais vendido no último mês
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.bestSellingItemLast30Days?.productTitleSnapshot}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.bestSellingItemLast30Days._sum.quantity} venda
+              {dashboardData?.bestSellingItemLastWeekend._sum.quantity === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Item mais vendido no último fim de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.bestSellingItemLastWeekend?.productTitleSnapshot}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.bestSellingItemLastWeekend._sum.quantity} venda
+              {dashboardData?.bestSellingItemLastWeekend._sum.quantity === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Item menos vendido no último mês
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.leastSellingItemLast30Days?.productTitleSnapshot}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.leastSellingItemLast30Days._sum.quantity} venda
+              {dashboardData?.leastSellingItemLast30Days._sum.quantity === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Item menos vendido no último fim de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.leastSellingItemLastWeekend?.productTitleSnapshot}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.leastSellingItemLastWeekend._sum.quantity} venda
+              {dashboardData?.leastSellingItemLastWeekend._sum.quantity === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Bairro mais vendido no último mês
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.bestSellingNeighborhoodLast30Days[0]}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.bestSellingNeighborhoodLast30Days[1]} venda
+              {dashboardData?.bestSellingNeighborhoodLast30Days[1] === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Bairro menos vendido no último mês
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.leastSellingNeighborhoodLast30Days[0]}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.leastSellingNeighborhoodLast30Days[1]} venda
+              {dashboardData?.leastSellingNeighborhoodLast30Days[1] === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Bairro mais vendido no último final de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.bestWorstSellingNeighborhoodLastWeekend[0]}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.bestWorstSellingNeighborhoodLastWeekend[1]} venda
+              {dashboardData?.bestWorstSellingNeighborhoodLastWeekend[1] === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Bairro menos vendido no último final de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {dashboardData?.leastSellingNeighborhoodLastWeekend[0]}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.leastSellingNeighborhoodLastWeekend[1]} venda
+              {dashboardData?.leastSellingNeighborhoodLastWeekend[1] === 1
+                ? ""
+                : "s"}
             </div>
           </CardContent>
         </Card>
       </div>
-      <OrdersResume />
     </div>
   );
 }

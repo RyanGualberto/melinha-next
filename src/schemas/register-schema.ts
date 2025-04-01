@@ -8,7 +8,9 @@ export const registerSchema = z
     lastName: z
       .string()
       .min(2, { message: "Sobrenome deve ter pelo menos 2 caracteres" }),
-    phoneNumber: z.string(),
+    phoneNumber: z
+      .string()
+      .min(15, { message: "Telefone deve ter pelo menos 16 caracteres" }),
     email: z
       .string()
       .min(1, { message: "Email é obrigatório" })
