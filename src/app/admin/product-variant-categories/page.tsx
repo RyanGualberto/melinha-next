@@ -65,6 +65,9 @@ export default function ProductVariantCategorysPage() {
   );
 
   const handleSave = async (data: ProductVariantCategoryFormValues) => {
+    if (!Boolean(data.max)) {
+      delete (data as Partial<ProductVariantCategoryFormValues>).max;
+    }
     if (editingProductVariantCategory) {
       await updateProductVariantCategoryMutation({
         id: editingProductVariantCategory.id,

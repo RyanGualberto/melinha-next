@@ -33,12 +33,17 @@ export function ProductViewDialog({
   const router = useRouter();
   const { handleAddCartItem } = useCartContext();
   const [quantity, setQuantity] = useState(1);
-  const [complements, setComplementos] = useState<string[]>([]);
+  const [complements, setComplementos] = useState<
+    {
+      categoryId: string;
+      variantId: string;
+    }[]
+  >([]);
   const [observations, setObservations] = useState("");
   const priceItemSubtotal = useMemo(() => {
     let priceBase = product.price;
 
-    complements.forEach((variantId) => {
+    complements.forEach(({ variantId }) => {
       const variant = product.productVariants.find((v) => v.id === variantId);
       if (variant) {
         priceBase += variant.price;
@@ -84,7 +89,7 @@ export function ProductViewDialog({
       quantity,
       unitPrice: priceItemSubtotal.unit,
       price: priceItemSubtotal.subtotal,
-      variants: complements.map((variantId) => {
+      variants: complements.map(({ variantId }) => {
         const variant = product.productVariants.find((v) => v.id === variantId);
         return {
           variantId: variantId || "",

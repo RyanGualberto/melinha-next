@@ -8,12 +8,33 @@ export function ProductViewDialogCategory({
   setComplements,
 }: {
   productVariantCategory: IProductVariantCategory;
-  complements: string[];
-  setComplements: Dispatch<SetStateAction<string[]>>;
+  complements: {
+    categoryId: string;
+    variantId: string;
+  }[];
+  setComplements: Dispatch<
+    SetStateAction<
+      {
+        categoryId: string;
+        variantId: string;
+      }[]
+    >
+  >;
 }) {
   return (
     <div key={productVariantCategory.id}>
-      <h3 className="font-medium mb-3">{productVariantCategory.name}</h3>
+      <div className="flex gap-1 items-end mb-3">
+        <h3 className="font-medium">{productVariantCategory.name}</h3>
+        <h5 className="text-xs opacity-50 mb-[3px]">
+          (
+          {productVariantCategory.type === "MULTIPLE"
+            ? productVariantCategory.max
+              ? "Escolha até " + productVariantCategory.max
+              : "Escolha quantos quiser"
+            : "Escolha uma opção"}
+          )
+        </h5>
+      </div>
       <div className="grid grid-cols-1 gap-2">
         {productVariantCategory.productVariants.map((variant) => (
           <ProductViewDialogVariant
@@ -21,6 +42,13 @@ export function ProductViewDialogCategory({
             productVariant={variant}
             complements={complements}
             setComplements={setComplements}
+            disabled={
+              complements.length >= (productVariantCategory.max || 9999) &&
+              !complements
+                .map((complement) => complement.variantId)
+                .includes(variant.id)
+            }
+            type={productVariantCategory.type}
           />
         ))}
       </div>

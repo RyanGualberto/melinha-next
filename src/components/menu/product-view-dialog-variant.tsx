@@ -8,37 +8,94 @@ export default function ProductViewDialogVariant({
   productVariant,
   complements,
   setComplements,
+  disabled,
+  type,
 }: {
   productVariant: IProductVariant;
-  complements: string[];
-  setComplements: Dispatch<SetStateAction<string[]>>;
+  complements: {
+    categoryId: string;
+    variantId: string;
+  }[];
+  setComplements: Dispatch<
+    SetStateAction<
+      {
+        categoryId: string;
+        variantId: string;
+      }[]
+    >
+  >;
+  disabled: boolean;
+  type: "SINGLE" | "MULTIPLE";
 }) {
-  const handleComplementsToggle = (variantId: string) => {
-    if (complements.includes(variantId)) {
-      setComplements(complements.filter((id) => id !== variantId));
+  const handleComplementsToggle = (variant: {
+    categoryId: string;
+    variantId: string;
+  }) => {
+    console.log("here");
+
+    if (disabled) return;
+
+    console.log("here1");
+    if (type === "SINGLE") {
+      const complementsFromOtherCategories = complements.filter(
+        (complement) => complement.categoryId !== variant.categoryId
+      );
+      setComplements([...complementsFromOtherCategories, variant]);
+      console.log("here2");
+      return;
+    }
+
+    if (
+      complements
+        .map((complement) => complement.variantId)
+        .includes(variant.variantId)
+    ) {
+      setComplements(
+        complements.filter(
+          (complement) => complement.variantId !== variant.variantId
+        )
+      );
     } else {
-      setComplements([...complements, variantId]);
+      setComplements(
+        complements.concat({
+          categoryId: productVariant.productVariantCategoryId,
+          variantId: variant.variantId,
+        })
+      );
     }
   };
+
+  console.log(complements);
 
   return (
     <div
       key={productVariant.id}
       className={`flex items-center space-x-2 rounded-md border p-3 cursor-pointer ${
-        complements.includes(productVariant.id)
+        complements
+          .map((complement) => complement.variantId)
+          .includes(productVariant.id)
           ? "border-[#73067D] bg-purple-50 dark:bg-purple-950/20"
           : ""
       }`}
-      onClick={() => handleComplementsToggle(productVariant.id)}
+      onClick={() =>
+        handleComplementsToggle({
+          categoryId: productVariant.productVariantCategoryId,
+          variantId: productVariant.id,
+        })
+      }
     >
       <div
         className={`h-5 w-5 rounded-full border flex items-center justify-center ${
-          complements.includes(productVariant.id)
+          complements
+            .map((complement) => complement.variantId)
+            .includes(productVariant.id)
             ? "border-[#73067D] bg-[#73067D]"
             : "border-gray-300"
         }`}
       >
-        {complements.includes(productVariant.id) && (
+        {complements
+          .map((complement) => complement.variantId)
+          .includes(productVariant.id) && (
           <Check className="h-3 w-3 text-white" />
         )}
       </div>

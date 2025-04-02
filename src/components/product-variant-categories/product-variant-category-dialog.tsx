@@ -26,6 +26,13 @@ import {
   productVariantCategorySchema,
 } from "@/schemas/product-variant-category-schema";
 import { IProductVariantCategory } from "@/types/product-variant-category";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface ProductVariantCategoryDialogProps {
   open: boolean;
@@ -44,6 +51,8 @@ export function ProductVariantCategoryDialog({
     resolver: zodResolver(productVariantCategorySchema),
     defaultValues: {
       name: "",
+      max: 0,
+      type: "MULTIPLE",
     },
   });
 
@@ -52,10 +61,15 @@ export function ProductVariantCategoryDialog({
 
   useEffect(() => {
     if (productVariantCategory) {
-      reset(productVariantCategory);
+      reset({
+        ...productVariantCategory,
+        max: productVariantCategory.max ?? 0,
+      });
     } else {
       reset({
         name: "",
+        max: 0,
+        type: "MULTIPLE",
       });
     }
   }, [productVariantCategory, reset]);
@@ -98,7 +112,54 @@ export function ProductVariantCategoryDialog({
                 </FormItem>
               )}
             />
-
+            <div className="flex gap-2">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Tipo</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Tipo de variante" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MULTIPLE">Múltiplo</SelectItem>
+                          <SelectItem value="SINGLE">Único</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {form.watch("type") === "MULTIPLE" && (
+                <FormField
+                  control={form.control}
+                  name="max"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Máximo</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Máximo de opções"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
             <DialogFooter>
               <Button
                 type="button"
