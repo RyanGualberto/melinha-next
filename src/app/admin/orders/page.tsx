@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useMemo, useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { OrderDialog } from "@/components/orders/order-dialog";
@@ -18,14 +18,18 @@ import { useQuery } from "@tanstack/react-query";
 import { listOrders } from "@/requests/order";
 import { OrderStatus } from "@/types/order-status";
 import OrdersResume from "@/components/orders/orders-resume";
+import { cn } from "@/lib/utils";
 
 export default function OrdersPage() {
-  const { data: orders } = useQuery({
+  const {
+    data: orders,
+    refetch,
+    isPending: loadingOrders,
+  } = useQuery({
     queryKey: ["orders"],
     queryFn: () => listOrders(),
   });
-  console.log(orders);
-  
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [statusFilter, setStatusFilter] = useState<
@@ -138,6 +142,20 @@ export default function OrdersPage() {
             Gerencie os pedidos da sua açaíteria
           </p>
         </div>
+        <Button
+          variant="outline"
+          className={cn("hidden md:inline-flex", {
+            "animate-pulse": loadingOrders,
+          })}
+          onClick={() => refetch()}
+        >
+          <RefreshCcw
+            className={cn("h-4 w-4", {
+              "animate-spin": loadingOrders,
+            })}
+          />
+          Atualizar
+        </Button>
       </div>
       <OrdersResume />
       <Card className="p-4">

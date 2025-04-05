@@ -3,9 +3,16 @@ import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import { useQuery } from "@tanstack/react-query";
 import { listUsers } from "@/requests/user";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { RefreshCcw } from "lucide-react";
 
 export default function UsersPage() {
-  const { data: users } = useQuery({
+  const {
+    data: users,
+    refetch,
+    isLoading: loadingUsers,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: async () => await listUsers(),
   });
@@ -19,6 +26,20 @@ export default function UsersPage() {
             Gerencie os clientes da sua loja.
           </p>
         </div>
+        <Button
+          variant="outline"
+          className={cn("hidden md:inline-flex", {
+            "animate-pulse": loadingUsers,
+          })}
+          onClick={() => refetch()}
+        >
+          <RefreshCcw
+            className={cn("h-4 w-4", {
+              "animate-spin": loadingUsers,
+            })}
+          />
+          Atualizar
+        </Button>
       </div>
 
       <DataTable
