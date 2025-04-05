@@ -1,22 +1,44 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { getDashboard } from "@/requests/dashboard";
 import { useQuery } from "@tanstack/react-query";
-import { ShoppingBag } from "lucide-react";
+import { RefreshCcw, ShoppingBag } from "lucide-react";
 
 export default function Dashboard() {
-  const { data: dashboardData } = useQuery({
+  const {
+    data: dashboardData,
+    refetch,
+    isPending,
+  } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => await getDashboard(),
   });
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Bem-vindo ao sistema de gerenciamento da Melinha Açaíteria
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Bem-vindo ao sistema de gerenciamento da Melinha Açaíteria
+          </p>
+        </div>
+        <div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refetch()}
+            className="hidden md:inline-flex"
+          >
+            <RefreshCcw
+              className={cn("h-4 w-4", {
+                "animate-spin": isPending,
+              })}
+            />
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -27,7 +49,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.totalClients}
             </div>
@@ -40,7 +66,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.ordersLast30Days}
             </div>
@@ -53,7 +83,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.ordersLastWeekend}
             </div>
@@ -66,7 +100,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
@@ -82,7 +120,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
@@ -98,7 +140,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.bestSellingItemLast30Days?.productTitleSnapshot}
             </div>
@@ -117,7 +163,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.bestSellingItemLastWeekend?.productTitleSnapshot}
             </div>
@@ -136,7 +186,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.leastSellingItemLast30Days?.productTitleSnapshot}
             </div>
@@ -155,7 +209,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.leastSellingItemLastWeekend?.productTitleSnapshot}
             </div>
@@ -174,7 +232,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.bestSellingNeighborhoodLast30Days[0]}
             </div>
@@ -193,7 +255,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.leastSellingNeighborhoodLast30Days[0]}
             </div>
@@ -212,7 +278,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.bestWorstSellingNeighborhoodLastWeekend[0]}
             </div>
@@ -231,7 +301,11 @@ export default function Dashboard() {
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
             <div className="text-2xl font-bold">
               {dashboardData?.leastSellingNeighborhoodLastWeekend[0]}
             </div>

@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
 import { ChefHat, Clock, Truck } from "lucide-react";
-import { Button } from "../ui/button";
-import Link from "next/link";
 import { OrdersResumeColumn } from "./order-resume-column";
 import { useQuery } from "@tanstack/react-query";
 import { listOrders } from "@/requests/order";
@@ -20,7 +18,7 @@ export default function OrdersResume() {
     if (currentHour < 2) {
       startDate.setDate(startDate.getDate() - 1);
     }
-    startDate.setHours(16, 0, 0, 0);
+    startDate.setHours(9, 0, 0, 0);
 
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 1);
@@ -30,6 +28,7 @@ export default function OrdersResume() {
       const orderDate = new Date(order.createdAt);
       return orderDate >= startDate && orderDate < endDate;
     });
+    
     return {
       waiting: ordersInPeriod?.filter(
         (order) => order.status === OrderStatus.PENDING
@@ -71,12 +70,6 @@ export default function OrdersResume() {
           icon={<Truck className="h-5 w-5 mr-2 text-green-500" />}
           title="Saiu para Entrega"
         />
-      </div>
-
-      <div className="mt-4 text-center">
-        <Button asChild variant="outline">
-          <Link href="/admin/orders">Ver todos os pedidos</Link>
-        </Button>
       </div>
     </div>
   );

@@ -24,6 +24,8 @@ export default function OrdersPage() {
     queryKey: ["orders"],
     queryFn: () => listOrders(),
   });
+  console.log(orders);
+  
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [statusFilter, setStatusFilter] = useState<

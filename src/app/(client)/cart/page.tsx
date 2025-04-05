@@ -50,12 +50,13 @@ export default function CarrinhoPage() {
     setObservation,
     toggleIsWithdrawal,
   } = useCartContext();
-  const { mutateAsync: createOrderMutation } = useMutation({
-    mutationKey: ["createOrder"],
-    mutationFn: async (data: CreateOrderDto) => {
-      return await createOrder(data);
-    },
-  });
+  const { mutateAsync: createOrderMutation, isPending: isCreatingOrder } =
+    useMutation({
+      mutationKey: ["createOrder"],
+      mutationFn: async (data: CreateOrderDto) => {
+        return await createOrder(data);
+      },
+    });
   const { addresses } = useAuthContext();
   const [selectedAddress, setSelectedAddress] = useState("");
 
@@ -64,6 +65,26 @@ export default function CarrinhoPage() {
     const total = subtotal - (cart.discount || 0) + cart.deliveryCost;
     return { subtotal, total };
   }, [cart]);
+  const disabledButton = useMemo(() => {
+    return (
+      isCreatingOrder ||
+      (!cart.isWithdrawal && !selectedAddress) ||
+      (cart.paymentMethod === "money" &&
+        needPaymentChange &&
+        !cart.paymentChange) ||
+      !cart.paymentMethod ||
+      (storeConfig?.orderMinimum ?? 0) > calculateTotalAndSubtotal.total ||
+      !storeConfig?.opened
+    );
+  }, [
+    isCreatingOrder,
+    cart,
+    selectedAddress,
+    needPaymentChange,
+    calculateTotalAndSubtotal,
+    storeConfig?.orderMinimum,
+    storeConfig?.opened,
+  ]);
 
   useEffect(() => {
     if (selectedAddress) {
@@ -452,16 +473,7 @@ export default function CarrinhoPage() {
                   className="w-full bg-[#73067D] hover:bg-[#73067D]/80"
                   size="lg"
                   onClick={handleFinalizarPedido}
-                  disabled={
-                    (!cart.isWithdrawal && !selectedAddress) ||
-                    (cart.paymentMethod === "money" &&
-                      needPaymentChange &&
-                      !cart.paymentChange) ||
-                    !cart.paymentMethod ||
-                    storeConfig?.orderMinimum >
-                      calculateTotalAndSubtotal.total ||
-                    !storeConfig?.opened
-                  }
+                  disabled={disabledButton}
                 >
                   Finalizar Pedido
                 </Button>

@@ -10,15 +10,17 @@ import {
   AlertDialog,
   AlertDialogTitle,
   AlertDialogContent,
-  AlertDialogCancel,
+  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { listOrders } from "@/requests/order";
+import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { push } = useRouter();
   const queryClient = useQueryClient();
   const [oldOrdersLength, setOldOrdersLength] = useState<number | null>(null);
   const [hasNewOrder, setHasNewOrder] = useState(false);
@@ -91,7 +93,15 @@ export default function DashboardLayout({
               detalhes.
             </p>
           </AlertDescription>
-          <AlertDialogCancel>Ver Pedido</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              setHasNewOrder(false);
+              push("/admin/orders");
+              queryClient.invalidateQueries({ queryKey: ["orders"] });
+            }}
+          >
+            Ver Pedido
+          </AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
     </SidebarProvider>
