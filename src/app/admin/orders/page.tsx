@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useMemo, useState } from "react";
-import { Eye, RefreshCcw } from "lucide-react";
+import { BookText, Eye, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { OrderDialog } from "@/components/orders/order-dialog";
@@ -19,6 +19,8 @@ import { listOrders } from "@/requests/order";
 import { OrderStatus } from "@/types/order-status";
 import OrdersResume from "@/components/orders/orders-resume";
 import { cn } from "@/lib/utils";
+import { IAddress } from "@/types/address";
+import { IUser } from "@/types/user";
 
 export default function OrdersPage() {
   const {
@@ -132,6 +134,32 @@ export default function OrdersPage() {
 
     return ordersFiltered;
   }, [orders, statusFilter, deliveryMethod, paymentMethod, period]);
+
+  const handleCopyDeliveryReport = () => {
+    const deliveryReport = filteredOrders
+      .filter(
+        (order) =>
+          order.status !== "CANCELED" &&
+          !order.isWithdrawal &&
+          order.deliveryCost > 0 &&
+          order.addressSnapshot
+      )
+      .map((order) => {
+        const addressSnapshot: IAddress = JSON.parse(
+          order.addressSnapshot || ""
+        );
+        const userSnapshot: IUser = JSON.parse(order.userSnapshot);
+        return `${userSnapshot.firstName} ${userSnapshot.lastName} - ${
+          addressSnapshot.district
+        } - ${new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(order.deliveryCost)}`;
+      });
+    const deliveryReportString = deliveryReport.join("\n");
+    navigator.clipboard.writeText(deliveryReportString);
+    alert("Relatório de fretes copiado para a área de transferência!");
+  };
 
   return (
     <div className="space-y-6">
@@ -254,6 +282,13 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-medium">Relatório de fretes</span>
+            <Button onClick={handleCopyDeliveryReport} variant="secondary">
+              <BookText className="h-4 w-4 mr-2" />
+              Copiar
+            </Button>
+          </div>
         </div>
 
         <DataTable
@@ -273,10 +308,9 @@ export default function OrdersPage() {
                 style: "currency",
                 currency: "BRL",
               }).format(
-                filteredOrders?.reduce(
-                  (acc, order) => acc + order.deliveryCost,
-                  0
-                ) || 0
+                filteredOrders
+                  ?.filter((order) => order.status !== "CANCELED")
+                  .reduce((acc, order) => acc + order.deliveryCost, 0) || 0
               )}
             </p>
             <p className="text-sm text-muted-foreground">
@@ -285,8 +319,9 @@ export default function OrdersPage() {
                 style: "currency",
                 currency: "BRL",
               }).format(
-                filteredOrders?.reduce((acc, order) => acc + order.total, 0) ||
-                  0
+                filteredOrders
+                  ?.filter((order) => order.status !== "CANCELED")
+                  .reduce((acc, order) => acc + order.total, 0) || 0
               )}
             </p>
           </div>

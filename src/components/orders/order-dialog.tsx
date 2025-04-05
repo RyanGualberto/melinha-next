@@ -64,12 +64,24 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(() => {
+    const paymentInfo =
+      order.paymentMethod === "money"
+        ? `Dinheiro - ${new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(order.total)}`
+        : order.paymentMethod === "card"
+        ? `Cartão - ${new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(order.total)}`
+        : `PIX - pago`;
     navigator.clipboard.writeText(
-      `${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`
+      `${user.firstName} ${user.lastName} - ${paymentInfo} \n \n ${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [address]);
+  }, [address, order, user]);
 
   const handleStatusChange = async (newStatus: keyof typeof OrderStatus) => {
     if (newStatus === order.status) return;
@@ -397,12 +409,6 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                 </div>
               </CardContent>
             </Card>
-
-            {/* <div className="text-center">
-              <Button variant="outline" size="sm">
-                Ver histórico de orders
-              </Button>
-            </div> */}
           </TabsContent>
 
           <TabsContent value="entrega" className="space-y-4 pt-4">
@@ -428,12 +434,6 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                 </div>
               </CardContent>
             </Card>
-
-            {/* <div className="text-center">
-              <Button variant="outline" size="sm">
-                Ver no mapa
-              </Button>
-            </div> */}
           </TabsContent>
         </Tabs>
 
