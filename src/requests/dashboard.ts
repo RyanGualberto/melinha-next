@@ -14,6 +14,7 @@ export interface GetDashboardResponse {
   leastSellingNeighborhoodLast30Days: [string, number];
   bestWorstSellingNeighborhoodLastWeekend: [string, number];
   leastSellingNeighborhoodLastWeekend: [string, number];
+  averageTicket: number;
 }
 
 export interface BestSellingItemLast30Days {
