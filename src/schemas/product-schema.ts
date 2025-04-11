@@ -8,6 +8,7 @@ export const productSchema = z.object({
     .string()
     .min(5, { message: "Descrição deve ter pelo menos 5 caracteres" }),
   price: z.coerce.number().positive({ message: "Preço deve ser positivo" }),
+  cost: z.coerce.number().positive({ message: "Custo deve ser positivo" }),
   status: z.string(),
   image: z.string(),
   categoryId: z.string(),

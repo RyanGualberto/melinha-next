@@ -10,6 +10,7 @@ export interface IProduct {
   image: string;
   categoryId: string;
   category: ICategory;
+  cost: number;
   productVariants: IProductVariant[];
   createdAt: Date;
   updatedAt: Date;

@@ -57,23 +57,46 @@ export const columns: ColumnDef<ListUsersResponse>[] = [
   },
   {
     accessorKey: "qtOrders",
-    header: "Quantidade Pedidos",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Pedidos
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+
     cell: ({ row }) => {
       const qtOrders = row.getValue("qtOrders") as number;
-
-      return <span>{qtOrders}</span>;
+      return <span className="px-3">{qtOrders}</span>;
     },
+    enableSorting: true,
   },
 
   {
     accessorKey: "lastOrder",
-    header: "Último Pedido",
-
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Último Pedido
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    enableSorting: true,
     cell: ({ row }) => {
       const lastOrder = row.getValue("lastOrder") as Date | null;
 
       return (
-        <span>
+        <span
+          className="px-3"
+        >
           {lastOrder
             ? new Date(String(lastOrder)).toLocaleDateString("pt-BR")
             : "Nenhum pedido"}
