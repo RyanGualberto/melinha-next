@@ -22,13 +22,15 @@ export default function MenuCategoryTabContent({
       </div>
       <div className="flex-1 outline-none">
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {category.products.map((product) => (
-            <ProductCard
-              key={product.id}
-              handleProductClick={handleProductClick}
-              product={product}
-            />
-          ))}
+          {category.products
+            .sort((a, b) => (a.title < b.title ? 1 : -1))
+            .map((product) => (
+              <ProductCard
+                key={product.id}
+                handleProductClick={handleProductClick}
+                product={product}
+              />
+            ))}
         </div>
 
         {category.products.length === 0 && (
