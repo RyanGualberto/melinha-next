@@ -123,7 +123,6 @@ export function ProductViewDialog({
 
         <div className="space-y-6">
           {productVariantCategories
-            // deixa na seguinte ordem "frutas, complementos, coberturas e adicionais"
             .sort((a, b) => {
               const order = [
                 "frutas",
