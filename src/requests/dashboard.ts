@@ -6,10 +6,10 @@ export interface GetDashboardResponse {
   ordersLastWeekend: number;
   revenueLast30Days: number;
   revenueLastWeekend: number;
-  bestSellingItemLast30Days: BestSellingItemLast30Days;
-  leastSellingItemLast30Days: LeastSellingItemLast30Days;
-  bestSellingItemLastWeekend: BestSellingItemLastWeekend;
-  leastSellingItemLastWeekend: LeastSellingItemLastWeekend;
+  bestSellingItemLast30Days?: BestSellingItemLast30Days;
+  leastSellingItemLast30Days?: LeastSellingItemLast30Days;
+  bestSellingItemLastWeekend?: BestSellingItemLastWeekend;
+  leastSellingItemLastWeekend?: LeastSellingItemLastWeekend;
   bestSellingNeighborhoodLast30Days: [string, number];
   leastSellingNeighborhoodLast30Days: [string, number];
   bestWorstSellingNeighborhoodLastWeekend: [string, number];

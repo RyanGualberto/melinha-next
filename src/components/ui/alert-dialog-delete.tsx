@@ -19,14 +19,20 @@ interface AlertDialogDeleteProps {
   title: string;
   description: string;
   onDelete: () => Promise<void>;
+  _open?: boolean;
+  _setOpen?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
 export function AlertDialogDelete({
   title,
   description,
   onDelete,
+  _open = false,
+  _setOpen,
+  hideTrigger,
 }: AlertDialogDeleteProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(_open);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async () => {
@@ -42,12 +48,17 @@ export function AlertDialogDelete({
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        <Button variant="destructive" size="icon">
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </AlertDialogTrigger>
+    <AlertDialog
+      open={_setOpen ? _open : open}
+      onOpenChange={_setOpen ? _setOpen : setOpen}
+    >
+      {!hideTrigger && (
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" size="icon">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

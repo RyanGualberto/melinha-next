@@ -52,6 +52,7 @@ export async function deleteCategory(id: string) {
 export interface updateCategoryPayload {
   name: string;
   description: string;
+  status: "ACTIVE" | "INACTIVE";
 }
 
 export async function updateCategory(id: string, data: updateCategoryPayload) {

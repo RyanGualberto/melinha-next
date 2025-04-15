@@ -5,14 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ShoppingBag,
-  Package,
-  Tag,
   Layers,
   Grid,
   LogOut,
   Users,
   Settings2,
   ChartNoAxesCombined,
+  Menu,
 } from "lucide-react";
 import {
   Sidebar,
@@ -37,14 +36,9 @@ const navItems = [
     icon: ShoppingBag,
   },
   {
-    title: "Produtos",
-    href: "/admin/products",
-    icon: Package,
-  },
-  {
-    title: "Categorias",
-    href: "/admin/categories",
-    icon: Tag,
+    title: "Cardápio",
+    href: "/admin/menu",
+    icon: Menu,
   },
   {
     title: "Variantes",

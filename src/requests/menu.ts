@@ -21,3 +21,17 @@ export const listMenu = async (query: string) => {
     throw error;
   }
 };
+
+export const listAdminMenu = async () => {
+  try {
+    const response = await apiClient<IMenuResponse>({
+      method: "get",
+      url: "/menu/admin",
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
+};

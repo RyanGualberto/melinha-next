@@ -169,8 +169,8 @@ export default function Dashboard() {
               {dashboardData?.bestSellingItemLast30Days?.productTitleSnapshot}
             </div>
             <div className="text-sm justify-end flex">
-              {dashboardData?.bestSellingItemLast30Days._sum.quantity} venda
-              {dashboardData?.bestSellingItemLastWeekend._sum.quantity === 1
+              {dashboardData?.bestSellingItemLast30Days?._sum.quantity} venda
+              {dashboardData?.bestSellingItemLastWeekend?._sum.quantity === 1
                 ? ""
                 : "s"}
             </div>
@@ -192,8 +192,8 @@ export default function Dashboard() {
               {dashboardData?.bestSellingItemLastWeekend?.productTitleSnapshot}
             </div>
             <div className="text-sm justify-end flex">
-              {dashboardData?.bestSellingItemLastWeekend._sum.quantity} venda
-              {dashboardData?.bestSellingItemLastWeekend._sum.quantity === 1
+              {dashboardData?.bestSellingItemLastWeekend?._sum.quantity} venda
+              {dashboardData?.bestSellingItemLastWeekend?._sum.quantity === 1
                 ? ""
                 : "s"}
             </div>
@@ -215,8 +215,8 @@ export default function Dashboard() {
               {dashboardData?.leastSellingItemLast30Days?.productTitleSnapshot}
             </div>
             <div className="text-sm justify-end flex">
-              {dashboardData?.leastSellingItemLast30Days._sum.quantity} venda
-              {dashboardData?.leastSellingItemLast30Days._sum.quantity === 1
+              {dashboardData?.leastSellingItemLast30Days?._sum.quantity} venda
+              {dashboardData?.leastSellingItemLast30Days?._sum.quantity === 1
                 ? ""
                 : "s"}
             </div>
@@ -238,8 +238,8 @@ export default function Dashboard() {
               {dashboardData?.leastSellingItemLastWeekend?.productTitleSnapshot}
             </div>
             <div className="text-sm justify-end flex">
-              {dashboardData?.leastSellingItemLastWeekend._sum.quantity} venda
-              {dashboardData?.leastSellingItemLastWeekend._sum.quantity === 1
+              {dashboardData?.leastSellingItemLastWeekend?._sum.quantity} venda
+              {dashboardData?.leastSellingItemLastWeekend?._sum.quantity === 1
                 ? ""
                 : "s"}
             </div>

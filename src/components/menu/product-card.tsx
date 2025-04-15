@@ -9,13 +9,13 @@ export default function ProductCard({
   handleProductClick,
 }: {
   product: IProduct;
-  handleProductClick: (product: IProduct) => void;
+  handleProductClick?: (product: IProduct) => void;
 }) {
   return (
     <Card
       key={product.id}
       className="overflow-hidden cursor-pointer transition-all hover:shadow-md pt-0 pb-0 md:pb-6 flex flex-row md:flex-col gap-0"
-      onClick={() => handleProductClick(product)}
+      onClick={() => handleProductClick?.(product)}
     >
       <div className="relative min-w-24 h-36 w-36 md:h-72 md:w-full">
         <Image

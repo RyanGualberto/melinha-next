@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -35,17 +36,19 @@ import { useQuery } from "@tanstack/react-query";
 import { listCategories } from "@/requests/category";
 
 interface ProductDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
   product?: IProduct;
+  categoryId?: string;
   onSave: (data: ProductFormValues) => Promise<void>;
 }
 
 export function ProductDialog({
-  open,
-  onOpenChange,
   product,
   onSave,
+  categoryId,
+  open,
+  setOpen,
 }: ProductDialogProps) {
   const { data: categories } = useQuery({
     queryKey: ["categories"],
@@ -57,6 +60,7 @@ export function ProductDialog({
       title: "",
       description: "",
       price: 0,
+      cost: 0,
       status: "ACTIVE",
       image:
         "https://acaidatribo.com.br/wp-content/uploads/2024/10/10102421.jpg",
@@ -75,13 +79,14 @@ export function ProductDialog({
         title: "",
         description: "",
         price: 0,
+        cost: 0,
         status: "ACTIVE",
         image:
           "https://acaidatribo.com.br/wp-content/uploads/2024/10/10102421.jpg",
-        categoryId: "",
+        categoryId: categoryId,
       });
     }
-  }, [product, reset]);
+  }, [product, reset, categoryId]);
 
   const onSubmit = async (data: ProductFormValues) => {
     await onSave(data);
@@ -89,7 +94,7 @@ export function ProductDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
@@ -138,13 +143,54 @@ export function ProductDialog({
                   <FormItem>
                     <FormLabel>Preço</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" {...field} />
+                      <Input type="number" step="0.50" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
+              <FormField
+                control={form.control}
+                name="cost"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Custo</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="0.50" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4 items-start">
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoria</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione a categoria" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {(categories || []).map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="status"
@@ -156,7 +202,7 @@ export function ProductDialog({
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Selecione o status" />
                         </SelectTrigger>
                       </FormControl>
@@ -170,34 +216,6 @@ export function ProductDialog({
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoria</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a categoria" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {(categories || []).map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
@@ -217,13 +235,11 @@ export function ProductDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancelar
-              </Button>
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  Cancelar
+                </Button>
+              </DialogClose>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Salvando..." : "Salvar"}
               </Button>
