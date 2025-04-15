@@ -5,6 +5,7 @@ export interface ICategory {
   name: string;
   status: "ACTIVE" | "INACTIVE";
   description?: string;
+  index: number;
   products: IProduct[];
   createdAt: Date;
   updatedAt: Date;

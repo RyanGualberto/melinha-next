@@ -18,6 +18,7 @@ export async function listCategories() {
 export interface createCategoryPayload {
   name: string;
   description: string;
+  index: number;
 }
 
 export async function createCategory(data: createCategoryPayload) {
@@ -60,6 +61,28 @@ export async function updateCategory(id: string, data: updateCategoryPayload) {
     const response = await apiClient<Array<ICategory>>({
       method: "patch",
       url: `/categories/${id}`,
+      data,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
+}
+
+export interface updateCategoryOrderPayload {
+  id: string;
+  index: number;
+}
+
+export async function updateOrderCategory(
+  data: Array<updateCategoryOrderPayload>
+) {
+  try {
+    const response = await apiClient<Array<ICategory>>({
+      method: "put",
+      url: `/categories/order`,
       data,
     });
 

@@ -18,13 +18,32 @@ import { AlertDialogDelete } from "../ui/alert-dialog-delete";
 import { ProductDialog } from "../products/product-dialog";
 import { createProduct, createProductPayload } from "@/requests/product";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
+import { GripVertical, Plus } from "lucide-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function CategoryAdminListItem({
   category,
 }: {
   category: ICategory;
 }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: category.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1 : 0,
+  };
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingName, setEditingName] = useState(false);
@@ -77,116 +96,136 @@ export default function CategoryAdminListItem({
   };
 
   return (
-    <AccordionItem key={category.id} value={category.id} className="w-full">
-      <div className="flex flex-col py-2">
-        <div className="flex gap-2 items-center justify-between">
-          {editingName ? (
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onBlur={() => {
-                setEditingName(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
+    <AccordionItem
+      ref={setNodeRef}
+      style={style}
+      className={`w-full items-center p-3 mb-2 rounded-md ${
+        isDragging
+          ? "bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800"
+          : ""
+      } `}
+      key={category.id}
+      value={category.id}
+    >
+      <div className="flex w-full items-center">
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab p-1 mr-2 rounded hover:bg-muted active:cursor-grabbing"
+        >
+          <GripVertical className="h-5 w-5 text-muted-foreground" />
+        </div>
+
+        <div className="flex flex-col py-2 w-full">
+          <div className="flex gap-2 items-center justify-between">
+            {editingName ? (
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={() => {
+                  setEditingName(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleEdit(category.id, {
+                      name: name,
+                      description: category.description || "",
+                      status: category.status,
+                    });
+                  }
+                }}
+                className="w-full"
+                required
+              />
+            ) : (
+              <span
+                className="text-xl font-semibold"
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setEditingName(true);
+                }}
+              >
+                {category.name}
+              </span>
+            )}
+            <div className="flex gap-2 items-center">
+              <AccordionTrigger
+                className="flex w-full min-w-full"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              />
+              <div className="text-sm bg-[#EEEEEE90] rounded-lg h-9 w-fit flex items-center overflow-hidden">
+                <span
+                  className={cn("p-4 flex items-center justify-center", {
+                    "bg-purple-800 text-white": category.status === "INACTIVE",
+                  })}
+                  onClick={() => {
+                    handleEdit(category.id, {
+                      name: category.name,
+                      description: category.description || "",
+                      status: "INACTIVE",
+                    });
+                  }}
+                >
+                  Pausado
+                </span>
+                <span
+                  className={cn("p-4 flex items-center justify-center", {
+                    "bg-purple-800 text-white": category.status === "ACTIVE",
+                  })}
+                  onClick={() => {
+                    handleEdit(category.id, {
+                      name: category.name,
+                      description: category.description || "",
+                      status: "ACTIVE",
+                    });
+                  }}
+                >
+                  Ativado
+                </span>
+              </div>
+              <AlertDialogDelete
+                title="Excluir categorias"
+                description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+                onDelete={() => handleDelete(category.id)}
+              />
+            </div>
+          </div>
+          <div>
+            {editingDescription ? (
+              <Input
+                value={category.description || ""}
+                onChange={(e) => {
                   handleEdit(category.id, {
-                    name: name,
-                    description: category.description || "",
+                    name: category.name,
+                    description: e.target.value,
                     status: category.status,
                   });
-                }
-              }}
-              className="w-full"
-              required
-            />
-          ) : (
-            <span
-              className="text-xl font-semibold"
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setEditingName(true);
-              }}
-            >
-              {category.name}
-            </span>
-          )}
-          <div className="flex gap-2 items-center">
-            <AccordionTrigger
-              className="flex w-full min-w-full"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            />
-            <div className="text-sm bg-[#EEEEEE90] rounded-lg h-9 w-fit flex items-center overflow-hidden">
-              <span
-                className={cn("p-4 flex items-center justify-center", {
-                  "bg-purple-800 text-white": category.status === "INACTIVE",
-                })}
-                onClick={() => {
-                  handleEdit(category.id, {
-                    name: category.name,
-                    description: category.description || "",
-                    status: "INACTIVE",
-                  });
                 }}
-              >
-                Pausado
-              </span>
-              <span
-                className={cn("p-4 flex items-center justify-center", {
-                  "bg-purple-800 text-white": category.status === "ACTIVE",
-                })}
-                onClick={() => {
-                  handleEdit(category.id, {
-                    name: category.name,
-                    description: category.description || "",
-                    status: "ACTIVE",
-                  });
-                }}
-              >
-                Ativado
-              </span>
-            </div>
-            <AlertDialogDelete
-              title="Excluir categorias"
-              description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
-              onDelete={() => handleDelete(category.id)}
-            />
-          </div>
-        </div>
-        <div>
-          {editingDescription ? (
-            <Input
-              value={category.description || ""}
-              onChange={(e) => {
-                handleEdit(category.id, {
-                  name: category.name,
-                  description: e.target.value,
-                  status: category.status,
-                });
-              }}
-              onBlur={() => {
-                setEditingDescription(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                onBlur={() => {
                   setEditingDescription(false);
-                }
-              }}
-              className="w-full"
-            />
-          ) : (
-            <span
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setEditingDescription(true);
-              }}
-            >
-              {category.description}
-            </span>
-          )}
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setEditingDescription(false);
+                  }
+                }}
+                className="w-full"
+              />
+            ) : (
+              <span
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setEditingDescription(true);
+                }}
+              >
+                {category.description}
+              </span>
+            )}
+          </div>
         </div>
       </div>
       <AccordionContent className="flex flex-col gap-4 pl-4">
