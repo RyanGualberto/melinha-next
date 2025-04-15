@@ -18,18 +18,35 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Copy, Edit, MoreVertical, Trash2 } from "lucide-react";
+import { Copy, Edit, GripVertical, MoreVertical, Trash2 } from "lucide-react";
 import { AlertDialogDelete } from "../ui/alert-dialog-delete";
 import { ProductDialog } from "../products/product-dialog";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function ProductAdminListItem({
   product,
-  handleProductClick,
 }: {
   product: IProduct;
-  handleProductClick?: (product: IProduct) => void;
 }) {
   const queryClient = useQueryClient();
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: product.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1 : 0,
+  };
   const [price, setPrice] = useState(String(product.price));
   const [openDropdown, setOpenDropdown] = useState(false);
   const [alertDialogDeleteOpen, setAlertDialogDeleteOpen] = useState(false);
@@ -97,10 +114,21 @@ export default function ProductAdminListItem({
 
   return (
     <Card
-      key={product.id}
-      className="overflow-hidden cursor-pointer transition-all hover:shadow-md flex flex-row py-0 gap-2"
-      onClick={() => handleProductClick?.(product)}
+      ref={setNodeRef}
+      style={style}
+      className={`overflow-hidden cursor-pointer transition-all hover:shadow-md flex flex-row py-0 gap-2 items-center border-none shadow-none rounded-none pl-4 ${
+        isDragging
+          ? "bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800"
+          : ""
+      } `}
     >
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab p-1 mr-2 rounded hover:bg-muted active:cursor-grabbing"
+      >
+        <GripVertical className="h-5 w-5 text-muted-foreground" />
+      </div>
       <div className="relative min-w-24 h-36 w-36">
         <Image
           src={product.image || "/placeholder.svg"}

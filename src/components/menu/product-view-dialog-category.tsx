@@ -36,23 +36,21 @@ export function ProductViewDialogCategory({
         </h5>
       </div>
       <div className="grid grid-cols-1 gap-2">
-        {productVariantCategory.productVariants
-          .sort((a, b) => (a.name < b.name ? 1 : -1))
-          .map((variant) => (
-            <ProductViewDialogVariant
-              key={variant.id}
-              productVariant={variant}
-              complements={complements}
-              setComplements={setComplements}
-              disabled={
-                complements.length >= (productVariantCategory.max || 9999) &&
-                !complements
-                  .map((complement) => complement.variantId)
-                  .includes(variant.id)
-              }
-              type={productVariantCategory.type}
-            />
-          ))}
+        {productVariantCategory.productVariants.map((variant) => (
+          <ProductViewDialogVariant
+            key={variant.id}
+            productVariant={variant}
+            complements={complements}
+            setComplements={setComplements}
+            disabled={
+              complements.length >= (productVariantCategory.max || 9999) &&
+              !complements
+                .map((complement) => complement.variantId)
+                .includes(variant.id)
+            }
+            type={productVariantCategory.type}
+          />
+        ))}
       </div>
     </div>
   );

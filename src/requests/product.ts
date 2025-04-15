@@ -76,3 +76,25 @@ export async function updateProduct(id: string, data: updateProductPayload) {
     throw error;
   }
 }
+
+export interface UpdateProductOrderPayload {
+  id: string;
+  index: number;
+}
+
+export async function updateOrderProduct(
+  data: Array<UpdateProductOrderPayload>
+) {
+  try {
+    const response = await apiClient<Array<IProduct>>({
+      method: "put",
+      url: `/products/order`,
+      data,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
+}

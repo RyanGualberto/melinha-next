@@ -1,5 +1,5 @@
 import { ICategory } from "@/types/category";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   AccordionContent,
   AccordionItem,
@@ -16,11 +16,31 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertDialogDelete } from "../ui/alert-dialog-delete";
 import { ProductDialog } from "../products/product-dialog";
-import { createProduct, createProductPayload } from "@/requests/product";
+import {
+  createProduct,
+  createProductPayload,
+  updateOrderProduct,
+  UpdateProductOrderPayload,
+} from "@/requests/product";
 import { Button } from "../ui/button";
 import { GripVertical, Plus } from "lucide-react";
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 
 export default function CategoryAdminListItem({
   category,
@@ -49,6 +69,7 @@ export default function CategoryAdminListItem({
   const [editingName, setEditingName] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
   const [name, setName] = useState(category.name);
+  const [products, setProducts] = useState(category.products);
 
   const { mutateAsync: updateCategoryMutation } = useMutation({
     mutationFn: async ({
@@ -58,6 +79,10 @@ export default function CategoryAdminListItem({
       id: string;
       data: updateCategoryPayload;
     }) => await updateCategory(id, data),
+  });
+  const { mutateAsync: updateOrderProductMutation } = useMutation({
+    mutationFn: async (data: Array<UpdateProductOrderPayload>) =>
+      await updateOrderProduct(data),
   });
   const { mutateAsync: deleteCategoryMutation } = useMutation({
     mutationFn: async (id: string) => await deleteCategory(id),
@@ -95,6 +120,42 @@ export default function CategoryAdminListItem({
     refreshMenu();
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setProducts((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const updateProducts = async () => {
+      const data = products.map((category, index) => ({
+        id: category.id,
+        index: index + 1,
+      }));
+
+      await updateOrderProductMutation(data);
+    };
+
+    updateProducts();
+  }, [products, updateOrderProductMutation]);
+
+  useEffect(() => {
+    setProducts(category.products);
+  }, [category.products]);
+
   return (
     <AccordionItem
       ref={setNodeRef}
@@ -104,7 +165,6 @@ export default function CategoryAdminListItem({
           ? "bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800"
           : ""
       } `}
-      key={category.id}
       value={category.id}
     >
       <div className="flex w-full items-center">
@@ -229,9 +289,20 @@ export default function CategoryAdminListItem({
         </div>
       </div>
       <AccordionContent className="flex flex-col gap-4 pl-4">
-        {category.products.map((product) => (
-          <ProductAdminListItem key={product.id} product={product} />
-        ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={products.map((p) => p.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {products.map((product) => (
+              <ProductAdminListItem key={product.id} product={product} />
+            ))}
+          </SortableContext>
+        </DndContext>
         <Button
           onClick={() => setOpen(true)}
           className="w-full mt-4"

@@ -122,28 +122,14 @@ export function ProductViewDialog({
         </div>
 
         <div className="space-y-6">
-          {productVariantCategories
-            .sort((a, b) => {
-              const order = [
-                "frutas",
-                "complementos",
-                "coberturas",
-                "adicionais",
-              ];
-              return (
-                order.indexOf(a.name.toLowerCase()) -
-                order.indexOf(b.name.toLowerCase())
-              );
-            })
-
-            .map((pvc) => (
-              <ProductViewDialogCategory
-                key={pvc.id}
-                productVariantCategory={pvc}
-                complements={complements}
-                setComplements={setComplementos}
-              />
-            ))}
+          {productVariantCategories.map((pvc) => (
+            <ProductViewDialogCategory
+              key={pvc.id}
+              productVariantCategory={pvc}
+              complements={complements}
+              setComplements={setComplementos}
+            />
+          ))}
           <div className="space-y-2">
             <Label>Observações</Label>
             <Textarea
