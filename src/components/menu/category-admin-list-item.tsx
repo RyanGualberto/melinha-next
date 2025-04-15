@@ -193,16 +193,16 @@ export default function CategoryAdminListItem({
         {category.products.map((product) => (
           <ProductAdminListItem key={product.id} product={product} />
         ))}
+        <Button
+          onClick={() => setOpen(true)}
+          className="w-full mt-4"
+          size="lg"
+          variant="outline"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Adicionar Produto
+        </Button>
       </AccordionContent>
-      <Button
-        onClick={() => setOpen(true)}
-        className="w-full mt-4"
-        size="lg"
-        variant="outline"
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        Adicionar Produto
-      </Button>
       <ProductDialog
         product={undefined}
         categoryId={category.id}
