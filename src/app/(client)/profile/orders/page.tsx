@@ -26,7 +26,7 @@ export default function PedidosPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       refetchOrders();
-    }, 5000);
+    }, 10000);
 
     return clearInterval(interval);
   }, [refetchOrders]);

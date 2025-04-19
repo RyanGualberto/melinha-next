@@ -59,7 +59,7 @@ export default function DashboardLayout({
     const interval = setInterval(() => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       console.log("invalidating");
-    }, 5000);
+    }, 10000);
 
     if (
       orders &&
