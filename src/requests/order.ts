@@ -2,12 +2,12 @@ import apiClient from "@/config/api-client";
 import { IOrder } from "@/types/order";
 import { OrderStatus } from "@/types/order-status";
 
-interface OrderProductVariantDto {
+export interface OrderProductVariantDto {
   variantName: string;
   variantPrice: number;
 }
 
-interface OrderProductDto {
+export interface OrderProductDto {
   productObservation?: string;
   productId: string;
   quantity: number;

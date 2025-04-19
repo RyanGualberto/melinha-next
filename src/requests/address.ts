@@ -1,6 +1,20 @@
 import apiClient from "@/config/api-client";
 import { IAddress } from "@/types/address";
 
+export async function listAddressesByUserId(userId: string) {
+  try {
+    const response = await apiClient<Array<IAddress>>({
+      method: "get",
+      url: `/addresses/${userId}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    throw error;
+  }
+}
+
 export async function listAddresses() {
   try {
     const response = await apiClient<Array<IAddress>>({

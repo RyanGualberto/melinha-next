@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
-import { BookText, Eye, RefreshCcw } from "lucide-react";
+import { BookText, Eye, PlusCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { OrderDialog } from "@/components/orders/order-dialog";
@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { IAddress } from "@/types/address";
 import { IUser } from "@/types/user";
 import { IOrder } from "@/types/order";
+import Link from "next/link";
 
 export default function OrdersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -253,6 +254,14 @@ export default function OrdersPage() {
               <BookText className="h-4 w-4 mr-2" />
               Copiar
             </Button>
+          </div>
+          <div>
+            <Link href="/admin/orders/create" passHref>
+              <Button>
+                <PlusCircle />
+                Novo pedido manual
+              </Button>
+            </Link>
           </div>
         </div>
 

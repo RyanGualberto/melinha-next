@@ -38,9 +38,9 @@ import {
 import { IOrder } from "@/types/order";
 import { OrderStatus } from "@/types/order-status";
 import { IUser } from "@/types/user";
-import { IAddress } from "@/types/address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderStatus } from "@/requests/order";
+import { formatAddress } from "@/utils/convert-json-address-to-string";
 
 interface OrderDialogProps {
   open: boolean;
@@ -60,7 +60,6 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
     keyof typeof OrderStatus | null
   >(null);
   const user: IUser = JSON.parse(order.userSnapshot || "");
-  const address: IAddress = JSON.parse(order?.addressSnapshot || "{}");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(() => {
@@ -77,11 +76,13 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
           }).format(order.total)}`
         : `PIX - pago`;
     navigator.clipboard.writeText(
-      `${user.firstName} ${user.lastName} - ${paymentInfo} \n \n ${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`
+      `${user.firstName} ${
+        user.lastName
+      } - ${paymentInfo} \n \n ${formatAddress(order.addressSnapshot || "")}`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [address, order, user]);
+  }, [order, user]);
 
   const handleStatusChange = async (newStatus: keyof typeof OrderStatus) => {
     if (newStatus === order.status) return;
@@ -431,9 +432,7 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                     {order.isWithdrawal ? (
                       <p>Retirada no local</p>
                     ) : (
-                      <p>
-                        {`${address.address}, ${address.number} - ${address.complement}, ${address.reference} - ${address.district}, ${address.city} - ${address.state}, ${address.zipCode}`}
-                      </p>
+                      <p>{formatAddress(order.addressSnapshot || "")}</p>
                     )}
                   </div>
                 </div>
