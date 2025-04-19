@@ -89,8 +89,13 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
     try {
       await updateOrderMutation(newStatus);
       setCurrentStatus(newStatus);
+      if (newStatus === "CANCELED" || newStatus === "COMPLETED") {
+        queryClient.invalidateQueries({
+          queryKey: ["orders"],
+        });
+      }
       queryClient.invalidateQueries({
-        queryKey: ["orders"],
+        queryKey: ["orders", "in", "progress"],
       });
       onOpenChange(false);
     } catch (error) {

@@ -34,18 +34,29 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  length?: number;
   searchColumn?: string;
   searchPlaceholder?: string;
+  onPageChange?: (pageIndex: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  onFilterChange?: (filters: string) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  length,
   searchColumn,
   searchPlaceholder = "Filtrar...",
+  onPageChange,
+  onPageSizeChange,
+  onFilterChange,
 }: DataTableProps<TData, TValue>) {
+  const defaultPageSize = 10; // ou pegue de props se quiser
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const table = useReactTable({
     data,
@@ -54,11 +65,30 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: (filters) => {
+      setColumnFilters(filters);
+    },
     getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true,
+    pageCount: Math.ceil((length ?? data.length) / pageSize),
     state: {
       sorting,
       columnFilters,
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
+    },
+    onPaginationChange: (updater) => {
+      const newState =
+        typeof updater === "function"
+          ? updater({ pageIndex, pageSize })
+          : updater;
+
+      setPageIndex(newState.pageIndex);
+      setPageSize(newState.pageSize);
+      onPageChange?.(newState.pageIndex);
+      onPageSizeChange?.(newState.pageSize);
     },
   });
 
@@ -71,9 +101,10 @@ export function DataTable<TData, TValue>({
             value={
               (table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""
             }
-            onChange={(event) =>
-              table.getColumn(searchColumn)?.setFilterValue(event.target.value)
-            }
+            onChange={(event) => {
+              table.getColumn(searchColumn)?.setFilterValue(event.target.value);
+              onFilterChange?.(event.target.value);
+            }}
             className="max-w-sm"
           />
         </div>
@@ -132,12 +163,16 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div>
             Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
+            {Math.ceil(
+              (length ?? data.length) / table.getState().pagination.pageSize
+            )}
           </div>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              table.setPageSize(Number(value));
+              const pageSize = Number(value);
+              table.setPageSize(pageSize);
+              onPageSizeChange?.(pageSize);
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">

@@ -61,11 +61,8 @@ export default function DashboardLayout({
       queryClient.invalidateQueries({ queryKey: ["new", "orders"] });
     }, 10000);
 
-    console.log(orders, orders?.length);
 
     if (orders && orders.length > 0 && orders.length > (oldOrdersLength || 0)) {
-      console.log("here1");
-
       handleNewOrder();
     }
 

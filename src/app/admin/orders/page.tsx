@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BookText, Eye, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -21,19 +21,14 @@ import OrdersResume from "@/components/orders/orders-resume";
 import { cn } from "@/lib/utils";
 import { IAddress } from "@/types/address";
 import { IUser } from "@/types/user";
+import { IOrder } from "@/types/order";
 
 export default function OrdersPage() {
-  const {
-    data: orders,
-    refetch,
-    isPending: loadingOrders,
-  } = useQuery({
-    queryKey: ["orders"],
-    queryFn: () => listOrders(),
-  });
-
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [customerName, setCustomerName] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | keyof typeof OrderStatus
   >("all");
@@ -47,7 +42,25 @@ export default function OrdersPage() {
     "all" | "today" | "yesterday" | "last3Days" | "lastMonth"
   >("all");
 
-  const handleViewOrder = (pedido: any) => {
+  const {
+    data: orders,
+    refetch,
+    isPending: loadingOrders,
+  } = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () =>
+      await listOrders({
+        page,
+        perPage,
+        customerName,
+        status: statusFilter,
+        deliveryMethod,
+        paymentMethod,
+        period: period,
+      }),
+  });
+
+  const handleViewOrder = (pedido: IOrder) => {
     setSelectedOrder(pedido);
     setDialogOpen(true);
   };
@@ -74,69 +87,82 @@ export default function OrdersPage() {
 
   const allColumns = [...columns, actionColumn];
 
-  const filteredOrders = useMemo(() => {
-    if (!orders) return [];
+  // const filteredOrders = useMemo(() => {
+  //   if (!orders) return [];
 
-    let ordersFiltered = [...orders];
+  //   let ordersFiltered = [...orders.results];
 
-    if (period !== "all") {
-      const startTime = new Date();
-      let endTime = new Date();
+  //   if (period !== "all") {
+  //     const startTime = new Date();
+  //     let endTime = new Date();
 
-      if (period === "today") {
-        startTime.setHours(13, 0, 0, 0);
-        endTime = new Date(startTime);
-        endTime.setDate(endTime.getDate() + 1);
-        endTime.setHours(2, 0, 0, 0);
-      } else if (period === "yesterday") {
-        startTime.setDate(startTime.getDate() - 1);
-        startTime.setHours(13, 0, 0, 0);
-        endTime = new Date(startTime);
-        endTime.setDate(endTime.getDate() + 1);
-        endTime.setHours(2, 0, 0, 0);
-      } else if (period === "last3Days") {
-        startTime.setDate(startTime.getDate() - 3);
-        startTime.setHours(13, 0, 0, 0);
-        endTime = new Date();
-        endTime.setHours(2, 0, 0, 0);
-      } else if (period === "lastMonth") {
-        startTime.setMonth(startTime.getMonth() - 1);
-        startTime.setHours(13, 0, 0, 0);
-        endTime = new Date();
-        endTime.setHours(2, 0, 0, 0);
-      }
+  //     if (period === "today") {
+  //       startTime.setHours(13, 0, 0, 0);
+  //       endTime = new Date(startTime);
+  //       endTime.setDate(endTime.getDate() + 1);
+  //       endTime.setHours(2, 0, 0, 0);
+  //     } else if (period === "yesterday") {
+  //       startTime.setDate(startTime.getDate() - 1);
+  //       startTime.setHours(13, 0, 0, 0);
+  //       endTime = new Date(startTime);
+  //       endTime.setDate(endTime.getDate() + 1);
+  //       endTime.setHours(2, 0, 0, 0);
+  //     } else if (period === "last3Days") {
+  //       startTime.setDate(startTime.getDate() - 3);
+  //       startTime.setHours(13, 0, 0, 0);
+  //       endTime = new Date();
+  //       endTime.setHours(2, 0, 0, 0);
+  //     } else if (period === "lastMonth") {
+  //       startTime.setMonth(startTime.getMonth() - 1);
+  //       startTime.setHours(13, 0, 0, 0);
+  //       endTime = new Date();
+  //       endTime.setHours(2, 0, 0, 0);
+  //     }
 
-      ordersFiltered = ordersFiltered.filter((order) => {
-        const orderDate = new Date(order.createdAt);
-        return orderDate >= startTime && orderDate < endTime;
-      });
-    }
+  //     ordersFiltered = ordersFiltered.filter((order) => {
+  //       const orderDate = new Date(order.createdAt);
+  //       return orderDate >= startTime && orderDate < endTime;
+  //     });
+  //   }
 
-    if (statusFilter !== "all") {
-      ordersFiltered = ordersFiltered.filter(
-        (order) => order.status === statusFilter
-      );
-    }
+  //   if (statusFilter !== "all") {
+  //     ordersFiltered = ordersFiltered.filter(
+  //       (order) => order.status === statusFilter
+  //     );
+  //   }
 
-    if (deliveryMethod !== "all") {
-      ordersFiltered = ordersFiltered.filter((order) =>
-        order.isWithdrawal
-          ? deliveryMethod === "withdrawal"
-          : deliveryMethod === "delivery"
-      );
-    }
+  //   if (deliveryMethod !== "all") {
+  //     ordersFiltered = ordersFiltered.filter((order) =>
+  //       order.isWithdrawal
+  //         ? deliveryMethod === "withdrawal"
+  //         : deliveryMethod === "delivery"
+  //     );
+  //   }
 
-    if (paymentMethod !== "all") {
-      ordersFiltered = ordersFiltered.filter(
-        (order) => order.paymentMethod === paymentMethod
-      );
-    }
+  //   if (paymentMethod !== "all") {
+  //     ordersFiltered = ordersFiltered.filter(
+  //       (order) => order.paymentMethod === paymentMethod
+  //     );
+  //   }
 
-    return ordersFiltered;
-  }, [orders, statusFilter, deliveryMethod, paymentMethod, period]);
+  //   return ordersFiltered;
+  // }, [orders, statusFilter, deliveryMethod, paymentMethod, period]);
+
+  useEffect(() => {
+    refetch();
+  }, [
+    statusFilter,
+    deliveryMethod,
+    paymentMethod,
+    period,
+    page,
+    perPage,
+    customerName,
+    refetch,
+  ]);
 
   const handleCopyDeliveryReport = () => {
-    const deliveryReport = filteredOrders
+    const deliveryReport = orders?.data
       .filter(
         (order) =>
           order.status !== "CANCELED" &&
@@ -156,7 +182,7 @@ export default function OrdersPage() {
           currency: "BRL",
         }).format(order.deliveryCost)}`;
       });
-    const deliveryReportString = deliveryReport.join("\n");
+    const deliveryReportString = (deliveryReport || [""]).join("\n");
     navigator.clipboard.writeText(deliveryReportString);
     alert("Relatório de fretes copiado para a área de transferência!");
   };
@@ -293,13 +319,19 @@ export default function OrdersPage() {
 
         <DataTable
           columns={allColumns}
-          data={filteredOrders || []}
+          data={orders?.data || []}
+          length={orders?.pagination.total}
           searchColumn="userSnapshot"
           searchPlaceholder="Buscar por cliente..."
+          onFilterChange={(filters) => {
+            setCustomerName(filters.toString());
+          }}
+          onPageChange={(value) => setPage(value)}
+          onPageSizeChange={(value) => setPerPage(value)}
         />
         <div className="flex justify-between">
           <p className="text-sm text-muted-foreground">
-            Total de pedidos: {filteredOrders?.length || 0}
+            Total de pedidos: {orders?.pagination.total || 0}
           </p>
           <div className="flex items-center gap-2">
             <p className="text-sm text-muted-foreground">
@@ -307,22 +339,14 @@ export default function OrdersPage() {
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(
-                filteredOrders
-                  ?.filter((order) => order.status !== "CANCELED")
-                  .reduce((acc, order) => acc + order.deliveryCost, 0) || 0
-              )}
+              }).format(orders?.totals.deliveryCost || 0)}
             </p>
             <p className="text-sm text-muted-foreground">
               Valor total:{" "}
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(
-                filteredOrders
-                  ?.filter((order) => order.status !== "CANCELED")
-                  .reduce((acc, order) => acc + order.total, 0) || 0
-              )}
+              }).format(orders?.totals.totalSales || 0)}
             </p>
           </div>
         </div>

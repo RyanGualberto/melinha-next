@@ -63,10 +63,8 @@ export const AuthenticatedContextProvider = ({
       queryClient.invalidateQueries({
         queryKey: ["addresses"],
       });
-      console.log(data.user.role);
       
       const nextRoute = data.user.role === "admin" ? "/admin/dashboard" : "/";
-      console.log(nextRoute);
       
       router.push(nextRoute);
       router.refresh();

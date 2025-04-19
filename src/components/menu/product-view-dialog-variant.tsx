@@ -31,17 +31,13 @@ export default function ProductViewDialogVariant({
     categoryId: string;
     variantId: string;
   }) => {
-    console.log("here");
 
     if (disabled) return;
-
-    console.log("here1");
     if (type === "SINGLE") {
       const complementsFromOtherCategories = complements.filter(
         (complement) => complement.categoryId !== variant.categoryId
       );
       setComplements([...complementsFromOtherCategories, variant]);
-      console.log("here2");
       return;
     }
 
@@ -64,8 +60,6 @@ export default function ProductViewDialogVariant({
       );
     }
   };
-
-  console.log(complements);
 
   return (
     <div

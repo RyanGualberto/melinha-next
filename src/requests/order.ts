@@ -62,11 +62,52 @@ export async function getCurrentUserOrders() {
   }
 }
 
-export async function listOrders() {
+export interface ListOrdersResponse {
+  pagination: {
+    total: number;
+  };
+  data: Array<IOrder>;
+  totals: {
+    totalSales: number;
+    deliveryCost: number;
+  };
+}
+
+export interface ListOrdersRequest {
+  page: number;
+  perPage: number;
+  customerName: string;
+  status: "all" | keyof typeof OrderStatus;
+  deliveryMethod: "delivery" | "withdrawal" | "all";
+  paymentMethod: "all" | "money" | "card" | "pix";
+  period: "all" | "today" | "yesterday" | "last3Days" | "lastMonth";
+}
+
+export async function listOrders(params: ListOrdersRequest) {
   try {
-    const response = await apiClient<Array<IOrder>>({
+    const response = await apiClient<ListOrdersResponse>({
       method: "get",
       url: "/orders",
+      params,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error getting orders:", error);
+    throw error;
+  }
+}
+export interface ListOrdersInProgress {
+  waiting: Array<IOrder>;
+  inProgress: Array<IOrder>;
+  inDelivery: Array<IOrder>;
+}
+
+export async function listOrdersInProgress() {
+  try {
+    const response = await apiClient<ListOrdersInProgress>({
+      method: "get",
+      url: "/orders/in-progress",
     });
 
     return response.data;
@@ -78,8 +119,6 @@ export async function listOrders() {
 
 export async function listNewOrders() {
   try {
-    console.log("here");
-    
     const response = await apiClient<Array<IOrder>>({
       method: "get",
       url: "/orders/new",
