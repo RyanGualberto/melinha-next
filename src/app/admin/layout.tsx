@@ -12,7 +12,7 @@ import {
   AlertDialogContent,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { listOrders } from "@/requests/order";
+import { listNewOrders } from "@/requests/order";
 import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({
@@ -25,9 +25,9 @@ export default function DashboardLayout({
   const [oldOrdersLength, setOldOrdersLength] = useState<number | null>(null);
   const [hasNewOrder, setHasNewOrder] = useState(false);
   const { data: orders } = useQuery({
-    queryKey: ["orders"],
+    queryKey: ["new", "orders"],
     queryFn: async () => {
-      const orders = await listOrders();
+      const orders = await listNewOrders();
       return orders;
     },
   });
@@ -54,19 +54,18 @@ export default function DashboardLayout({
       setHasNewOrder(true);
       playTrimmedAudio();
       setOldOrdersLength(orders?.length || null);
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     };
 
     const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-      console.log("invalidating");
+      queryClient.invalidateQueries({ queryKey: ["new", "orders"] });
     }, 10000);
 
-    if (
-      orders &&
-      orders.length > 0 &&
-      oldOrdersLength !== null &&
-      orders.length > oldOrdersLength
-    ) {
+    console.log(orders, orders?.length);
+
+    if (orders && orders.length > 0 && orders.length > (oldOrdersLength || 0)) {
+      console.log("here1");
+
       handleNewOrder();
     }
 
