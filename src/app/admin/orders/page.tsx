@@ -87,67 +87,6 @@ export default function OrdersPage() {
 
   const allColumns = [...columns, actionColumn];
 
-  // const filteredOrders = useMemo(() => {
-  //   if (!orders) return [];
-
-  //   let ordersFiltered = [...orders.results];
-
-  //   if (period !== "all") {
-  //     const startTime = new Date();
-  //     let endTime = new Date();
-
-  //     if (period === "today") {
-  //       startTime.setHours(13, 0, 0, 0);
-  //       endTime = new Date(startTime);
-  //       endTime.setDate(endTime.getDate() + 1);
-  //       endTime.setHours(2, 0, 0, 0);
-  //     } else if (period === "yesterday") {
-  //       startTime.setDate(startTime.getDate() - 1);
-  //       startTime.setHours(13, 0, 0, 0);
-  //       endTime = new Date(startTime);
-  //       endTime.setDate(endTime.getDate() + 1);
-  //       endTime.setHours(2, 0, 0, 0);
-  //     } else if (period === "last3Days") {
-  //       startTime.setDate(startTime.getDate() - 3);
-  //       startTime.setHours(13, 0, 0, 0);
-  //       endTime = new Date();
-  //       endTime.setHours(2, 0, 0, 0);
-  //     } else if (period === "lastMonth") {
-  //       startTime.setMonth(startTime.getMonth() - 1);
-  //       startTime.setHours(13, 0, 0, 0);
-  //       endTime = new Date();
-  //       endTime.setHours(2, 0, 0, 0);
-  //     }
-
-  //     ordersFiltered = ordersFiltered.filter((order) => {
-  //       const orderDate = new Date(order.createdAt);
-  //       return orderDate >= startTime && orderDate < endTime;
-  //     });
-  //   }
-
-  //   if (statusFilter !== "all") {
-  //     ordersFiltered = ordersFiltered.filter(
-  //       (order) => order.status === statusFilter
-  //     );
-  //   }
-
-  //   if (deliveryMethod !== "all") {
-  //     ordersFiltered = ordersFiltered.filter((order) =>
-  //       order.isWithdrawal
-  //         ? deliveryMethod === "withdrawal"
-  //         : deliveryMethod === "delivery"
-  //     );
-  //   }
-
-  //   if (paymentMethod !== "all") {
-  //     ordersFiltered = ordersFiltered.filter(
-  //       (order) => order.paymentMethod === paymentMethod
-  //     );
-  //   }
-
-  //   return ordersFiltered;
-  // }, [orders, statusFilter, deliveryMethod, paymentMethod, period]);
-
   useEffect(() => {
     refetch();
   }, [

@@ -1,7 +1,7 @@
 import apiClient from "@/config/api-client";
 import { IUser } from "@/types/user";
 
-export interface ListUsersResponse {
+export interface UsersResponse {
   id: string;
   role: "admin" | "user";
   email: string;
@@ -12,14 +12,31 @@ export interface ListUsersResponse {
   lastOrder: Date | null;
 }
 
-export const listUsers = async () => {
+export interface ListUsersRequest {
+  page: number;
+  perPage: number;
+  clientName: string;
+}
+
+export interface ListUsersResponse {
+  pagination: {
+    total: number;
+  };
+  data: Array<IUser>;
+  totals: {
+    totalUsers: number;
+  };
+}
+
+export const listUsers = async (params: ListUsersRequest) => {
   try {
-    const response = await apiClient<IUser[]>({
+    const response = await apiClient<ListUsersResponse>({
       method: "get",
       url: "/users",
+      params,
     });
 
-    const formattedResponse: ListUsersResponse[] = response.data.map(
+    const formattedResponse: UsersResponse[] = response.data.data.map(
       (user: IUser) => ({
         id: user.id,
         role: user.role,
@@ -43,7 +60,10 @@ export const listUsers = async () => {
       })
     );
 
-    return formattedResponse;
+    return {
+      ...response.data,
+      data: formattedResponse,
+    };
   } catch (error) {
     console.error("Error fetching user:", error);
     throw error;

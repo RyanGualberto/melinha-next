@@ -2,9 +2,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { ListUsersResponse } from "@/requests/user";
+import { UsersResponse } from "@/requests/user";
 
-export const columns: ColumnDef<ListUsersResponse>[] = [
+export const columns: ColumnDef<UsersResponse>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -94,9 +94,7 @@ export const columns: ColumnDef<ListUsersResponse>[] = [
       const lastOrder = row.getValue("lastOrder") as Date | null;
 
       return (
-        <span
-          className="px-3"
-        >
+        <span className="px-3">
           {lastOrder
             ? new Date(String(lastOrder)).toLocaleDateString("pt-BR")
             : "Nenhum pedido"}
