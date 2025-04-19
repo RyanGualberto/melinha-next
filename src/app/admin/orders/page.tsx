@@ -27,7 +27,7 @@ import Link from "next/link";
 export default function OrdersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [customerName, setCustomerName] = useState("");
   const [statusFilter, setStatusFilter] = useState<
