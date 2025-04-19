@@ -36,7 +36,7 @@ export interface CartContextProps {
   handleAddCartItem: (item: CartProduct) => void;
   handleRemoveCartItem: (item: CartProduct) => void;
   handleChangeQuantity: (cartProduct: CartProduct, quantity: number) => void;
-  setPaymentMethod: (paymentMethod: string) => void;
+  setPaymentMethod: (paymentMethod: "pix" | "money" | "card") => void;
   setPaymentChange: (paymentChange: string) => void;
   cart: Cart;
   setObservation: (observation: string) => void;
@@ -68,7 +68,7 @@ export const CartContextProvider = ({
     products: [],
     discount: 0,
     deliveryCost: 0,
-    paymentMethod: "",
+    paymentMethod: "money",
     observation: "",
     paymentChange: "",
     isWithdrawal: false,
@@ -150,7 +150,7 @@ export const CartContextProvider = ({
   );
 
   const setPaymentMethod = useCallback(
-    (paymentMethod: string) => {
+    (paymentMethod: "money" | "card" | "pix") => {
       setCart({
         ...cart,
         paymentMethod,
@@ -199,7 +199,7 @@ export const CartContextProvider = ({
       products: [],
       discount: 0,
       deliveryCost: 0,
-      paymentMethod: "",
+      paymentMethod: "money",
       observation: "",
       paymentChange: "",
       isWithdrawal: false,
