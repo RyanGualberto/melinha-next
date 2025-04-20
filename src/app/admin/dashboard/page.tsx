@@ -337,6 +337,91 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Bairro menos vendido no último final de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              {dashboardData?.leastSellingNeighborhoodLastWeekend[0]}
+            </div>
+            <div className="text-sm justify-end flex">
+              {dashboardData?.leastSellingNeighborhoodLastWeekend[1]} venda
+              {dashboardData?.leastSellingNeighborhoodLastWeekend[1] === 1
+                ? ""
+                : "s"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total de Frete
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData?.totalDeliveryCost || 0)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total de Custo de produtos
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              ~{" "}
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData?.totalCost || 0)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Lucro Presumido
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              ~{" "}
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData?.totalProfit || 0)}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
