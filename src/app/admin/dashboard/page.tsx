@@ -116,46 +116,6 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Faturado no último mês
-            </CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent
-            className={cn({
-              "animate-pulse": isPending,
-            })}
-          >
-            <div className="text-2xl font-bold">
-              {new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(dashboardData?.revenueLast30Days || 0)}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Faturado no último final de semana
-            </CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent
-            className={cn({
-              "animate-pulse": isPending,
-            })}
-          >
-            <div className="text-2xl font-bold">
-              {new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(dashboardData?.revenueLastWeekend || 0)}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
               Item mais vendido no último mês
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
@@ -374,6 +334,46 @@ export default function Dashboard() {
           >
             <div className="text-2xl font-bold">
               {dashboardData?.totalWorkedDays || 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Faturado no último mês
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData?.revenueLast30Days || 0)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Faturado no último final de semana
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData?.revenueLastWeekend || 0)}
             </div>
           </CardContent>
         </Card>
