@@ -363,6 +363,40 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
+              Dias trabalhados
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              {dashboardData?.totalWorkedDays || 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total de Taxa Fixa Motoboy
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              {dashboardData?.deliveryFixedTotalCost || 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
               Total de Frete
             </CardTitle>
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
@@ -377,6 +411,28 @@ export default function Dashboard() {
                 style: "currency",
                 currency: "BRL",
               }).format(dashboardData?.totalDeliveryCost || 0)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Taxa Fixa + Frete
+            </CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent
+            className={cn({
+              "animate-pulse": isPending,
+            })}
+          >
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(
+                dashboardData?.totalDeliveryCostMoreDeliveryFixedTotalCost || 0
+              )}
             </div>
           </CardContent>
         </Card>
@@ -418,7 +474,7 @@ export default function Dashboard() {
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(dashboardData?.totalProfit || 0)}
+              }).format(dashboardData?.realProfit || 0)}
             </div>
           </CardContent>
         </Card>
