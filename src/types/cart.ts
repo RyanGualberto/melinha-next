@@ -6,7 +6,7 @@ export interface Cart {
   products: CartProduct[];
   discount?: number;
   deliveryCost: number;
-  paymentMethod: "money" | "card" | "pix";
+  paymentMethod: "" | "money" | "card" | "pix";
   paymentChange?: string;
   observation?: string;
   isWithdrawal: boolean;
