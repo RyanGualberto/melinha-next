@@ -390,7 +390,10 @@ export default function Dashboard() {
             })}
           >
             <div className="text-2xl font-bold">
-              {dashboardData?.deliveryFixedTotalCost || 0}
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(dashboardData?.deliveryFixedTotalCost || 0)}
             </div>
           </CardContent>
         </Card>
