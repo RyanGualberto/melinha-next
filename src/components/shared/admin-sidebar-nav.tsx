@@ -12,6 +12,7 @@ import {
   Settings2,
   ChartNoAxesCombined,
   Menu,
+  Tickets,
 } from "lucide-react";
 import {
   Sidebar,
@@ -54,6 +55,11 @@ const navItems = [
     title: "Clientes",
     href: "/admin/clients",
     icon: Users,
+  },
+  {
+    title: "Cupons",
+    href: "/admin/coupons",
+    icon: Tickets,
   },
 ];
 

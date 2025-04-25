@@ -10,13 +10,14 @@ export interface Cart {
   paymentChange?: string;
   observation?: string;
   isWithdrawal: boolean;
+  couponId?: string;
+  couponCode?: string;
 }
 
 export interface CartProduct {
   id: string;
   productId: string;
   product: IProduct;
-
   quantity: number;
   price: number;
   unitPrice: number;

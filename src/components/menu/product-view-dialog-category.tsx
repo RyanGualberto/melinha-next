@@ -21,6 +21,12 @@ export function ProductViewDialogCategory({
     >
   >;
 }) {
+  const complementsFromSameCategory = complements.filter(
+    (complement) => complement.categoryId === productVariantCategory.id
+  );
+  const isDisabled =
+    complementsFromSameCategory.length >= (productVariantCategory.max || 9999);
+
   return (
     <div key={productVariantCategory.id}>
       <div className="flex gap-1 items-end mb-3">
@@ -42,12 +48,7 @@ export function ProductViewDialogCategory({
             productVariant={variant}
             complements={complements}
             setComplements={setComplements}
-            disabled={
-              complements.length >= (productVariantCategory.max || 9999) &&
-              !complements
-                .map((complement) => complement.variantId)
-                .includes(variant.id)
-            }
+            disabled={isDisabled}
             type={productVariantCategory.type}
           />
         ))}

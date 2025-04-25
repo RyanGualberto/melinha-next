@@ -1,7 +1,14 @@
 "use client";
 import { IAddress } from "@/types/address";
 import { Cart, CartProduct } from "@/types/cart";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { ICoupon } from "@/types/coupon";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createContext } from "react";
 
 const districts = [
@@ -42,6 +49,11 @@ export interface CartContextProps {
   setObservation: (observation: string) => void;
   cleanCart: () => void;
   toggleIsWithdrawal: (isWithdrawal: boolean) => void;
+  calculateTotalAndSubtotal: {
+    subtotal: number;
+    total: number;
+  };
+  addDiscount: (coupon: ICoupon) => void;
 }
 
 const CartContext = createContext<CartContextProps>({
@@ -55,6 +67,11 @@ const CartContext = createContext<CartContextProps>({
   setObservation: () => {},
   cleanCart: () => {},
   toggleIsWithdrawal: () => {},
+  calculateTotalAndSubtotal: {
+    subtotal: 0,
+    total: 0,
+  },
+  addDiscount: () => {},
 });
 
 export const CartContextProvider = ({
@@ -206,9 +223,33 @@ export const CartContextProvider = ({
     });
   }, []);
 
+  const calculateTotalAndSubtotal = useMemo(() => {
+    const subtotal = cart.products.reduce((acc, item) => acc + item.price, 0);
+    const total = subtotal - (cart.discount || 0) + cart.deliveryCost;
+    return { subtotal, total };
+  }, [cart]);
+
+  const addDiscount = useCallback(
+    (coupon: ICoupon) => {
+      const discountValue =
+        coupon.type === "PERCENT"
+          ? (calculateTotalAndSubtotal.subtotal * coupon.discount) / 100
+          : coupon.discount;
+      setCart({
+        ...cart,
+        discount: discountValue,
+        couponId: coupon.id,
+        couponCode: coupon.code,
+      });
+    },
+    [setCart, cart, calculateTotalAndSubtotal]
+  );
+
   return (
     <CartContext.Provider
       value={{
+        calculateTotalAndSubtotal,
+        addDiscount,
         cart,
         handleAddCartItem,
         handleRemoveCartItem,

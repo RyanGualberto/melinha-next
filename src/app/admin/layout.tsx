@@ -22,7 +22,6 @@ export default function DashboardLayout({
 }) {
   const { push } = useRouter();
   const queryClient = useQueryClient();
-  const [oldOrdersLength, setOldOrdersLength] = useState<number | null>(null);
   const [hasNewOrder, setHasNewOrder] = useState(false);
   const { data: orders } = useQuery({
     queryKey: ["new", "orders"],
@@ -31,12 +30,6 @@ export default function DashboardLayout({
       return orders;
     },
   });
-
-  useEffect(() => {
-    if (oldOrdersLength === null) {
-      setOldOrdersLength(orders?.length || null);
-    }
-  }, [orders, oldOrdersLength]);
 
   function playTrimmedAudio() {
     const audio = new Audio("/sounds/notification.wav");
@@ -53,7 +46,6 @@ export default function DashboardLayout({
     const handleNewOrder = () => {
       setHasNewOrder(true);
       playTrimmedAudio();
-      setOldOrdersLength(orders?.length || null);
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     };
 
@@ -61,13 +53,12 @@ export default function DashboardLayout({
       queryClient.invalidateQueries({ queryKey: ["new", "orders"] });
     }, 10000);
 
-
-    if (orders && orders.length > 0 && orders.length > (oldOrdersLength || 0)) {
+    if (orders?.length) {
       handleNewOrder();
     }
 
     return () => clearInterval(interval);
-  }, [queryClient, orders, oldOrdersLength]);
+  }, [queryClient, orders]);
 
   return (
     <SidebarProvider>

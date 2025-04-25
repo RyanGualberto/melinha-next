@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Check, Minus, Plus, PlusCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +31,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createOrder, CreateOrderDto } from "@/requests/order";
 import { getSettings } from "@/requests/settings";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import { getCoupon } from "@/requests/coupon";
 
 export default function CarrinhoPage() {
   const router = useRouter();
@@ -49,6 +51,8 @@ export default function CarrinhoPage() {
     setPaymentChange,
     setObservation,
     toggleIsWithdrawal,
+    calculateTotalAndSubtotal,
+    addDiscount,
   } = useCartContext();
   const { mutateAsync: createOrderMutation, isPending: isCreatingOrder } =
     useMutation({
@@ -57,14 +61,22 @@ export default function CarrinhoPage() {
         return await createOrder(data);
       },
     });
+  const [usingCoupon, setUsingCoupon] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+
+  const { data: coupon, refetch: refetchCoupon } = useQuery({
+    queryKey: ["coupon"],
+    queryFn: async () => {
+      if (!couponCode) return null;
+      const coupon = await getCoupon(couponCode);
+      addDiscount(coupon);
+      return coupon;
+    },
+  });
+
   const { addresses } = useAuthContext();
   const [selectedAddress, setSelectedAddress] = useState("");
 
-  const calculateTotalAndSubtotal = useMemo(() => {
-    const subtotal = cart.products.reduce((acc, item) => acc + item.price, 0);
-    const total = subtotal - (cart.discount || 0) + cart.deliveryCost;
-    return { subtotal, total };
-  }, [cart]);
   const disabledButton = useMemo(() => {
     return (
       isCreatingOrder ||
@@ -119,6 +131,7 @@ export default function CarrinhoPage() {
       ),
       orderObservation: cart.observation,
       isWithdrawal: cart.isWithdrawal,
+      couponId: cart?.couponId,
     });
     cleanCart();
     router.push("/profile/orders");
@@ -458,6 +471,65 @@ export default function CarrinhoPage() {
                   </span>
                 </div>
                 <Separator />
+                <div
+                  className={cn(
+                    "flex justify-between font-medium items-center",
+                    {
+                      "justify-between": usingCoupon,
+                      "justify-end": !usingCoupon,
+                    }
+                  )}
+                >
+                  {usingCoupon ? <span>Cupom</span> : null}
+                  {usingCoupon ? (
+                    <>
+                      <Input
+                        type="text"
+                        placeholder="Digite seu cupom"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        className="w-full"
+                        onFocus={() => setUsingCoupon(true)}
+                      />
+                      <Button
+                        size="icon"
+                        onClick={() => {
+                          refetchCoupon();
+                          setUsingCoupon(false);
+                          setCouponCode("");
+                        }}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-[#73067D] hover:bg-[#73067D]/10"
+                      onClick={() => setUsingCoupon(true)}
+                    >
+                      <PlusCircle /> Adicionar Cupom
+                    </Button>
+                  )}
+                </div>
+                <div className="flex justify-between font-medium">
+                  <span>Desconto</span>
+                  <div className="flex flex-col gap-0.5">
+                    <span>
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(cart.discount || 0)}
+                    </span>
+                    {cart.couponCode ||
+                      (coupon?.code && (
+                        <span className="text-sm text-muted-foreground">
+                          {cart.couponCode || coupon.code}
+                        </span>
+                      ))}
+                  </div>
+                </div>
                 <div className="flex justify-between font-medium">
                   <span>Total</span>
                   <span>

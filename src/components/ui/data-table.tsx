@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  RowSelectionState,
   type SortingState,
+  Updater,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -40,6 +42,8 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (pageIndex: number) => void;
   onPageSizeChange?: (pageSize: number) => void;
   onFilterChange?: (filters: string) => void;
+  setSelectedRows?: (selectedRows: Updater<RowSelectionState>) => void;
+  selectedRows?: RowSelectionState;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,15 +54,20 @@ export function DataTable<TData, TValue>({
   searchPlaceholder = "Filtrar...",
   onPageChange,
   onPageSizeChange,
+  setSelectedRows,
+  selectedRows = {},
   onFilterChange,
-}: DataTableProps<TData, TValue>) {
-  const defaultPageSize = 10; // ou pegue de props se quiser
+}: DataTableProps<TData & { id: string }, TValue>) {
+  const defaultPageSize = 10;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pageSize, setPageSize] = useState(defaultPageSize);
   const [pageIndex, setPageIndex] = useState(0);
 
   const table = useReactTable({
+    getRowId: (row, index) => {
+      return row.id ?? index.toString();
+    },
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -78,6 +87,7 @@ export function DataTable<TData, TValue>({
         pageIndex,
         pageSize,
       },
+      rowSelection: selectedRows,
     },
     onPaginationChange: (updater) => {
       const newState =
@@ -90,6 +100,7 @@ export function DataTable<TData, TValue>({
       onPageChange?.(newState.pageIndex);
       onPageSizeChange?.(newState.pageSize);
     },
+    onRowSelectionChange: (d) => setSelectedRows?.(d),
   });
 
   return (
@@ -179,7 +190,7 @@ export function DataTable<TData, TValue>({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[10, 20, 30, 40, 50, 75, 100, 150, 200].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>

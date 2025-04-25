@@ -31,8 +31,6 @@ export default function ProductViewDialogVariant({
     categoryId: string;
     variantId: string;
   }) => {
-
-    if (disabled) return;
     if (type === "SINGLE") {
       const complementsFromOtherCategories = complements.filter(
         (complement) => complement.categoryId !== variant.categoryId
@@ -52,6 +50,7 @@ export default function ProductViewDialogVariant({
         )
       );
     } else {
+      if (disabled) return;
       setComplements(
         complements.concat({
           categoryId: productVariant.productVariantCategoryId,

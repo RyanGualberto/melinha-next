@@ -35,14 +35,9 @@ export default function MenuDynamicContentPage({
         onValueChange={setSelectedCategory}
         className="w-full"
       >
-        <div className="mb-6 overflow-auto sticky left-0 pb-0.5 top-[65px] z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full pt-3">
-          {/* <Input
-            icon={<Search size={14} />}
-            placeholder="Pesquisar produtos"
-            className="mb-2 bg-background"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          /> */}
+        <div id="sticky-sentinel" className="h-1"></div>{" "}
+        {/* MARCADOR ANTES DO STICKY */}
+        <div className="mb-6 overflow-auto sticky left-0 pb-0.5 top-[65px] z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full md:pt-3">
           <MenuTabs categories={menu?.categories || []} />
         </div>
         <div className="flex flex-col gap-5">

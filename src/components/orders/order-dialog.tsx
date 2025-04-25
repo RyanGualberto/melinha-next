@@ -323,7 +323,16 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                       {new Intl.NumberFormat("pt-BR", {
                         style: "currency",
                         currency: "BRL",
-                      }).format(order.total - order.deliveryCost)}
+                      }).format(order.total + order.discount - order.deliveryCost)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Desconto</span>
+                    <span>
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(order.discount)}
                     </span>
                   </div>
                   <div className="flex justify-between">

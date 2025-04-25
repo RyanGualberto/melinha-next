@@ -26,6 +26,7 @@ export interface CreateOrderDto {
   addressSnapshot?: string;
   orderObservation?: string;
   isWithdrawal?: boolean;
+  couponId?: string;
 }
 
 export async function createOrder(data: CreateOrderDto) {

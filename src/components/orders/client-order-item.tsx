@@ -77,7 +77,13 @@ export function CientOrderItem({
 }) {
   const statusInfo = getStatusInfo(order.status);
   const isExpanded = expandedOrders[order.id] || false;
-  const address: IAddress = JSON.parse(order?.addressSnapshot || "{}");
+  console.log(order.addressSnapshot);
+
+  const address: IAddress = order?.addressSnapshot
+    ? order?.addressSnapshot[0] === "{"
+      ? JSON.parse(order?.addressSnapshot || "{}")
+      : null
+    : null;
 
   return (
     <Card key={order.id}>
@@ -149,7 +155,7 @@ export function CientOrderItem({
             {order.isWithdrawal ? (
               <span>Retirada no local</span>
             ) : (
-              <p>{address.name}</p>
+              <p>{address?.name}</p>
             )}
           </div>
         </div>
@@ -236,9 +242,9 @@ export function CientOrderItem({
                 <span>Retirada no local</span>
               ) : (
                 <>
-                  <p>{address.address}</p>
+                  <p>{address?.address}</p>
                   <p>
-                    {address.district}, {address.city}
+                    {address?.district}, {address?.city}
                   </p>
                 </>
               )}
