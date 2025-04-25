@@ -37,6 +37,7 @@ export function ProductViewDialog({
     {
       categoryId: string;
       variantId: string;
+      productId: string;
     }[]
   >([]);
   const [observations, setObservations] = useState("");
@@ -122,14 +123,28 @@ export function ProductViewDialog({
         </div>
 
         <div className="space-y-6">
-          {productVariantCategories.map((pvc) => (
-            <ProductViewDialogCategory
-              key={pvc.id}
-              productVariantCategory={pvc}
-              complements={complements}
-              setComplements={setComplementos}
-            />
-          ))}
+          {productVariantCategories
+            .sort((a, b) => {
+              const order = [
+                "frutas",
+                "complementos",
+                "coberturas",
+                "adicionais",
+                "colher"
+              ];
+              return (
+                order.indexOf(a.name.toLowerCase()) -
+                order.indexOf(b.name.toLowerCase())
+              );
+            })
+            .map((pvc) => (
+              <ProductViewDialogCategory
+                key={pvc.id}
+                productVariantCategory={pvc}
+                complements={complements}
+                setComplements={setComplementos}
+              />
+            ))}
           <div className="space-y-2">
             <Label>Observações</Label>
             <Textarea

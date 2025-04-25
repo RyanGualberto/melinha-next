@@ -2,30 +2,41 @@ import React, { Dispatch, SetStateAction } from "react";
 import { IProductVariantCategory } from "@/types/product-variant-category";
 import ProductViewDialogVariant from "./product-view-dialog-variant";
 
+export interface Complement {
+  categoryId: string;
+  variantId: string;
+  productId: string;
+}
+
 export function ProductViewDialogCategory({
   productVariantCategory,
   complements,
   setComplements,
 }: {
   productVariantCategory: IProductVariantCategory;
-  complements: {
-    categoryId: string;
-    variantId: string;
-  }[];
-  setComplements: Dispatch<
-    SetStateAction<
-      {
-        categoryId: string;
-        variantId: string;
-      }[]
-    >
-  >;
+  complements: Complement[];
+  setComplements: Dispatch<SetStateAction<Complement[]>>;
 }) {
-  const complementsFromSameCategory = complements.filter(
-    (complement) => complement.categoryId === productVariantCategory.id
-  );
-  const isDisabled =
-    complementsFromSameCategory.length >= (productVariantCategory.max || 9999);
+  const complementsFromSameProduct = (variant: Complement) =>
+    complements.filter(
+      (complement) => complement.productId === variant.productId
+    );
+
+  const complementsFromSameCategory = (variant: Complement) =>
+    complementsFromSameProduct(variant).filter(
+      (complement) => complement.categoryId === productVariantCategory.id
+    );
+
+  const isDisabled = (complement: Complement) => {
+    if (
+      complementsFromSameCategory(complement).length >=
+      (productVariantCategory.max || 999)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
 
   return (
     <div key={productVariantCategory.id}>
