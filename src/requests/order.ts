@@ -118,20 +118,6 @@ export async function listOrdersInProgress() {
   }
 }
 
-export async function listNewOrders() {
-  try {
-    const response = await apiClient<Array<IOrder>>({
-      method: "get",
-      url: "/orders/new",
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Error getting orders:", error);
-    throw error;
-  }
-}
-
 export async function updateOrderStatus(
   orderId: string,
   status: keyof typeof OrderStatus

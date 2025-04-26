@@ -3,36 +3,28 @@ import type React from "react";
 import { SidebarNav } from "@/components/shared/admin-sidebar-nav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebarMobileTrigger from "@/components/shared/admin-sidebar-mobile-trigger";
-import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  AlertDialog,
-  AlertDialogTitle,
-  AlertDialogContent,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import { listNewOrders } from "@/requests/order";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import Pusher from "pusher-js";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { IOrder } from "@/types/order";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { push } = useRouter();
   const queryClient = useQueryClient();
-  const [hasNewOrder, setHasNewOrder] = useState(false);
-  const { data: orders } = useQuery({
-    queryKey: ["new", "orders"],
-    queryFn: async () => {
-      const orders = await listNewOrders();
-      return orders;
-    },
-  });
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  function playTrimmedAudio() {
-    const audio = new Audio("/sounds/notification.wav");
+  const playTrimmedAudio = useCallback(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/sounds/notification.wav");
+    }
+
+    const audio = audioRef.current;
     audio.currentTime = 0;
     audio.play();
 
@@ -40,25 +32,69 @@ export default function DashboardLayout({
       audio.pause();
       audio.currentTime = 0;
     }, 3000);
-  }
+  }, []);
 
-  useEffect(() => {
-    const handleNewOrder = () => {
-      setHasNewOrder(true);
+  const handleReceiveOrder = useCallback(
+    (order: IOrder) => {
+      toast.custom(
+        () => (
+          <div
+            className={`pointer-events-auto w-full max-w-sm rounded-lg bg-white shadow-lg border border-border flex gap-2 items-center p-4`}
+          >
+            <div className="flex flex-col gap-1">
+              <span className="text-sm text-gray-900">
+                Novo pedido recebido!
+              </span>
+              <span className="text-sm text-gray-500">
+                Pedido #{JSON.parse(order.userSnapshot).firstName}
+              </span>
+              <span className="text-sm text-gray-500">
+                {order.products.length} itens
+              </span>
+              <span className="text-sm text-gray-500">
+                {order.total.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}{" "}
+                -{" "}
+                {new Date(order.createdAt).toLocaleString("pt-BR", {
+                  timeStyle: "short",
+                })}
+              </span>
+              <span className="text-sm text-gray-500"></span>
+            </div>
+            <Link href="/admin/orders">
+              <Button>Ver pedidos</Button>
+            </Link>
+          </div>
+        ),
+        {
+          position: "top-right",
+          duration: 15000,
+        }
+      );
       playTrimmedAudio();
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["orders", "in", "progress"] });
+    },
+    [playTrimmedAudio, queryClient]
+  );
+
+  useEffect(() => {
+    const pusher = new Pusher(String(process.env.NEXT_PUBLIC_PUSHER_KEY), {
+      cluster: String(process.env.NEXT_PUBLIC_PUSHER_CLUSTER),
+    });
+
+    const channel = pusher.subscribe("orders");
+    channel.bind("orderCreated", (order: IOrder) => {
+      handleReceiveOrder(order);
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
     };
-
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ["new", "orders"] });
-    }, 10000);
-
-    if (orders?.length) {
-      handleNewOrder();
-    }
-
-    return () => clearInterval(interval);
-  }, [queryClient, orders]);
+  }, [handleReceiveOrder]);
 
   return (
     <SidebarProvider>
@@ -69,28 +105,6 @@ export default function DashboardLayout({
           <main className="flex-1 p-6 md:p-8">{children}</main>
         </div>
       </div>
-      <AlertDialog open={hasNewOrder} onOpenChange={setHasNewOrder}>
-        <AlertDialogContent className="flex flex-col">
-          <AlertDialogTitle>
-            <AlertTitle>Novo pedido</AlertTitle>
-          </AlertDialogTitle>
-          <AlertDescription>
-            <p>
-              Um novo pedido foi criado. Clique no botão abaixo para ver os
-              detalhes.
-            </p>
-          </AlertDescription>
-          <AlertDialogAction
-            onClick={() => {
-              setHasNewOrder(false);
-              push("/admin/orders");
-              queryClient.invalidateQueries({ queryKey: ["orders"] });
-            }}
-          >
-            Ver Pedido
-          </AlertDialogAction>
-        </AlertDialogContent>
-      </AlertDialog>
     </SidebarProvider>
   );
 }

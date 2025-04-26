@@ -6,8 +6,11 @@ import { getCurrentUserOrders } from "@/requests/order";
 import { CientOrderItem } from "@/components/orders/client-order-item";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import Pusher from "pusher-js";
+import { useAuthContext } from "@/contexts/user-context";
 
 export default function PedidosPage() {
+  const { currentUser } = useAuthContext();
   const { data: orders, refetch: refetchOrders } = useQuery({
     queryKey: ["user", "orders"],
     queryFn: getCurrentUserOrders,
@@ -25,12 +28,20 @@ export default function PedidosPage() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      refetchOrders();
-    }, 10000);
+    const pusher = new Pusher(String(process.env.NEXT_PUBLIC_PUSHER_KEY), {
+      cluster: String(process.env.NEXT_PUBLIC_PUSHER_CLUSTER),
+    });
 
-    return clearInterval(interval);
-  }, [refetchOrders]);
+    const channel = pusher.subscribe(`orders_user_${currentUser?.id}`);
+    channel.bind("orderUpdated", () => {
+      refetchOrders();
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [refetchOrders, currentUser?.id]);
 
   return (
     <div className="container py-8 px-4 sm:px-0">

@@ -90,11 +90,9 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
     try {
       await updateOrderMutation(newStatus);
       setCurrentStatus(newStatus);
-      if (newStatus === "CANCELED" || newStatus === "COMPLETED") {
-        queryClient.invalidateQueries({
-          queryKey: ["orders"],
-        });
-      }
+      queryClient.invalidateQueries({
+        queryKey: ["orders"],
+      });
       queryClient.invalidateQueries({
         queryKey: ["orders", "in", "progress"],
       });
@@ -323,7 +321,9 @@ export function OrderDialog({ open, onOpenChange, order }: OrderDialogProps) {
                       {new Intl.NumberFormat("pt-BR", {
                         style: "currency",
                         currency: "BRL",
-                      }).format(order.total + order.discount - order.deliveryCost)}
+                      }).format(
+                        order.total + order.discount - order.deliveryCost
+                      )}
                     </span>
                   </div>
                   <div className="flex justify-between">

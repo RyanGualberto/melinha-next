@@ -118,6 +118,20 @@ export function AddressDialog({
     }
   }, [address, reset]);
 
+  useEffect(() => {
+    if (
+      form.watch("city") &&
+      form.watch("city").toLowerCase() !== "praia grande"
+    ) {
+      form.setError("city", {
+        type: "manual",
+        message: "Localização fora da área de entrega",
+      });
+    } else {
+      form.clearErrors("city");
+    }
+  }, [form.watch("city")]);
+
   const onSubmit = async (data: AddressFormValues) => {
     await onSave(data);
     reset();

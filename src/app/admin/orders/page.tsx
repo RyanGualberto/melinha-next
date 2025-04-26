@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { listOrders } from "@/requests/order";
 import { OrderStatus } from "@/types/order-status";
 import OrdersResume from "@/components/orders/orders-resume";
@@ -25,6 +25,7 @@ import { IOrder } from "@/types/order";
 import Link from "next/link";
 
 export default function OrdersPage() {
+  const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [page, setPage] = useState(0);
@@ -141,7 +142,12 @@ export default function OrdersPage() {
           className={cn("hidden md:inline-flex", {
             "animate-pulse": loadingOrders,
           })}
-          onClick={() => refetch()}
+          onClick={() => {
+            refetch();
+            queryClient.invalidateQueries({
+              queryKey: ["orders", "in", "progress"],
+            });
+          }}
         >
           <RefreshCcw
             className={cn("h-4 w-4", {
