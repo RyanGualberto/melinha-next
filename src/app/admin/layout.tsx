@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { IOrder } from "@/types/order";
+import InstallButton from "@/components/pwa/install-button";
 
 export default function DashboardLayout({
   children,
@@ -98,6 +99,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
+      <InstallButton />
       <div className="flex min-h-screen flex-col w-screen">
         <div className="flex flex-1">
           <AdminSidebarMobileTrigger />
