@@ -54,17 +54,13 @@ export default function DashboardLayout({
   const handleBrowserNotification = useCallback(
     (order: IOrder) => {
       if (Notification.permission === "granted") {
-        console.log("Notification permission granted");
-
         const notification = new Notification("Novo pedido recebido!", {
           body: `Pedido #${JSON.parse(order.userSnapshot).firstName} - ${
             order.products.length
           } itens`,
         });
 
-
         notification.onclick = () => {
-          console.log("Notification clicked");
           window.focus();
           queryClient.invalidateQueries({ queryKey: ["orders"] });
           queryClient.invalidateQueries({
