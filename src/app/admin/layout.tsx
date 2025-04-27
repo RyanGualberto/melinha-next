@@ -35,6 +35,11 @@ export default function DashboardLayout({
   }, []);
 
   const getNotificationPermission = useCallback(() => {
+    if (!("Notification" in window)) {
+      toast.error("Seu navegador não suporta notificações!");
+      return;
+    }
+
     if (Notification.permission === "default") {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
@@ -52,6 +57,11 @@ export default function DashboardLayout({
 
   const handleBrowserNotification = useCallback(
     (order: IOrder) => {
+      if (!("Notification" in window)) {
+        toast.error("Seu navegador não suporta notificações!");
+        return;
+      }
+
       if (Notification.permission === "granted") {
         const notification = new Notification("Novo pedido recebido!", {
           body: `Pedido #${JSON.parse(order.userSnapshot).firstName} - ${
@@ -144,7 +154,9 @@ export default function DashboardLayout({
         <div className="flex flex-1">
           <AdminSidebarMobileTrigger />
           <SidebarNav />
-          <main className="flex-1 p-6 md:p-8 max-w-screen md:max-w-[auto]">{children}</main>
+          <main className="flex-1 p-6 md:p-8 max-w-screen md:max-w-[auto]">
+            {children}
+          </main>
         </div>
       </div>
     </SidebarProvider>
