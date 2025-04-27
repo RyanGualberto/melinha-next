@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import QueryProvider from "@/contexts/query-context";
 import { AuthenticatedContextProvider } from "@/contexts/user-context";
@@ -12,7 +12,6 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   manifest: "/manifest.json",
-  themeColor: "#8b30f4",
   openGraph: {
     images: [
       {
@@ -22,6 +21,11 @@ export const metadata: Metadata = {
       },
     ],
   },
+};
+
+// ⚡️ Agora o themeColor vem aqui:
+export const viewport: Viewport = {
+  themeColor: "#692eff",
 };
 
 export default function RootLayout({
