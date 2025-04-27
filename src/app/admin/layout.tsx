@@ -35,6 +35,44 @@ export default function DashboardLayout({
     }, 3000);
   }, []);
 
+  const getNotificationPermission = useCallback(() => {
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          toast.success("Notificações ativadas!");
+        } else {
+          toast.error("Notificações desativadas!");
+        }
+      });
+    } else if (Notification.permission === "denied") {
+      toast.error("Notificações desativadas!");
+    } else {
+      toast.success("Notificações ativadas!");
+    }
+  }, []);
+
+  const handleBrowserNotification = useCallback(
+    (order: IOrder) => {
+      if (Notification.permission === "granted") {
+        const notification = new Notification("Novo pedido recebido!", {
+          body: `Pedido #${JSON.parse(order.userSnapshot).firstName} - ${
+            order.products.length
+          } itens`,
+          icon: "/profile.png",
+        });
+
+        notification.onclick = () => {
+          window.focus();
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
+          queryClient.invalidateQueries({
+            queryKey: ["orders", "in", "progress"],
+          });
+        };
+      }
+    },
+    [queryClient]
+  );
+
   const handleReceiveOrder = useCallback(
     (order: IOrder) => {
       toast.custom(
@@ -75,11 +113,16 @@ export default function DashboardLayout({
         }
       );
       playTrimmedAudio();
+      handleBrowserNotification(order);
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["orders", "in", "progress"] });
     },
-    [playTrimmedAudio, queryClient]
+    [playTrimmedAudio, queryClient, handleBrowserNotification]
   );
+
+  useEffect(() => {
+    getNotificationPermission();
+  }, [getNotificationPermission]);
 
   useEffect(() => {
     const pusher = new Pusher(String(process.env.NEXT_PUBLIC_PUSHER_KEY), {
