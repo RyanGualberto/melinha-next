@@ -129,7 +129,7 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden max-w-full">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Pedidos</h1>
@@ -158,9 +158,9 @@ export default function OrdersPage() {
         </Button>
       </div>
       <OrdersResume />
-      <Card className="p-4">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex flex-col gap-1">
+      <Card className="p-4 max-w-full">
+        <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
+          <div className="flex flex-col gap-1 w-full md:w-[180px]">
             <span className="text-sm font-medium">Status</span>
             <Select
               value={statusFilter}
@@ -168,7 +168,7 @@ export default function OrdersPage() {
                 setStatusFilter(value as keyof typeof OrderStatus)
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent>
@@ -187,7 +187,7 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full md:w-[180px]">
             <span className="text-sm font-medium">Método de entrega</span>
             <Select
               defaultValue="all"
@@ -196,7 +196,7 @@ export default function OrdersPage() {
                 setDeliveryMethod(value as "delivery" | "withdrawal" | "all")
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Selecione o método de entrega" />
               </SelectTrigger>
               <SelectContent>
@@ -206,7 +206,7 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full md:w-[180px]">
             <span className="text-sm font-medium">Método de pagamento</span>
             <Select
               defaultValue="all"
@@ -215,7 +215,7 @@ export default function OrdersPage() {
                 setPaymentMethod(value as "all" | "money" | "card" | "pix")
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Selecione o método de pagamento" />
               </SelectTrigger>
               <SelectContent>
@@ -226,7 +226,7 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full md:w-[180px]">
             <span className="text-sm font-medium">Periodo</span>
             <Select
               defaultValue="all"
@@ -242,7 +242,7 @@ export default function OrdersPage() {
                 )
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Selecione o periodo" />
               </SelectTrigger>
               <SelectContent>
@@ -254,9 +254,13 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full md:w-[180px]">
             <span className="text-sm font-medium">Relatório de fretes</span>
-            <Button onClick={handleCopyDeliveryReport} variant="secondary">
+            <Button
+              onClick={handleCopyDeliveryReport}
+              variant="secondary"
+              className="w-full md:w-auto"
+            >
               <BookText className="h-4 w-4 mr-2" />
               Copiar
             </Button>

@@ -160,7 +160,7 @@ export default function CategoryAdminListItem({
     <AccordionItem
       ref={setNodeRef}
       style={style}
-      className={`w-full items-center p-3 mb-2 rounded-md ${
+      className={`w-full items-center p-1 md:p-3 mb-2 rounded-md ${
         isDragging
           ? "bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800"
           : ""
@@ -176,8 +176,8 @@ export default function CategoryAdminListItem({
           <GripVertical className="h-5 w-5 text-muted-foreground" />
         </div>
 
-        <div className="flex flex-col py-2 w-full">
-          <div className="flex gap-2 items-center justify-between">
+        <div className="flex flex-col py-2 w-full gap-2 md:gap-0">
+          <div className="flex gap-0 md:gap-2 flex-col md:flex-row items-start md:items-center justify-between">
             {editingName ? (
               <Input
                 value={name}
@@ -198,24 +198,26 @@ export default function CategoryAdminListItem({
                 required
               />
             ) : (
-              <span
-                className="text-xl font-semibold"
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setEditingName(true);
-                }}
-              >
-                {category.name}
-              </span>
+              <div className="flex gap-2 items-center w-full">
+                <span
+                  className="text-xl font-semibold w-full"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setEditingName(true);
+                  }}
+                >
+                  {category.name}
+                </span>
+                <AccordionTrigger
+                  className="flex w-full min-w-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                />
+              </div>
             )}
             <div className="flex gap-2 items-center">
-              <AccordionTrigger
-                className="flex w-full min-w-full"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              />
               <div className="text-sm bg-[#EEEEEE90] rounded-lg h-9 w-fit flex items-center overflow-hidden">
                 <span
                   className={cn("p-4 flex items-center justify-center", {
@@ -276,6 +278,7 @@ export default function CategoryAdminListItem({
               />
             ) : (
               <span
+              className=""
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -288,7 +291,7 @@ export default function CategoryAdminListItem({
           </div>
         </div>
       </div>
-      <AccordionContent className="flex flex-col gap-4 pl-4">
+      <AccordionContent className="flex flex-col gap-4 pl-1 md:pl-4">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

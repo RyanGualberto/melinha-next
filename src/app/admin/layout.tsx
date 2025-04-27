@@ -146,7 +146,7 @@ export default function DashboardLayout({
         <div className="flex flex-1">
           <AdminSidebarMobileTrigger />
           <SidebarNav />
-          <main className="flex-1 p-6 md:p-8">{children}</main>
+          <main className="flex-1 p-6 md:p-8 max-w-screen">{children}</main>
         </div>
       </div>
     </SidebarProvider>

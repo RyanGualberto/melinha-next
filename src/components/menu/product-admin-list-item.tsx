@@ -116,7 +116,7 @@ export default function ProductAdminListItem({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`overflow-hidden cursor-pointer transition-all hover:shadow-md flex flex-row py-0 gap-2 items-center border-none shadow-none rounded-none pl-4 ${
+      className={`overflow-hidden cursor-pointer transition-all hover:shadow-md flex flex-row py-0 gap-2 items-center border-none shadow-none rounded-none pl-1 md:pl-4 ${
         isDragging
           ? "bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800"
           : ""
@@ -129,113 +129,116 @@ export default function ProductAdminListItem({
       >
         <GripVertical className="h-5 w-5 text-muted-foreground" />
       </div>
-      <div className="relative min-w-24 h-36 w-36">
-        <Image
-          src={product.image || "/placeholder.svg"}
-          alt={product.title}
-          fill
-          className="object-cover"
-        />
-      </div>
-      <CardContent className="p-2  w-full flex-row flex items-center pr-8">
-        <div className="flex flex-col mb-2 w-full ">
-          <h3 className="font-semibold text-xl">{product.title}</h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 flex-1 h-14">
-            {product.description}
-          </p>
+      <div className="flex flex-col md:flex-row gap-2 items-center w-full">
+        <div className="relative min-w-24 h-36 w-36">
+          <Image
+            src={product.image || "/placeholder.svg"}
+            alt={product.title}
+            fill
+            className="object-cover"
+          />
         </div>
-        <div className="h-full flex items-center justify-center gap-3">
-          <Input
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="w-20 text-center"
-          />
-          <div className="text-sm bg-[#EEEEEE90] rounded-lg h-9 w-fit flex items-center overflow-hidden">
-            <span
-              className={cn("p-4 flex items-center justify-center", {
-                "bg-purple-800 text-white": product.status === "INACTIVE",
-              })}
-              onClick={() => {
-                handleEdit({
-                  description: product.description,
-                  image: product.image,
-                  price: product.price,
-                  status: "INACTIVE",
-                  title: product.title,
-                });
-              }}
-            >
-              Pausado
-            </span>
-            <span
-              className={cn("p-4 flex items-center justify-center", {
-                "bg-purple-800 text-white": product.status === "ACTIVE",
-              })}
-              onClick={() => {
-                handleEdit({
-                  description: product.description,
-                  image: product.image,
-                  price: product.price,
-                  status: "ACTIVE",
-                  title: product.title,
-                });
-              }}
-            >
-              Ativado
-            </span>
+        <CardContent className="p-2 w-full flex-col md:flex-row flex items-center pr-8">
+          <div className="flex flex-col mb-2 w-full ">
+            <h3 className="font-semibold text-xl">{product.title}</h3>
+            <p className="text-sm text-muted-foreground line-clamp-2 flex-1 h-14">
+              {product.description}
+            </p>
           </div>
-          <ProductDialog
-            onSave={handleEdit}
-            categoryId={product.categoryId}
-            product={product}
-            open={openDialog}
-            setOpen={setOpenDialog}
-          />
-          <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
-            <DropdownMenuTrigger className="">
-              <MoreVertical size={16} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
+          <div className="h-full flex flex-col md:flex-row items-center justify-center gap-3">
+            <Input
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="w-20 text-center"
+            />
+            <div className="text-sm bg-[#EEEEEE90] rounded-lg h-9 w-fit flex items-center overflow-hidden">
+              <span
+                className={cn("p-4 flex items-center justify-center", {
+                  "bg-purple-800 text-white": product.status === "INACTIVE",
+                })}
                 onClick={() => {
-                  setOpenDropdown(false);
-                  setOpenDialog(true);
-                }}
-              >
-                <Edit size={12} />
-                Editar item
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => {
-                  setOpenDropdown(false);
-                  duplicate({
+                  handleEdit({
                     description: product.description,
                     image: product.image,
                     price: product.price,
-                    status: product.status,
+                    status: "INACTIVE",
                     title: product.title,
-                    categoryId: product.categoryId,
                   });
                 }}
               >
-                <Copy size={12} />
-                Duplicar item
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                variant="destructive"
+                Pausado
+              </span>
+              <span
+                className={cn("p-4 flex items-center justify-center", {
+                  "bg-purple-800 text-white": product.status === "ACTIVE",
+                })}
                 onClick={() => {
-                  setOpenDropdown(false);
-                  setAlertDialogDeleteOpen(true);
+                  handleEdit({
+                    description: product.description,
+                    image: product.image,
+                    price: product.price,
+                    status: "ACTIVE",
+                    title: product.title,
+                  });
                 }}
               >
-                <Trash2 size={12} />
-                Remover item
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardContent>
+                Ativado
+              </span>
+            </div>
+            <ProductDialog
+              onSave={handleEdit}
+              categoryId={product.categoryId}
+              product={product}
+              open={openDialog}
+              setOpen={setOpenDialog}
+            />
+            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
+              <DropdownMenuTrigger className="">
+                <MoreVertical size={16} className="hidden md:block" />
+                <span>Mais ações</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setOpenDropdown(false);
+                    setOpenDialog(true);
+                  }}
+                >
+                  <Edit size={12} />
+                  Editar item
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={() => {
+                    setOpenDropdown(false);
+                    duplicate({
+                      description: product.description,
+                      image: product.image,
+                      price: product.price,
+                      status: product.status,
+                      title: product.title,
+                      categoryId: product.categoryId,
+                    });
+                  }}
+                >
+                  <Copy size={12} />
+                  Duplicar item
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => {
+                    setOpenDropdown(false);
+                    setAlertDialogDeleteOpen(true);
+                  }}
+                >
+                  <Trash2 size={12} />
+                  Remover item
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </CardContent>
+      </div>
       <AlertDialogDelete
         hideTrigger
         _open={alertDialogDeleteOpen}
