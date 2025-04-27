@@ -184,8 +184,7 @@ export default function CriarPedidoPage() {
       };
 
       // Chamar a API para criar o pedido
-      const resultado = await createOrderMutation(pedidoData);
-      console.log("Pedido criado:", resultado);
+      await createOrderMutation(pedidoData);
 
       toast.success("Pedido #${resultado.id} criado com sucesso");
 

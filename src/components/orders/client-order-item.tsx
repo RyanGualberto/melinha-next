@@ -77,7 +77,6 @@ export function CientOrderItem({
 }) {
   const statusInfo = getStatusInfo(order.status);
   const isExpanded = expandedOrders[order.id] || false;
-  console.log(order.addressSnapshot);
 
   const address: IAddress = order?.addressSnapshot
     ? order?.addressSnapshot[0] === "{"
