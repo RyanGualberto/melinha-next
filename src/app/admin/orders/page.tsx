@@ -23,6 +23,8 @@ import { IAddress } from "@/types/address";
 import { IUser } from "@/types/user";
 import { IOrder } from "@/types/order";
 import Link from "next/link";
+import { DatePickerWithPresets } from "@/components/ui/date-picker-with-presets";
+import { DateRange } from "react-day-picker";
 
 export default function OrdersPage() {
   const queryClient = useQueryClient();
@@ -40,9 +42,10 @@ export default function OrdersPage() {
   const [paymentMethod, setPaymentMethod] = useState<
     "all" | "money" | "card" | "pix"
   >("all");
-  const [period, setPeriod] = useState<
-    "all" | "today" | "yesterday" | "last3Days" | "lastMonth"
-  >("all");
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(new Date().setDate(new Date().getDate() - 30)),
+    to: new Date(),
+  });
 
   const {
     data: orders,
@@ -58,7 +61,8 @@ export default function OrdersPage() {
         status: statusFilter,
         deliveryMethod,
         paymentMethod,
-        period: period,
+        from: date?.from ? date.from.toISOString() : undefined,
+        to: date?.to ? date.to.toISOString() : undefined,
       }),
   });
 
@@ -95,7 +99,7 @@ export default function OrdersPage() {
     statusFilter,
     deliveryMethod,
     paymentMethod,
-    period,
+    date,
     page,
     perPage,
     customerName,
@@ -160,7 +164,7 @@ export default function OrdersPage() {
       <OrdersResume />
       <Card className="p-4 max-w-full">
         <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-          <div className="flex flex-col gap-1 w-full md:w-[180px]">
+          <div className="flex flex-col gap-1 w-full">
             <span className="text-sm font-medium">Status</span>
             <Select
               value={statusFilter}
@@ -168,7 +172,7 @@ export default function OrdersPage() {
                 setStatusFilter(value as keyof typeof OrderStatus)
               }
             >
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent>
@@ -187,7 +191,7 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1 w-full md:w-[180px]">
+          <div className="flex flex-col gap-1 w-full">
             <span className="text-sm font-medium">Método de entrega</span>
             <Select
               defaultValue="all"
@@ -196,7 +200,7 @@ export default function OrdersPage() {
                 setDeliveryMethod(value as "delivery" | "withdrawal" | "all")
               }
             >
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione o método de entrega" />
               </SelectTrigger>
               <SelectContent>
@@ -206,7 +210,7 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1 w-full md:w-[180px]">
+          <div className="flex flex-col gap-1 w-full">
             <span className="text-sm font-medium">Método de pagamento</span>
             <Select
               defaultValue="all"
@@ -215,7 +219,7 @@ export default function OrdersPage() {
                 setPaymentMethod(value as "all" | "money" | "card" | "pix")
               }
             >
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione o método de pagamento" />
               </SelectTrigger>
               <SelectContent>
@@ -226,35 +230,11 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1 w-full md:w-[180px]">
+          <div className="flex flex-col gap-1 w-full">
             <span className="text-sm font-medium">Periodo</span>
-            <Select
-              defaultValue="all"
-              value={period}
-              onValueChange={(value) =>
-                setPeriod(
-                  value as
-                    | "all"
-                    | "today"
-                    | "yesterday"
-                    | "last3Days"
-                    | "lastMonth"
-                )
-              }
-            >
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Selecione o periodo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os pedidos</SelectItem>
-                <SelectItem value="today">Hoje</SelectItem>
-                <SelectItem value="yesterday">Ontem</SelectItem>
-                <SelectItem value="last3Days">Últimos 3 dias</SelectItem>
-                <SelectItem value="lastMonth">Último mês</SelectItem>
-              </SelectContent>
-            </Select>
+            <DatePickerWithPresets date={date} setDate={setDate} />
           </div>
-          <div className="flex flex-col gap-1 w-full md:w-[180px]">
+          <div className="flex flex-col gap-1 w-full">
             <span className="text-sm font-medium">Relatório de fretes</span>
             <Button
               onClick={handleCopyDeliveryReport}

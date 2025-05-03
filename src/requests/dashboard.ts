@@ -2,18 +2,12 @@ import apiClient from "@/config/api-client";
 
 export interface GetDashboardResponse {
   totalClients: number;
-  ordersLast30Days: number;
-  ordersLastWeekend: number;
-  revenueLast30Days: number;
-  revenueLastWeekend: number;
-  bestSellingItemLast30Days?: BestSellingItemLast30Days;
-  leastSellingItemLast30Days?: LeastSellingItemLast30Days;
-  bestSellingItemLastWeekend?: BestSellingItemLastWeekend;
-  leastSellingItemLastWeekend?: LeastSellingItemLastWeekend;
-  bestSellingNeighborhoodLast30Days: [string, number];
-  leastSellingNeighborhoodLast30Days: [string, number];
-  bestWorstSellingNeighborhoodLastWeekend: [string, number];
-  leastSellingNeighborhoodLastWeekend: [string, number];
+  ordersPeriod: number;
+  revenuePeriod: number;
+  bestSellingItemPeriod?: BestSellingItemPeriod;
+  leastSellingItemPeriod?: LeastSellingItemPeriod;
+  bestSellingNeighborhoodPeriod: [string, number];
+  leastSellingNeighborhoodPeriod: [string, number];
   averageTicket: number;
   totalWorkedDays: number;
   deliveryFixedTotalCost: number;
@@ -23,7 +17,7 @@ export interface GetDashboardResponse {
   realProfit: number;
 }
 
-export interface BestSellingItemLast30Days {
+export interface BestSellingItemPeriod {
   _sum: Sum;
   productTitleSnapshot: string;
 }
@@ -32,7 +26,7 @@ export interface Sum {
   quantity: number;
 }
 
-export interface LeastSellingItemLast30Days {
+export interface LeastSellingItemPeriod {
   _sum: Sum2;
   productTitleSnapshot: string;
 }
@@ -59,11 +53,15 @@ export interface Sum4 {
   quantity: number;
 }
 
-export async function getDashboard() {
+export async function getDashboard(params: {
+  from: string | undefined;
+  to: string | undefined;
+}) {
   try {
     const response = await apiClient<GetDashboardResponse>({
       method: "get",
       url: "/dashboard",
+      params,
     });
 
     return response.data;

@@ -81,7 +81,8 @@ export interface ListOrdersRequest {
   status: "all" | keyof typeof OrderStatus;
   deliveryMethod: "delivery" | "withdrawal" | "all";
   paymentMethod: "all" | "money" | "card" | "pix";
-  period: "all" | "today" | "yesterday" | "last3Days" | "lastMonth";
+  from: string | undefined;
+  to: string | undefined;
 }
 
 export async function listOrders(params: ListOrdersRequest) {
