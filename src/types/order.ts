@@ -1,4 +1,5 @@
 import { OrderStatus } from "./order-status";
+import { IProduct } from "./product";
 
 export interface IOrder {
   id: string;
@@ -27,6 +28,7 @@ export interface IOrderProduct {
   orderId: string;
   price: number;
   productId: string;
+  product: IProduct;
   productPriceSnapshot: number;
   productTitleSnapshot: string;
   productVariantId: null;

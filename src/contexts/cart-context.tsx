@@ -41,6 +41,7 @@ const districts = [
 export interface CartContextProps {
   setAddress: (address: IAddress) => void;
   handleAddCartItem: (item: CartProduct) => void;
+  handleAddManyCartItems: (item: CartProduct[]) => void;
   handleRemoveCartItem: (item: CartProduct) => void;
   handleChangeQuantity: (cartProduct: CartProduct, quantity: number) => void;
   setPaymentMethod: (paymentMethod: "pix" | "money" | "card") => void;
@@ -60,6 +61,7 @@ const CartContext = createContext<CartContextProps>({
   setAddress: () => {},
   handleChangeQuantity: () => {},
   handleAddCartItem: () => {},
+  handleAddManyCartItems: () => {},
   handleRemoveCartItem: () => {},
   cart: {} as Cart,
   setPaymentMethod: () => {},
@@ -107,6 +109,16 @@ export const CartContextProvider = ({
   const handleAddCartItem = useCallback(
     (cartProduct: CartProduct) => {
       const products = [...cart.products, cartProduct];
+      setCart({
+        ...cart,
+        products,
+      });
+    },
+    [cart]
+  );
+  const handleAddManyCartItems = useCallback(
+    (cartProducts: CartProduct[]) => {
+      const products = [...cart.products, ...cartProducts];
       setCart({
         ...cart,
         products,
@@ -252,6 +264,7 @@ export const CartContextProvider = ({
         addDiscount,
         cart,
         handleAddCartItem,
+        handleAddManyCartItems,
         handleRemoveCartItem,
         handleChangeQuantity,
         setAddress,

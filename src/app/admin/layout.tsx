@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { IOrder } from "@/types/order";
 import InstallButton from "@/components/pwa/install-button";
+import { requestPermissionAndSendToken } from "@/lib/firebase";
 
 export default function DashboardLayout({
   children,
@@ -33,27 +34,6 @@ export default function DashboardLayout({
       audio.pause();
       audio.currentTime = 0;
     }, 3000);
-  }, []);
-
-  const getNotificationPermission = useCallback(() => {
-    if (!("Notification" in window)) {
-      toast.error("Seu navegador não suporta notificações!");
-      return;
-    }
-
-    if (Notification.permission === "default") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          toast.success("Notificações ativadas!");
-        } else {
-          toast.error("Notificações desativadas!");
-        }
-      });
-    } else if (Notification.permission === "denied") {
-      toast.error("Notificações desativadas!");
-    } else {
-      toast.success("Notificações ativadas!");
-    }
   }, []);
 
   const handleBrowserNotification = useCallback(
@@ -130,8 +110,8 @@ export default function DashboardLayout({
   );
 
   useEffect(() => {
-    getNotificationPermission();
-  }, [getNotificationPermission]);
+    requestPermissionAndSendToken();
+  }, []);
 
   useEffect(() => {
     const pusher = new Pusher(String(process.env.NEXT_PUBLIC_PUSHER_KEY), {

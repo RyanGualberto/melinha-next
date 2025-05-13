@@ -1,5 +1,6 @@
 import MenuPageStoreConfigSection from "@/components/menu/menu-page-store-config-section";
 import MenuDynamicContentPage from "@/components/menu/menu-dynamic-content-page";
+import LastOrderSection from "@/components/menu/last-order-section";
 
 export default async function CardapioPage() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu`);
@@ -7,6 +8,7 @@ export default async function CardapioPage() {
 
   return (
     <div className="container px-4 md:px-0 py-8 w-full flex-1 scroll-smooth">
+      <LastOrderSection />
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Cardápio</h1>
         <p className="text-muted-foreground">
@@ -14,7 +16,6 @@ export default async function CardapioPage() {
           complementos a vontade, peça agora!
         </p>
       </div>
-
       <MenuPageStoreConfigSection />
       <MenuDynamicContentPage menu={menu} />
     </div>

@@ -162,17 +162,17 @@ export default function CarrinhoPage() {
 
       {cart.products.length > 0 ? (
         <div className="grid gap-8 md:grid-cols-3">
-          <div className="md:col-span-2 space-y-6">
-            <Card>
+          <div className="md:col-span-2 space-y-6 max-w-screen overflow-x-hidden">
+            <Card className="max-w-full">
               <CardHeader>
                 <CardTitle>Itens do Pedido</CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y">
+              <CardContent className="p-0 w-full">
+                <div className="divide-y w-full">
                   {cart.products.map((product) => (
-                    <div key={product.id} className="p-4 sm:p-6">
-                      <div className="flex gap-4">
-                        <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
+                    <div key={product.id} className="p-2 sm:p-6">
+                      <div className="flex gap-2 md:gap-4">
+                        <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md">
                           <Image
                             src={product.product.image || "/placeholder.svg"}
                             alt={product.product.title}

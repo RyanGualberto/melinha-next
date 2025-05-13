@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -21,6 +21,20 @@ import { IOrder } from "@/types/order";
 import { OrderStatus } from "@/types/order-status";
 import { IAddress } from "@/types/address";
 import { Badge } from "../ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import { useMutation } from "@tanstack/react-query";
+import { updateOrderStatus } from "@/requests/order";
+import { useCartContext } from "@/contexts/cart-context";
+import { useRouter } from "next/navigation";
 
 const getStatusInfo = (status: keyof typeof OrderStatus) => {
   switch (status) {
@@ -76,7 +90,33 @@ export function CientOrderItem({
   toggleOrder: (id: string) => void;
 }) {
   const statusInfo = getStatusInfo(order.status);
+  const { push } = useRouter();
   const isExpanded = expandedOrders[order.id] || false;
+  const { mutateAsync: confirmMutation } = useMutation({
+    mutationKey: ["cancel", "order"],
+    mutationFn: async () => await updateOrderStatus(order.id, "CANCELED"),
+  });
+  const { handleAddManyCartItems } = useCartContext();
+
+  const repeatOrder = useCallback(() => {
+    handleAddManyCartItems(
+      order.products.map((product) => ({
+        id: product.id,
+        price: product.price,
+        product: product.product,
+        observation: product.observation || undefined,
+        productId: product.id,
+        quantity: product.quantity,
+        unitPrice: product.price,
+        variants: product.variants.map((pv) => ({
+          variantId: pv.id,
+          variantName: pv.variantName,
+          variantPrice: pv.variantPrice,
+        })),
+      }))
+    );
+    push("/cart");
+  }, [order, handleAddManyCartItems, push]);
 
   const address: IAddress = order?.addressSnapshot
     ? order?.addressSnapshot[0] === "{"
@@ -176,6 +216,43 @@ export function CientOrderItem({
             </>
           )}
         </Button>
+        <div className="flex justify-center md:justify-start mt-2">
+          {order.status === "PENDING" && (
+            <AlertDialog>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancelar pedido</AlertDialogTitle>
+                </AlertDialogHeader>
+                <div>
+                  Tem certeza que deseja cancelar o pedido? Essa ação não pode
+                  ser desfeita
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Voltar</AlertDialogCancel>
+                  <Button type="button" variant="destructive" asChild>
+                    <AlertDialogAction onClick={() => confirmMutation()}>
+                      Confirmar
+                    </AlertDialogAction>
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full md:w-fit">
+                  Cancelar Pedido
+                </Button>
+              </AlertDialogTrigger>
+            </AlertDialog>
+          )}
+          {order.status === "COMPLETED" && (
+            <Button
+              type="button"
+              onClick={repeatOrder}
+              className="w-full md:w-fit"
+            >
+              Refazer pedido
+            </Button>
+          )}
+        </div>
 
         {isExpanded && (
           <div className="mt-4 space-y-4">

@@ -119,6 +119,20 @@ export async function listOrdersInProgress() {
   }
 }
 
+export async function listLastOrder() {
+  try {
+    const response = await apiClient<IOrder>({
+      method: "get",
+      url: "/orders/last-order",
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error getting orders:", error);
+    throw error;
+  }
+}
+
 export async function updateOrderStatus(
   orderId: string,
   status: keyof typeof OrderStatus
