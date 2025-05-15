@@ -169,7 +169,16 @@ export default function CriarPedidoPage() {
     setIsLoading(true);
 
     try {
-      const pedidoData: CreateOrderDto = {
+      const selectedClientData = {
+        ...selectedClient,
+        firstName: selectedClient?.name.split(" ")[0],
+        lastName: selectedClient?.name.split(" ").slice(1).join(" "),
+      };
+      const pedidoData: CreateOrderDto & {
+        userId?: string;
+        userSnapshot?: string;
+      } = {
+        userId: data.clienteId,
         addressId: data.addressId,
         addressSnapshot: data.addressSnapshot,
         products: products,
@@ -181,6 +190,7 @@ export default function CriarPedidoPage() {
           data.paymentMethod === "money" ? data.paymentChange : undefined,
         orderObservation: data.orderObservation,
         isWithdrawal: data.isWithdrawal,
+        userSnapshot: JSON.stringify(selectedClientData),
       };
 
       // Chamar a API para criar o pedido

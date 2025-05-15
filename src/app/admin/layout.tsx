@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { IOrder } from "@/types/order";
 import InstallButton from "@/components/pwa/install-button";
-import { requestPermissionAndSendToken } from "@/lib/firebase";
+import { requestPermissionAndSendToken } from "@/lib/notification";
 
 export default function DashboardLayout({
   children,
@@ -102,7 +102,7 @@ export default function DashboardLayout({
         }
       );
       playTrimmedAudio();
-      handleBrowserNotification(order);
+      // handleBrowserNotification(order);
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["orders", "in", "progress"] });
     },
