@@ -23,7 +23,7 @@ import {
   UpdateProductOrderPayload,
 } from "@/requests/product";
 import { Button } from "../ui/button";
-import { GripVertical, Plus } from "lucide-react";
+import { GripVertical, Pause, Play, Plus } from "lucide-react";
 import {
   arrayMove,
   SortableContext,
@@ -220,9 +220,13 @@ export default function CategoryAdminListItem({
             <div className="flex gap-2 items-center">
               <div className="text-sm bg-[#EEEEEE90] rounded-lg h-9 w-fit flex items-center overflow-hidden">
                 <span
-                  className={cn("p-4 flex items-center justify-center", {
-                    "bg-purple-800 text-white": category.status === "INACTIVE",
-                  })}
+                  className={cn(
+                    "p-4 flex items-center justify-center cursor-pointer",
+                    {
+                      "text-purple-800": category.status === "INACTIVE",
+                      "text-muted-foreground": category.status === "ACTIVE",
+                    }
+                  )}
                   onClick={() => {
                     handleEdit(category.id, {
                       name: category.name,
@@ -231,12 +235,16 @@ export default function CategoryAdminListItem({
                     });
                   }}
                 >
-                  Pausado
+                 <Pause size={12} />
                 </span>
                 <span
-                  className={cn("p-4 flex items-center justify-center", {
-                    "bg-purple-800 text-white": category.status === "ACTIVE",
-                  })}
+                  className={cn(
+                    "p-4 flex items-center justify-center cursor-pointer",
+                    {
+                      "text-purple-800": category.status === "ACTIVE",
+                      "text-muted-foreground": category.status === "INACTIVE",
+                    }
+                  )}
                   onClick={() => {
                     handleEdit(category.id, {
                       name: category.name,
@@ -245,7 +253,7 @@ export default function CategoryAdminListItem({
                     });
                   }}
                 >
-                  Ativado
+                  <Play size={12} />
                 </span>
               </div>
               <AlertDialogDelete

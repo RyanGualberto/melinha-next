@@ -18,7 +18,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Copy, Edit, GripVertical, MoreVertical, Trash2 } from "lucide-react";
+import {
+  Copy,
+  Edit,
+  GripVertical,
+  MoreVertical,
+  Pause,
+  Play,
+  Trash2,
+} from "lucide-react";
 import { AlertDialogDelete } from "../ui/alert-dialog-delete";
 import { ProductDialog } from "../products/product-dialog";
 import { useSortable } from "@dnd-kit/sortable";
@@ -153,9 +161,12 @@ export default function ProductAdminListItem({
             />
             <div className="text-sm bg-[#EEEEEE90] rounded-lg h-9 w-fit flex items-center overflow-hidden">
               <span
-                className={cn("p-4 flex items-center justify-center", {
-                  "bg-purple-800 text-white": product.status === "INACTIVE",
-                })}
+                className={cn(
+                  "p-4 flex items-center justify-center cursor-pointer", {
+                    "text-purple-800": product.status === "INACTIVE",
+                    "text-muted-foreground": product.status === "ACTIVE",
+                  }
+                )}
                 onClick={() => {
                   handleEdit({
                     description: product.description,
@@ -166,12 +177,17 @@ export default function ProductAdminListItem({
                   });
                 }}
               >
-                Pausado
+                <Pause
+                  size={12}
+                />
               </span>
               <span
-                className={cn("p-4 flex items-center justify-center", {
-                  "bg-purple-800 text-white": product.status === "ACTIVE",
-                })}
+                className={cn(
+                  "p-4 flex items-center justify-center cursor-pointer", {
+                    "text-purple-800": product.status === "ACTIVE",
+                    "text-muted-foreground": product.status === "INACTIVE",
+                  }
+                )}
                 onClick={() => {
                   handleEdit({
                     description: product.description,
@@ -182,7 +198,7 @@ export default function ProductAdminListItem({
                   });
                 }}
               >
-                Ativado
+                <Play size={12} />
               </span>
             </div>
             <ProductDialog
