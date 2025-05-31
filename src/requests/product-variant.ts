@@ -132,10 +132,10 @@ export async function updateProductVariant(
 }
 
 export interface updateManyProductVariantPayload {
-  price: number;
-  status: string;
-  productId: string;
-  productVariantCategoryId: string;
+  price?: number;
+  status?: string;
+  productId?: string;
+  productVariantCategoryId?: string;
 }
 
 export async function updateManyProductVariant(

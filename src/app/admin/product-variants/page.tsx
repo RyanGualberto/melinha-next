@@ -135,14 +135,43 @@ export default function ProductVariantsPage() {
 
   const handleSaveEditMany = useCallback(
     async (data: ProductVariantManyFormValues) => {
+      if (selectedRows.length === 0) return;
+      // se as linhas selecionadas tiverem um field diferente, não edita aquele field, ex.: se uma linha tiver um preço diferente, não edita o preço de todas as linhas
+      const mountData: updateManyProductVariantPayload = {
+        price: data.price,
+        status: data.status,
+        productId: data.productId,
+        productVariantCategoryId: data.productVariantCategoryId,
+      };
+      // remove fields that are not set
+      Object.keys(mountData).forEach(
+        (key) =>
+          mountData[key as keyof updateManyProductVariantPayload] === "" &&
+          delete mountData[key as keyof updateManyProductVariantPayload]
+      );
+      // if all fields are empty, return
+      if (Object.keys(mountData).length === 0) return;
+      // if the selected rows have different values for a field, do not update that field
+      const uniqueValues = new Set(
+        selectedRows.map((row) => row.productVariantCategoryId)
+      );
+      if (uniqueValues.size > 1) {
+        delete mountData.productVariantCategoryId;
+      }
+      const uniqueProductIds = new Set(
+        selectedRows.map((row) => row.productId)
+      );
+      if (uniqueProductIds.size > 1) {
+        delete mountData.productId;
+      }
+      const uniqueStatuses = new Set(selectedRows.map((row) => row.status));
+      if (uniqueStatuses.size > 1) {
+        delete mountData.status;
+      }
+
       await updateManyProductVariantMutation({
         ids: selectedRows.map((row) => row.id),
-        data: {
-          price: data.price,
-          status: data.status,
-          productId: data.productId,
-          productVariantCategoryId: data.productVariantCategoryId,
-        },
+        data: mountData,
       });
       setDialogManyOpen(false);
       setEditingProductVariant(undefined);

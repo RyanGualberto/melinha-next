@@ -211,7 +211,7 @@ export default function ProductAdminListItem({
             <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
               <DropdownMenuTrigger className="">
                 <MoreVertical size={16} className="hidden md:block" />
-                <span className="hidden md:block">Mais ações</span>
+                <span className="block md:hidden">Mais ações</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem
