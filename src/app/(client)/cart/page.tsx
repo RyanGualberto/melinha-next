@@ -133,8 +133,8 @@ export default function CarrinhoPage() {
       isWithdrawal: cart.isWithdrawal,
       couponId: cart?.couponId,
     });
-    cleanCart();
     router.push("/profile/orders");
+    cleanCart();
   };
 
   useEffect(() => {
