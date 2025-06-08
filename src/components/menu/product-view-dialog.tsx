@@ -126,6 +126,15 @@ export function ProductViewDialog({
           {productVariantCategories
             .sort((a, b) => {
               const order = [
+                "copo 1 - sabor",
+                "copo 1 - fruta",
+                "copo 1 - complementos",
+                "copo 1 - coberturas",
+                "copo 1 - adicionais",
+                "copo 2 - sabor",
+                "copo 2 - fruta",
+                "copo 2 - complementos",
+                "copo 2 - coberturas",
                 "frutas",
                 "complementos",
                 "coberturas",
