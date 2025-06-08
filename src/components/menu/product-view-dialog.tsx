@@ -126,24 +126,24 @@ export function ProductViewDialog({
           {productVariantCategories
             .sort((a, b) => {
               const order = [
-                "copo 1 - sabor",
-                "copo 1 - fruta",
-                "copo 1 - complementos",
-                "copo 1 - coberturas",
-                "copo 1 - adicionais",
-                "copo 2 - sabor",
-                "copo 2 - fruta",
-                "copo 2 - complementos",
-                "copo 2 - coberturas",
+                "copo1-sabor",
+                "copo1-fruta",
+                "copo1-complementos",
+                "copo1-cobertura",
+                "copo1-adicionais",
+                "copo2-sabor",
+                "copo2-fruta",
+                "copo2-complementos",
+                "copo2-cobertura",
                 "frutas",
                 "complementos",
                 "coberturas",
                 "adicionais",
-                "colher"
+                "colher",
               ];
               return (
-                order.indexOf(a.name.toLowerCase()) -
-                order.indexOf(b.name.toLowerCase())
+                order.indexOf(a.name.toLowerCase().trim()) -
+                order.indexOf(b.name.toLowerCase().trim())
               );
             })
             .map((pvc) => (
