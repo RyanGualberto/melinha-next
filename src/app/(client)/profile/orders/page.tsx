@@ -59,11 +59,11 @@ export default function PedidosPage() {
               Programa de Fidelidade
             </h2>
             <p className="text-sm text-muted-foreground">
-              A cada 15 pedidos, você ganha um açaí clássico grátis!
+              A cada 12 pedidos, você ganha um açaí clássico grátis!
             </p>
           </div>
 
-          {orders && orders.length >= 15 ? (
+          {orders && orders.length >= 12 ? (
             <div className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -81,14 +81,14 @@ export default function PedidosPage() {
             </div>
           ) : (
             <div className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 px-4 py-2 rounded-full text-sm font-medium">
-              Faltam {15 - (orders?.length || 0)} pedidos para ganhar
+              Faltam {12 - (orders?.length || 0)} pedidos para ganhar
             </div>
           )}
         </div>
 
         <div className="relative">
           <Progress
-            value={orders ? (orders.length % 15) * (100 / 15) : 0}
+            value={orders ? (orders.length % 12) * (100 / 12) : 0}
             className="h-4 bg-purple-200 dark:bg-purple-950"
           />
 
@@ -97,7 +97,7 @@ export default function PedidosPage() {
               <div key={i} className="flex flex-col items-center">
                 <div
                   className={`w-1 h-1 rounded-full ${
-                    (orders?.length || 0) % 15 >= (i + 1) * 3
+                    (orders?.length || 0) % 12 >= (i + 1) * 3
                       ? "bg-purple-600"
                       : "bg-purple-200 dark:bg-purple-800"
                   }`}
@@ -110,9 +110,9 @@ export default function PedidosPage() {
           <div className="flex justify-between items-center mt-4">
             <div className="text-sm">
               <span className="font-medium">
-                {orders ? orders.length % 15 : 0}
+                {orders ? orders.length % 12 : 0}
               </span>
-              <span className="text-muted-foreground"> de 15 pedidos</span>
+              <span className="text-muted-foreground"> de 12 pedidos</span>
             </div>
 
             <div className="flex -space-x-2">
@@ -146,9 +146,9 @@ export default function PedidosPage() {
               <span className="font-medium text-foreground">
                 {orders.length}
               </span>
-              {orders.length >= 15 && (
+              {orders.length >= 12 && (
                 <span className="ml-2 text-green-600 dark:text-green-400">
-                  ({Math.floor(orders.length / 15)} açaí(s) grátis já
+                  ({Math.floor(orders.length / 12)} açaí(s) grátis já
                   conquistado(s)!)
                 </span>
               )}
