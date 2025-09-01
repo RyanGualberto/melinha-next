@@ -63,7 +63,8 @@ export default function PedidosPage() {
             </p>
           </div>
 
-          {orders && orders.length >= 12 ? (
+          {orders &&
+          orders.filter((ord) => ord.status !== "CANCELED").length >= 12 ? (
             <div className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -81,14 +82,24 @@ export default function PedidosPage() {
             </div>
           ) : (
             <div className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 px-4 py-2 rounded-full text-sm font-medium">
-              Faltam {12 - (orders?.length || 0)} pedidos para ganhar
+              Faltam{" "}
+              {12 -
+                (orders?.filter((ord) => ord.status !== "CANCELED")?.length ||
+                  0)}{" "}
+              pedidos para ganhar
             </div>
           )}
         </div>
 
         <div className="relative">
           <Progress
-            value={orders ? (orders.length % 12) * (100 / 12) : 0}
+            value={
+              orders
+                ? (orders.filter((ord) => ord.status !== "CANCELED").length %
+                    12) *
+                  (100 / 12)
+                : 0
+            }
             className="h-4 bg-purple-200 dark:bg-purple-950"
           />
 
